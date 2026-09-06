@@ -1,0 +1,26 @@
+{
+  "name": "kinkyx-front",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Front headless Kinkyx — Astro statique, WooCommerce en moteur",
+  "scripts": {
+    "dev": "astro dev",
+    "fetch": "node scripts/fetch-catalog.mjs",
+    "build": "npm run fetch && astro build",
+    "build:nofetch": "astro build",
+    "preview": "astro preview",
+    "start": "node server/static.mjs",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^5.6.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "typescript": "^5.6.3"
+  },
+  "engines": {
+    "node": ">=20.11.0"
+  }
+}

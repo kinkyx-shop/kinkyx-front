@@ -1,0 +1,136 @@
+---
+import { useTranslations, localizedPath } from "@/i18n/utils";
+import { SITE } from "@/consts";
+import type { Locale } from "@/i18n/ui";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const year = new Date().getFullYear();
+
+const serviceLinks = [
+  { label: t("footer.delivery"), href: localizedPath("/livraison-retour/", locale) },
+  { label: t("footer.privacy"), href: localizedPath("/confidentialite/", locale) },
+  { label: t("footer.termsUse"), href: localizedPath("/cgu/", locale) },
+  { label: t("footer.terms"), href: localizedPath("/cgv/", locale) },
+];
+---
+
+<footer class="kx-footer">
+  <div class="kx-container kx-footer__grid">
+    <div class="kx-footer__col">
+      <span class="kx-footer__logo">KINKYX</span>
+      <p class="kx-footer__tag">{t("meta.tagline")}</p>
+      <p class="kx-footer__social">
+        <a href={SITE.social.instagram} rel="noopener">Instagram</a>
+        <a href={SITE.social.facebook} rel="noopener">Facebook</a>
+      </p>
+    </div>
+
+    <div class="kx-footer__col">
+      <h2>{t("footer.customerService")}</h2>
+      <ul>
+        {serviceLinks.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+      </ul>
+    </div>
+
+    <div class="kx-footer__col">
+      <h2>{t("footer.contact")}</h2>
+      <p>{t("footer.hours")}</p>
+      <p><a href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
+    </div>
+
+    <div class="kx-footer__col">
+      <h2>{t("footer.newsletter")}</h2>
+      <form class="kx-newsletter" action={`${SITE.checkoutUrl}/?newsletter=1`} method="post">
+        <label class="kx-visually-hidden" for="kx-nl">Email</label>
+        <input id="kx-nl" type="email" name="email" required placeholder="email@exemple.com" />
+        <button class="kx-btn" type="submit">{t("footer.newsletterCta")}</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="kx-container kx-footer__legal">
+    <span>© {year} {SITE.name}. {t("footer.rights")}.</span>
+  </div>
+</footer>
+
+<style>
+  .kx-footer {
+    margin-top: 4rem;
+    border-top: 1px solid var(--kx-line);
+    background: var(--kx-raise);
+  }
+  .kx-footer__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: 2rem;
+    padding-block: 3rem 2rem;
+  }
+  .kx-footer__logo {
+    font-family: var(--kx-font-display);
+    font-size: 1.25rem;
+    letter-spacing: 0.18em;
+    color: var(--kx-petrol);
+  }
+  .kx-footer__tag {
+    font-size: var(--kx-text-sm);
+    color: var(--kx-muted);
+    max-width: 24ch;
+  }
+  .kx-footer__social {
+    display: flex;
+    gap: 1rem;
+    font-size: var(--kx-text-sm);
+  }
+  .kx-footer__col h2 {
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--kx-ink);
+    margin-bottom: 0.9rem;
+  }
+  .kx-footer__col ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: var(--kx-text-sm);
+  }
+  .kx-footer__col a {
+    color: var(--kx-body);
+    text-decoration: none;
+  }
+  .kx-footer__col a:hover {
+    color: var(--kx-red);
+  }
+  .kx-footer__col p {
+    font-size: var(--kx-text-sm);
+    color: var(--kx-muted);
+    margin-bottom: 0.5rem;
+  }
+  .kx-newsletter {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .kx-newsletter input {
+    flex: 1;
+    min-width: 9rem;
+    padding: 0.7em 0.8em;
+    border: 1px solid var(--kx-line-strong);
+    border-radius: var(--kx-radius);
+    font: inherit;
+    font-size: var(--kx-text-sm);
+  }
+  .kx-footer__legal {
+    padding-block: 1.25rem;
+    border-top: 1px solid var(--kx-line);
+    font-size: var(--kx-text-xs);
+    color: var(--kx-muted);
+  }
+</style>

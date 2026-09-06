@@ -1,0 +1,20 @@
+# build
+dist/
+.astro/
+
+# deps
+node_modules/
+
+# data pulled from WooCommerce at build time
+data/
+
+# env
+.env
+.env.*
+!.env.example
+
+# os / editor
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*

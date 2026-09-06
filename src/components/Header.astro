@@ -1,0 +1,196 @@
+---
+import LangSwitcher from "@/components/LangSwitcher.astro";
+import { useTranslations, localizedPath } from "@/i18n/utils";
+import { NAV } from "@/consts";
+import type { Locale } from "@/i18n/ui";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const home = localizedPath("/", locale);
+
+// Libellés de menu : clé i18n si elle commence par "nav.", sinon libellé brut
+// (les libellés de catégories traduits seront injectés au lot 1).
+const label = (key: string) => (key.startsWith("nav.") ? t(key as any) : key);
+---
+
+<header class="kx-header">
+  <div class="kx-container kx-header__inner">
+    <a class="kx-header__brand" href={home} aria-label="Kinkyx — accueil">
+      <span class="kx-header__logo">KINKYX</span>
+      <span class="kx-header__tag">{t("meta.tagline")}</span>
+    </a>
+
+    <nav class="kx-nav" aria-label="Navigation principale">
+      <ul class="kx-nav__list">
+        {
+          NAV.map((node) => (
+            <li class:list={["kx-nav__item", { "has-children": !!node.children }]}>
+              <a href={localizedPath(node.slug, locale)}>{label(node.key)}</a>
+              {node.children && (
+                <div class="kx-nav__panel">
+                  <ul>
+                    {node.children.map((c) => (
+                      <li>
+                        <a href={localizedPath(c.slug, locale)}>{label(c.key)}</a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="kx-header__actions">
+      <LangSwitcher />
+      <a class="kx-header__icon" href={localizedPath("/recherche/", locale)} aria-label={t("nav.search")}>⌕</a>
+      <a class="kx-header__icon" href={localizedPath("/mon-compte/", locale)} aria-label={t("nav.account")}>◔</a>
+      <a class="kx-header__icon kx-cart-link" href={localizedPath("/panier/", locale)} aria-label={t("nav.cart")}>
+        ⛰ <span class="kx-cart-count" data-cart-count hidden>0</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<style>
+  .kx-header {
+    border-bottom: 1px solid var(--kx-line);
+    background: var(--kx-paper);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .kx-header__inner {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    min-height: var(--kx-header-h);
+    padding-block: 0.75rem;
+  }
+  .kx-header__brand {
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+    flex: none;
+  }
+  .kx-header__logo {
+    font-family: var(--kx-font-display);
+    font-size: 1.5rem;
+    letter-spacing: 0.18em;
+    color: var(--kx-petrol);
+  }
+  .kx-header__tag {
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--kx-muted);
+    max-width: 22ch;
+  }
+
+  .kx-nav {
+    flex: 1;
+  }
+  .kx-nav__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 1.6rem;
+    justify-content: center;
+  }
+  .kx-nav__item > a {
+    display: inline-block;
+    padding: 0.5em 0;
+    font-size: 0.82rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--kx-ink);
+  }
+  .kx-nav__item > a:hover {
+    color: var(--kx-red);
+  }
+  .kx-nav__item {
+    position: relative;
+  }
+  .kx-nav__panel {
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    transform: translateX(-50%);
+    min-width: 12rem;
+    background: var(--kx-paper);
+    border: 1px solid var(--kx-line);
+    box-shadow: var(--kx-shadow);
+    padding: 0.75rem 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.12s ease;
+  }
+  .kx-nav__item.has-children:hover .kx-nav__panel,
+  .kx-nav__item.has-children:focus-within .kx-nav__panel {
+    opacity: 1;
+    visibility: visible;
+  }
+  .kx-nav__panel ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .kx-nav__panel a {
+    display: block;
+    padding: 0.5em 1.25rem;
+    font-size: 0.82rem;
+    text-decoration: none;
+    color: var(--kx-body);
+    white-space: nowrap;
+  }
+  .kx-nav__panel a:hover {
+    color: var(--kx-red);
+    background: var(--kx-raise);
+  }
+
+  .kx-header__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: none;
+  }
+  .kx-header__icon {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    font-size: 1.05rem;
+    color: var(--kx-ink);
+    text-decoration: none;
+  }
+  .kx-header__icon:hover {
+    color: var(--kx-red);
+  }
+  .kx-cart-count {
+    font-family: var(--kx-font-body);
+    font-size: 0.62rem;
+    font-weight: 700;
+    background: var(--kx-red);
+    color: #fff;
+    border-radius: 999px;
+    min-width: 1.15em;
+    padding: 0.1em 0.35em;
+    text-align: center;
+  }
+
+  @media (max-width: 60rem) {
+    .kx-nav {
+      display: none;
+    }
+    .kx-header__tag {
+      display: none;
+    }
+  }
+</style>

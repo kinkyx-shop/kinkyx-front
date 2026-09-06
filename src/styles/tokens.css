@@ -1,0 +1,49 @@
+/* Jetons de design repris du site actuel kinkyx-shop.com
+   Titres : Questrial · Texte : Quattrocento Sans
+   Primaire pétrole #0C2835 · Accent rouge #CE2B37 */
+
+:root {
+  /* --- marque --- */
+  --kx-petrol: #0c2835;
+  --kx-petrol-tint: #0e252c;
+  --kx-red: #ce2b37;
+  --kx-red-dark: #a81f2a;
+
+  /* --- neutres (légèrement teintés pétrole) --- */
+  --kx-paper: #ffffff;
+  --kx-raise: #f6f7f7;
+  --kx-ink: #1f2529;
+  --kx-body: #333638;
+  --kx-muted: #69727d;
+  --kx-line: #e6e6e6;
+  --kx-line-strong: #cccccc;
+
+  /* --- sémantique --- */
+  --kx-sale: var(--kx-red);
+  --kx-instock: #2f7a52;
+  --kx-oos: #9a9a9a;
+
+  /* --- typographie --- */
+  --kx-font-display: "Questrial", ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
+  --kx-font-body: "Quattrocento Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  --kx-text-xs: 0.78rem;
+  --kx-text-sm: 0.875rem;
+  --kx-text-base: 1rem;
+  --kx-text-lg: 1.125rem;
+  --kx-text-xl: 1.375rem;
+  --kx-text-2xl: 1.75rem;
+  --kx-text-3xl: clamp(2rem, 4vw, 2.75rem);
+
+  /* --- rythme --- */
+  --kx-radius: 3px;
+  --kx-radius-lg: 6px;
+  --kx-gap: 1rem;
+  --kx-container: 78rem;
+  --kx-measure: 65ch;
+
+  --kx-shadow-sm: 0 1px 2px rgba(12, 40, 53, 0.06);
+  --kx-shadow: 0 4px 20px -8px rgba(12, 40, 53, 0.18);
+
+  --kx-header-h: 96px;
+}

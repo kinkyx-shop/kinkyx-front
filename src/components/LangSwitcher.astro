@@ -1,0 +1,49 @@
+---
+import { getLocale, stripLocale, localizedPath } from "@/i18n/utils";
+import { locales, localeNames, type Locale } from "@/i18n/ui";
+
+const current = getLocale(Astro.url);
+const base = stripLocale(Astro.url.pathname);
+
+const items = locales.map((l: Locale) => ({
+  locale: l,
+  label: localeNames[l],
+  short: l.toUpperCase(),
+  href: localizedPath(base, l),
+  active: l === current,
+}));
+---
+
+<nav class="kx-lang" aria-label="Choix de la langue">
+  {
+    items.map((it) => (
+      <a href={it.href} hreflang={it.locale} aria-current={it.active ? "true" : undefined} class:list={["kx-lang__item", { "is-active": it.active }]}>
+        <span aria-hidden="true">{it.short}</span>
+        <span class="kx-visually-hidden">{it.label}</span>
+      </a>
+    ))
+  }
+</nav>
+
+<style>
+  .kx-lang {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.15rem;
+    font-size: var(--kx-text-xs);
+    letter-spacing: 0.08em;
+  }
+  .kx-lang__item {
+    padding: 0.35em 0.5em;
+    color: var(--kx-muted);
+    text-decoration: none;
+    border-radius: var(--kx-radius);
+  }
+  .kx-lang__item:hover {
+    color: var(--kx-petrol);
+  }
+  .kx-lang__item.is-active {
+    color: var(--kx-petrol);
+    font-weight: 700;
+  }
+</style>
