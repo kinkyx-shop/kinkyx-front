@@ -6,7 +6,7 @@
   "description": "Front headless Kinkyx — Astro statique, WooCommerce en moteur",
   "scripts": {
     "dev": "astro dev",
-    "fetch": "node scripts/fetch-catalog.mjs",
+    "fetch": "node --env-file-if-exists=.env scripts/fetch-catalog.mjs",
     "build": "npm run fetch && astro build",
     "build:nofetch": "astro build",
     "preview": "astro preview",
