@@ -1,0 +1,178 @@
+---
+import ProductCard from "@/components/ProductCard.astro";
+import { useTranslations } from "@/i18n/utils";
+import type { Locale } from "@/i18n/ui";
+import { catalog, isStub, topCategories, categoryPath } from "@/lib/catalog";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const roots = topCategories();
+const newest = catalog.products.slice(0, 10);
+
+const roadmap = [
+  ["L0", "Socle · routage i18n · design", true],
+  ["L1", "Catalogue & navigation", !isStub],
+  ["L2", "Fiche produit & variations", false],
+  ["L3", "Panier & passage en caisse", false],
+  ["L4", "Pages de contenu", false],
+  ["L5", "Recherche · perf · SEO", false],
+  ["L6", "Bascule", false],
+] as const;
+---
+
+<section class="kx-home">
+  <div class="kx-container">
+    <p class="kx-eyebrow">Kinkyx</p>
+    <h1>{t("meta.tagline")}</h1>
+
+    {
+      isStub ? (
+        <>
+          <p class="kx-home__lead">Nouvelle version en construction — le catalogue n'est pas encore branché.</p>
+          <ol class="kx-roadmap">
+            {roadmap.map(([id, text, done]) => (
+              <li class:list={{ "is-done": done }}>
+                <span class="kx-roadmap__id">{id}</span>
+                <span>{text}</span>
+              </li>
+            ))}
+          </ol>
+        </>
+      ) : (
+        <>
+          <p class="kx-home__lead">
+            {catalog.products.length} pièces · {roots.length} univers
+          </p>
+
+          <ul class="kx-univers">
+            {roots.map((c) => (
+              <li>
+                <a href={categoryPath(c, locale)}>
+                  {c.image && <img src={c.image} alt="" loading="lazy" width="480" height="360" />}
+                  <span>{c.name[locale] || c.name.fr}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+
+          {newest.length > 0 && (
+            <>
+              <h2 class="kx-home__h2">{locale === "fr" ? "Dernières nouveautés" : locale === "de" ? "Neuheiten" : "New in"}</h2>
+              <div class="kx-grid">
+                {newest.map((p) => (
+                  <ProductCard product={p} locale={locale} />
+                ))}
+              </div>
+            </>
+          )}
+        </>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .kx-home {
+    padding-block: clamp(2.5rem, 6vw, 4.5rem) 4rem;
+  }
+  .kx-home h1 {
+    max-width: 20ch;
+  }
+  .kx-home__lead {
+    color: var(--kx-muted);
+    font-size: var(--kx-text-lg);
+  }
+  .kx-home__h2 {
+    margin-top: 3rem;
+    border-top: 1px solid var(--kx-line);
+    padding-top: 1.5rem;
+  }
+
+  .kx-univers {
+    list-style: none;
+    margin: 2rem 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+  .kx-univers a {
+    display: block;
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--kx-petrol);
+    text-decoration: none;
+  }
+  .kx-univers img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.72;
+    transition: transform 0.4s ease, opacity 0.2s ease;
+  }
+  .kx-univers a:hover img {
+    transform: scale(1.05);
+    opacity: 0.6;
+  }
+  .kx-univers span {
+    position: absolute;
+    left: 1rem;
+    bottom: 0.9rem;
+    color: #fff;
+    font-family: var(--kx-font-display);
+    font-size: 1.25rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .kx-grid {
+    margin-top: 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.75rem 1.25rem;
+  }
+
+  .kx-roadmap {
+    list-style: none;
+    margin: 2rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-width: 30rem;
+  }
+  .kx-roadmap li {
+    display: flex;
+    align-items: baseline;
+    gap: 0.9rem;
+    padding: 0.55rem 0;
+    border-bottom: 1px solid var(--kx-line);
+    color: var(--kx-muted);
+  }
+  .kx-roadmap li.is-done {
+    color: var(--kx-ink);
+  }
+  .kx-roadmap__id {
+    font-family: var(--kx-font-display);
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    width: 2rem;
+    flex: none;
+    color: var(--kx-line-strong);
+  }
+  .kx-roadmap li.is-done .kx-roadmap__id {
+    color: var(--kx-red);
+  }
+
+  @media (max-width: 40rem) {
+    .kx-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem 0.75rem;
+    }
+  }
+</style>

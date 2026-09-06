@@ -1,0 +1,114 @@
+---
+import type { Locale } from "@/i18n/ui";
+import { useTranslations } from "@/i18n/utils";
+import { type Product, productPath, priceLabel, formatPrice } from "@/lib/catalog";
+
+interface Props {
+  product: Product;
+  locale: Locale;
+}
+const { product, locale } = Astro.props;
+const t = useTranslations(locale);
+
+const href = productPath(product, locale);
+const name = product.name[locale] || product.name.fr;
+const img = product.images[0]?.src ?? null;
+const alt = product.images[0]?.alt || name;
+
+const hasRange =
+  product.price.max != null && product.price.min != null && product.price.max > product.price.min;
+---
+
+<article class="kx-card">
+  <a class="kx-card__link" href={href}>
+    <div class="kx-card__media">
+      {
+        img ? (
+          <img src={img} alt={alt} loading="lazy" decoding="async" width="600" height="600" />
+        ) : (
+          <span class="kx-card__noimg" aria-hidden="true">Kinkyx</span>
+        )
+      }
+      {product.price.onSale && <span class="kx-card__badge">-</span>}
+    </div>
+    <div class="kx-card__body">
+      <h3 class="kx-card__title">{name}</h3>
+      <p class="kx-card__price">
+        {hasRange && <span class="kx-card__from">{t("product.from")} </span>}
+        {formatPrice(product.price.min)}
+      </p>
+    </div>
+  </a>
+</article>
+
+<style>
+  .kx-card {
+    background: var(--kx-paper);
+  }
+  .kx-card__link {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    height: 100%;
+  }
+  .kx-card__media {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    background: var(--kx-raise);
+    overflow: hidden;
+  }
+  .kx-card__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+  .kx-card__link:hover .kx-card__media img {
+    transform: scale(1.04);
+  }
+  .kx-card__noimg {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-family: var(--kx-font-display);
+    letter-spacing: 0.2em;
+    color: var(--kx-line-strong);
+  }
+  .kx-card__badge {
+    position: absolute;
+    top: 0.6rem;
+    left: 0.6rem;
+    width: 2.2rem;
+    height: 2.2rem;
+    display: grid;
+    place-items: center;
+    background: var(--kx-red);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+  .kx-card__body {
+    padding: 0.75rem 0.15rem 0;
+  }
+  .kx-card__title {
+    font-family: var(--kx-font-body);
+    font-size: var(--kx-text-sm);
+    font-weight: 400;
+    color: var(--kx-ink);
+    margin: 0 0 0.25rem;
+    line-height: 1.35;
+  }
+  .kx-card__price {
+    margin: 0;
+    font-size: var(--kx-text-sm);
+    color: var(--kx-petrol);
+    font-variant-numeric: tabular-nums;
+  }
+  .kx-card__from {
+    color: var(--kx-muted);
+    font-size: var(--kx-text-xs);
+  }
+</style>

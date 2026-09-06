@@ -3,32 +3,43 @@ import "@/styles/global.css";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import { SITE } from "@/consts";
-import { getLocale, stripLocale, alternates } from "@/i18n/utils";
-import { htmlLang, defaultLocale } from "@/i18n/ui";
+import { getLocale, stripLocale, alternates as computeAlternates } from "@/i18n/utils";
+import { htmlLang, defaultLocale, locales, type Locale } from "@/i18n/ui";
 
 interface Props {
   title: string;
   description?: string;
-  /** chemin canonique SANS préfixe de langue, ex. "/boutique/" */
+  /** chemin canonique SANS préfixe de langue (repli si `alternates` absent) */
   path?: string;
+  /** URLs alternées explicites par langue (chemins préfixés, ex. "/en/latex/woman/") */
+  alternates?: Partial<Record<Locale, string>>;
   image?: string;
   noindex?: boolean;
 }
 
-const { title, description, path, image, noindex } = Astro.props;
+const { title, description, path, alternates, image, noindex } = Astro.props;
 
 const locale = getLocale(Astro.url);
-const pathNoLocale = path ?? stripLocale(Astro.url.pathname);
-const canonical = new URL(
-  locale === defaultLocale ? pathNoLocale : `/${locale}${pathNoLocale}`,
-  SITE.url,
-).href;
 
-const hreflangs = alternates(pathNoLocale).map(({ locale: l, path: p }) => ({
+// URLs par langue
+let altPaths: Record<Locale, string>;
+if (alternates) {
+  altPaths = Object.fromEntries(
+    locales.map((l) => [l, alternates[l] ?? Astro.url.pathname]),
+  ) as Record<Locale, string>;
+} else {
+  const pathNoLocale = path ?? stripLocale(Astro.url.pathname);
+  altPaths = Object.fromEntries(
+    computeAlternates(pathNoLocale).map(({ locale: l, path: p }) => [l, p]),
+  ) as Record<Locale, string>;
+}
+
+const canonical = new URL(altPaths[locale], SITE.url).href;
+const hreflangs = locales.map((l) => ({
   hreflang: htmlLang[l],
-  href: new URL(p, SITE.url).href,
+  href: new URL(altPaths[l], SITE.url).href,
 }));
-const xDefault = new URL(pathNoLocale, SITE.url).href;
+const xDefault = new URL(altPaths[defaultLocale], SITE.url).href;
 
 const fullTitle = title === SITE.name ? title : `${title} — ${SITE.name}`;
 ---

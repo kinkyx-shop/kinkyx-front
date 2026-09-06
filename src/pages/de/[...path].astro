@@ -1,0 +1,12 @@
+---
+import CategoryView from "@/components/CategoryView.astro";
+import { categoryStaticPaths } from "@/lib/routes";
+
+export function getStaticPaths() {
+  return categoryStaticPaths("de");
+}
+
+const { categoryKey } = Astro.props as { categoryKey: number };
+---
+
+<CategoryView locale="de" categoryKey={categoryKey} />

@@ -1,8 +1,8 @@
 ---
 import LangSwitcher from "@/components/LangSwitcher.astro";
 import { useTranslations, localizedPath } from "@/i18n/utils";
-import { NAV } from "@/consts";
 import type { Locale } from "@/i18n/ui";
+import { topCategories, childCategories, categoryPath, isStub } from "@/lib/catalog";
 
 interface Props {
   locale: Locale;
@@ -11,9 +11,23 @@ const { locale } = Astro.props;
 const t = useTranslations(locale);
 const home = localizedPath("/", locale);
 
-// Libellés de menu : clé i18n si elle commence par "nav.", sinon libellé brut
-// (les libellés de catégories traduits seront injectés au lot 1).
-const label = (key: string) => (key.startsWith("nav.") ? t(key as any) : key);
+// Menu principal : catégories racines du catalogue + leurs enfants.
+// Repli minimal si le catalogue n'est pas encore construit.
+const roots = topCategories();
+const nav = roots.length
+  ? roots.map((c) => ({
+      label: c.name[locale] || c.name.fr,
+      href: categoryPath(c, locale),
+      children: childCategories(c.key).map((cc) => ({
+        label: cc.name[locale] || cc.name.fr,
+        href: categoryPath(cc, locale),
+      })),
+    }))
+  : [
+      { label: t("nav.latex"), href: localizedPath("/latex/", locale), children: [] },
+      { label: t("nav.shoes"), href: localizedPath("/chaussures/", locale), children: [] },
+      { label: t("nav.bespoke"), href: localizedPath("/latex-sur-mesure/", locale), children: [] },
+    ];
 ---
 
 <header class="kx-header">
@@ -26,15 +40,15 @@ const label = (key: string) => (key.startsWith("nav.") ? t(key as any) : key);
     <nav class="kx-nav" aria-label="Navigation principale">
       <ul class="kx-nav__list">
         {
-          NAV.map((node) => (
-            <li class:list={["kx-nav__item", { "has-children": !!node.children }]}>
-              <a href={localizedPath(node.slug, locale)}>{label(node.key)}</a>
-              {node.children && (
+          nav.map((node) => (
+            <li class:list={["kx-nav__item", { "has-children": node.children.length > 0 }]}>
+              <a href={node.href}>{node.label}</a>
+              {node.children.length > 0 && (
                 <div class="kx-nav__panel">
                   <ul>
                     {node.children.map((c) => (
                       <li>
-                        <a href={localizedPath(c.slug, locale)}>{label(c.key)}</a>
+                        <a href={c.href}>{c.label}</a>
                       </li>
                     ))}
                   </ul>
@@ -55,6 +69,7 @@ const label = (key: string) => (key.startsWith("nav.") ? t(key as any) : key);
       </a>
     </div>
   </div>
+  {isStub && <p class="kx-header__stub">catalogue non chargé — build sans les clés API</p>}
 </header>
 
 <style>
@@ -103,15 +118,17 @@ const label = (key: string) => (key.startsWith("nav.") ? t(key as any) : key);
     display: flex;
     gap: 1.6rem;
     justify-content: center;
+    flex-wrap: wrap;
   }
   .kx-nav__item > a {
     display: inline-block;
     padding: 0.5em 0;
     font-size: 0.82rem;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.09em;
     text-transform: uppercase;
     text-decoration: none;
     color: var(--kx-ink);
+    white-space: nowrap;
   }
   .kx-nav__item > a:hover {
     color: var(--kx-red);
@@ -184,8 +201,16 @@ const label = (key: string) => (key.startsWith("nav.") ? t(key as any) : key);
     padding: 0.1em 0.35em;
     text-align: center;
   }
+  .kx-header__stub {
+    margin: 0;
+    padding: 0.25rem;
+    text-align: center;
+    font-size: 0.7rem;
+    background: var(--kx-warn-wash, #f1e8d9);
+    color: var(--kx-warn, #93641e);
+  }
 
-  @media (max-width: 60rem) {
+  @media (max-width: 62rem) {
     .kx-nav {
       display: none;
     }

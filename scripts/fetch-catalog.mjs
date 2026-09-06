@@ -1,39 +1,45 @@
 /**
- * Étape 1 du build : tire le catalogue depuis WooCommerce et l'écrit
- * dans ./data/*.json, que les pages Astro lisent ensuite.
+ * Étape 1 du build : tire le catalogue WooCommerce (toutes langues) dans
+ * ./data/raw/*.json, puis lance la normalisation vers ./data/catalog.json.
  *
- *   node scripts/fetch-catalog.mjs
+ *   node scripts/fetch-catalog.mjs [--strict]
  *
- * Tolérant : si le backend est injoignable ou si les clés API manquent,
- * on écrit des fichiers vides et on sort en 0 pour ne pas casser le build.
- * (Utile au premier déploiement, avant d'avoir renseigné les variables.)
+ * Tolérant : si le backend est injoignable ou si les clés manquent, écrit
+ * un catalogue vide et sort en 0 pour ne pas casser le build.
  */
 
 import { mkdir, writeFile } from "node:fs/promises";
-import { wcAll, ping } from "../src/lib/woo.mjs";
+import { wc, wcAll, ping } from "../src/lib/woo.mjs";
+import { normalize } from "./normalize.mjs";
 
-const OUT = new URL("../data/", import.meta.url);
+const DATA = new URL("../data/", import.meta.url);
+const RAW = new URL("../data/raw/", import.meta.url);
 const STRICT = process.argv.includes("--strict");
 
-async function save(name, data) {
-  await writeFile(new URL(`${name}.json`, OUT), JSON.stringify(data, null, 2));
+async function save(dir, name, data) {
+  await writeFile(new URL(`${name}.json`, dir), JSON.stringify(data));
   const n = Array.isArray(data) ? data.length : Object.keys(data).length;
-  console.log(`  data/${name}.json  (${n} entrées)`);
+  console.log(`  ${dir === RAW ? "raw/" : ""}${name}.json  (${n})`);
 }
 
-async function stubs(reason) {
-  await save("categories", []);
-  await save("attributes", { attributes: [], terms: {} });
-  await save("products", []);
-  await save("variations", {});
-  await save("_meta", { fetchedAt: new Date().toISOString(), mode: "stub", reason });
-  console.warn(`\n⚠ Catalogue non récupéré (${reason}). Fichiers vides écrits — le build continue.\n`);
+async function emptyCatalog(reason) {
+  await save(DATA, "catalog", {
+    generatedAt: new Date().toISOString(),
+    mode: "stub",
+    reason,
+    locales: ["fr", "en", "de"],
+    categories: [],
+    products: [],
+    attributes: {},
+  });
+  console.warn(`\n⚠ Catalogue vide (${reason}). Le build continue.\n`);
 }
 
 async function main() {
-  await mkdir(OUT, { recursive: true });
+  await mkdir(RAW, { recursive: true });
 
-  console.log("→ Connexion WooCommerce…", process.env.WOO_API_URL || "(WOO_API_URL absente)");
+  const url = process.env.WOO_API_URL || "(WOO_API_URL absente)";
+  console.log(`→ WooCommerce : ${url}`);
   let status;
   try {
     status = await ping();
@@ -48,69 +54,77 @@ async function main() {
       console.error(`\n✗ ${reason}\n`);
       process.exit(1);
     }
-    await stubs(reason);
-    return;
+    return emptyCatalog(reason);
   }
 
   try {
-    console.log("→ Catégories…");
-    const categories = await wcAll("wc/v3/products/categories", { orderby: "menu_order", hide_empty: false });
-    await save("categories", categories);
+    console.log("→ Catégories (toutes langues)…");
+    const categories = await wcAll("wc/v3/products/categories", {
+      hide_empty: false,
+      _fields: "id,name,slug,parent,description,count,image,menu_order,lang,translations",
+    });
+    await save(RAW, "categories", categories);
 
-    console.log("→ Attributs globaux…");
+    console.log("→ Attributs + termes…");
     const attributes = await wcAll("wc/v3/products/attributes");
     const attributeTerms = {};
     for (const a of attributes) {
-      attributeTerms[a.id] = await wcAll(`wc/v3/products/attributes/${a.id}/terms`);
+      attributeTerms[a.id] = await wcAll(`wc/v3/products/attributes/${a.id}/terms`, {
+        _fields: "id,name,slug,menu_order",
+      });
     }
-    await save("attributes", { attributes, terms: attributeTerms });
+    await save(RAW, "attributes", { attributes, terms: attributeTerms });
 
-    console.log("→ Produits…");
+    console.log("→ Produits (toutes langues)…");
     const products = await wcAll("wc/v3/products", {
       status: "publish",
-      orderby: "date",
-      order: "desc",
+      orderby: "menu_order",
+      order: "asc",
       _fields:
-        "id,name,slug,type,status,permalink,sku,price,regular_price,sale_price,on_sale,price_html,stock_status,short_description,description,categories,tags,brands,images,attributes,default_attributes,variations,average_rating,rating_count,date_modified",
+        "id,name,slug,permalink,type,status,sku,price,regular_price,sale_price,on_sale,price_html," +
+        "stock_status,short_description,description,categories,tags,brands,images," +
+        "attributes,default_attributes,variations,external_url,button_text," +
+        "average_rating,rating_count,date_modified,lang,translations",
     });
-    await save("products", products);
+    await save(RAW, "products", products);
 
-    const variableIds = products.filter((p) => p.type === "variable").map((p) => p.id);
-    console.log(`→ Variations de ${variableIds.length} produits variables…`);
+    // Variations : uniquement pour les produits variables FR (source de vérité).
+    const frVariable = products.filter((p) => p.lang === "fr" && p.type === "variable");
+    console.log(`→ Variations de ${frVariable.length} produits variables FR…`);
     const variations = {};
     let done = 0;
-    for (const id of variableIds) {
-      variations[id] = await wcAll(`wc/v3/products/${id}/variations`, {
-        _fields: "id,sku,price,regular_price,sale_price,on_sale,stock_status,stock_quantity,attributes,image",
+    for (const p of frVariable) {
+      variations[p.id] = await wcAll(`wc/v3/products/${p.id}/variations`, {
+        _fields:
+          "id,sku,price,regular_price,sale_price,on_sale,stock_status,stock_quantity,attributes,image",
       });
-      if (++done % 25 === 0) console.log(`   ${done}/${variableIds.length}`);
+      if (++done % 30 === 0) console.log(`   ${done}/${frVariable.length}`);
     }
-    await save("variations", variations);
+    await save(RAW, "variations", variations);
 
-    await save("_meta", {
-      fetchedAt: new Date().toISOString(),
-      mode: "full",
-      counts: {
-        categories: categories.length,
-        products: products.length,
-        variableProducts: variableIds.length,
-        variations: Object.values(variations).reduce((n, v) => n + v.length, 0),
-      },
-    });
-    console.log("\n✓ Catalogue récupéré dans ./data/\n");
+    console.log("→ Normalisation…");
+    const catalog = normalize({ categories, products, attributes, attributeTerms, variations });
+    catalog.generatedAt = new Date().toISOString();
+    catalog.mode = "full";
+    await save(DATA, "catalog", catalog);
+
+    console.log(
+      `\n✓ ${catalog.products.length} produits · ${catalog.categories.length} catégories · ` +
+        `${Object.values(variations).reduce((n, v) => n + v.length, 0)} variations\n`,
+    );
   } catch (err) {
     if (STRICT) {
-      console.error("\n✗", err.message, "\n");
+      console.error("\n✗", err.stack || err.message, "\n");
       process.exit(1);
     }
-    await stubs(`erreur en cours de récupération : ${err.message}`);
+    await emptyCatalog(`erreur : ${err.message}`);
   }
 }
 
 main().catch(async (err) => {
   if (STRICT) {
-    console.error("\n✗", err.message, "\n");
+    console.error("\n✗", err.stack || err.message, "\n");
     process.exit(1);
   }
-  await stubs(err.message);
+  await emptyCatalog(err.message);
 });

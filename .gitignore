@@ -5,8 +5,8 @@ dist/
 # deps
 node_modules/
 
-# data pulled from WooCommerce at build time
-data/
+# données brutes tirées de WooCommerce (data/catalog.json est versionné : stub réécrit au build)
+data/raw/
 
 # env
 .env

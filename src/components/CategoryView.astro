@@ -1,0 +1,176 @@
+---
+import Base from "@/layouts/Base.astro";
+import ProductCard from "@/components/ProductCard.astro";
+import { useTranslations, localizedPath } from "@/i18n/utils";
+import { locales, type Locale } from "@/i18n/ui";
+import {
+  getCategory,
+  childCategories,
+  ancestors,
+  productsInCategory,
+  categoryPath,
+} from "@/lib/catalog";
+
+interface Props {
+  locale: Locale;
+  categoryKey: number;
+}
+const { locale, categoryKey } = Astro.props;
+const t = useTranslations(locale);
+
+const category = getCategory(categoryKey);
+if (!category) throw new Error(`Catégorie introuvable : ${categoryKey}`);
+
+const name = category.name[locale] || category.name.fr;
+const desc = category.desc[locale] || category.desc.fr;
+const subs = childCategories(category.key);
+const trail = ancestors(category);
+const products = productsInCategory(category.key);
+
+const alternates = Object.fromEntries(
+  locales.map((l) => [l, categoryPath(category, l)]),
+) as Record<Locale, string>;
+---
+
+<Base
+  title={name}
+  description={desc || `${name} — Kinkyx`}
+  alternates={alternates}
+  image={category.image ?? products[0]?.images[0]?.src}
+>
+  <div class="kx-container kx-cat">
+    <nav class="kx-crumbs" aria-label="Fil d'ariane">
+      <a href={localizedPath("/", locale)}>{t("nav.shop")}</a>
+      {
+        trail.map((c) => (
+          <>
+            <span aria-hidden="true">/</span>
+            <a href={categoryPath(c, locale)}>{c.name[locale] || c.name.fr}</a>
+          </>
+        ))
+      }
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">{name}</span>
+    </nav>
+
+    <header class="kx-cat__head">
+      <h1>{name}</h1>
+      <p class="kx-cat__count">{products.length}</p>
+    </header>
+
+    {desc && <div class="kx-cat__desc" set:html={desc} />}
+
+    {
+      subs.length > 0 && (
+        <ul class="kx-subcats">
+          {subs.map((s) => (
+            <li>
+              <a href={categoryPath(s, locale)}>{s.name[locale] || s.name.fr}</a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+
+    {
+      products.length > 0 ? (
+        <div class="kx-grid">
+          {products.map((p) => (
+            <ProductCard product={p} locale={locale} />
+          ))}
+        </div>
+      ) : (
+        <p class="kx-cat__empty">—</p>
+      )
+    }
+  </div>
+</Base>
+
+<style>
+  .kx-cat {
+    padding-block: 1.75rem 3rem;
+  }
+  .kx-crumbs {
+    font-size: var(--kx-text-xs);
+    color: var(--kx-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: center;
+    margin-bottom: 1.4rem;
+  }
+  .kx-crumbs a {
+    color: var(--kx-muted);
+    text-decoration: none;
+  }
+  .kx-crumbs a:hover {
+    color: var(--kx-red);
+  }
+  .kx-crumbs [aria-current] {
+    color: var(--kx-ink);
+  }
+
+  .kx-cat__head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+  }
+  .kx-cat__head h1 {
+    margin: 0;
+  }
+  .kx-cat__count {
+    margin: 0;
+    font-size: var(--kx-text-sm);
+    color: var(--kx-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .kx-cat__desc {
+    max-width: var(--kx-measure);
+    margin-top: 0.9rem;
+    color: var(--kx-body);
+    font-size: var(--kx-text-sm);
+  }
+
+  .kx-subcats {
+    list-style: none;
+    margin: 1.6rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .kx-subcats a {
+    display: inline-block;
+    padding: 0.4em 0.9em;
+    border: 1px solid var(--kx-line-strong);
+    border-radius: 999px;
+    font-size: var(--kx-text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    text-decoration: none;
+    color: var(--kx-ink);
+  }
+  .kx-subcats a:hover {
+    border-color: var(--kx-petrol);
+    background: var(--kx-petrol);
+    color: #fff;
+  }
+
+  .kx-grid {
+    margin-top: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.75rem 1.25rem;
+  }
+  .kx-cat__empty {
+    margin-top: 2rem;
+    color: var(--kx-muted);
+  }
+
+  @media (max-width: 40rem) {
+    .kx-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem 0.75rem;
+    }
+  }
+</style>

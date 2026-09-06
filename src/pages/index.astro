@@ -1,11 +1,11 @@
 ---
 import Base from "@/layouts/Base.astro";
-import ScaffoldNotice from "@/components/ScaffoldNotice.astro";
+import Home from "@/components/Home.astro";
 import { useTranslations } from "@/i18n/utils";
 
 const t = useTranslations("fr");
 ---
 
 <Base title="Kinkyx" description={t("meta.tagline")} path="/">
-  <ScaffoldNotice locale="fr" />
+  <Home locale="fr" />
 </Base>
