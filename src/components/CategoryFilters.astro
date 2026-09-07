@@ -1,0 +1,474 @@
+---
+import ProductCard from "@/components/ProductCard.astro";
+import { useTranslations } from "@/i18n/utils";
+import type { Locale } from "@/i18n/ui";
+import type { Product } from "@/lib/catalog";
+
+interface Props {
+  locale: Locale;
+  products: Product[];
+}
+const { locale, products } = Astro.props;
+const t = useTranslations(locale);
+
+/* ---- facettes déduites des produits de la catégorie ---- */
+const brands = [...new Set(products.map((p) => p.brand).filter(Boolean))].sort() as string[];
+
+type Facet = { slug: string; label: string; options: string[] };
+const attrMap = new Map<string, { label: string; options: Map<string, number> }>();
+for (const p of products) {
+  for (const a of p.attributes) {
+    if (!a.options.length) continue;
+    if (!attrMap.has(a.slug)) attrMap.set(a.slug, { label: a.label, options: new Map() });
+    const bucket = attrMap.get(a.slug)!;
+    for (const o of a.options) bucket.options.set(o, (bucket.options.get(o) ?? 0) + 1);
+  }
+}
+const facets: Facet[] = [...attrMap.entries()]
+  .map(([slug, v]) => ({
+    slug,
+    label: v.label,
+    options: [...v.options.keys()].sort((a, b) => a.localeCompare(b, locale, { numeric: true })),
+  }))
+  .filter((f) => f.options.length >= 2 && f.options.length <= 30);
+
+const prices = products.map((p) => p.price.min).filter((n): n is number => n != null);
+const priceFloor = prices.length ? Math.floor(Math.min(...prices)) : 0;
+const priceCeil = prices.length ? Math.ceil(Math.max(...prices)) : 0;
+
+const hasControls = brands.length > 1 || facets.length > 0 || priceCeil > priceFloor;
+
+const L = {
+  filter: locale === "de" ? "Filtern" : locale === "en" ? "Filter" : "Filtrer",
+  sort: locale === "de" ? "Sortieren" : locale === "en" ? "Sort" : "Trier",
+  count: locale === "de" ? "{n} Artikel" : locale === "en" ? "{n} items" : "{n} articles",
+  reset: locale === "de" ? "Zurücksetzen" : locale === "en" ? "Reset" : "Réinitialiser",
+  brand: locale === "de" ? "Marke" : locale === "en" ? "Brand" : "Marque",
+  price: locale === "de" ? "Preis (€)" : locale === "en" ? "Price (€)" : "Prix (€)",
+  from: locale === "de" ? "von" : locale === "en" ? "from" : "de",
+  to: locale === "de" ? "bis" : locale === "en" ? "to" : "à",
+  instock: locale === "de" ? "Nur auf Lager" : locale === "en" ? "In stock only" : "En stock",
+  sale: locale === "de" ? "Im Angebot" : locale === "en" ? "On sale" : "En promo",
+  empty:
+    locale === "de"
+      ? "Kein Artikel entspricht den Filtern."
+      : locale === "en"
+        ? "No item matches these filters."
+        : "Aucun article ne correspond à ces filtres.",
+  sortFeatured: locale === "de" ? "Empfohlen" : locale === "en" ? "Featured" : "En vedette",
+  sortNew: locale === "de" ? "Neuheiten" : locale === "en" ? "Newest" : "Nouveautés",
+  sortPriceAsc: locale === "de" ? "Preis aufsteigend" : locale === "en" ? "Price: low to high" : "Prix croissant",
+  sortPriceDesc: locale === "de" ? "Preis absteigend" : locale === "en" ? "Price: high to low" : "Prix décroissant",
+  sortName: "A – Z",
+};
+
+const cellData = (p: Product) => {
+  const attrs: Record<string, string[]> = {};
+  for (const a of p.attributes) if (a.options.length) attrs[a.slug] = a.options;
+  return {
+    "data-brand": p.brand ?? "",
+    "data-price": p.price.min ?? "",
+    "data-order": p.order,
+    "data-date": p.date ? Date.parse(p.date) || 0 : 0,
+    "data-stock": p.stock === "instock" ? "1" : "0",
+    "data-sale": p.price.onSale ? "1" : "0",
+    "data-name": (p.name[locale] || p.name.fr).toLowerCase(),
+    "data-attrs": JSON.stringify(attrs),
+  };
+};
+---
+
+<div class="kx-cf" data-cf>
+  <div class="kx-cf__bar">
+    {
+      hasControls && (
+        <button type="button" class="kx-cf__toggle" data-cf-toggle aria-expanded="false">
+          {L.filter}
+        </button>
+      )
+    }
+    <p class="kx-cf__count" data-cf-count data-count-tpl={L.count} aria-live="polite">
+      {L.count.replace("{n}", String(products.length))}
+    </p>
+    <label class="kx-cf__sortwrap">
+      <span>{L.sort}</span>
+      <select data-cf-sort>
+        <option value="featured">{L.sortFeatured}</option>
+        <option value="new">{L.sortNew}</option>
+        <option value="price-asc">{L.sortPriceAsc}</option>
+        <option value="price-desc">{L.sortPriceDesc}</option>
+        <option value="name">{L.sortName}</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="kx-cf__body">
+    {
+      hasControls && (
+        <aside class="kx-cf__facets" data-cf-facets hidden>
+          <form data-cf-form>
+            {brands.length > 1 && (
+              <fieldset class="kx-cf__group">
+                <legend>{L.brand}</legend>
+                <div class="kx-cf__opts">
+                  {brands.map((b) => (
+                    <label>
+                      <input type="checkbox" name="marque" value={b} />
+                      <span>{b}</span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            )}
+
+            {facets.map((f) => (
+              <fieldset class="kx-cf__group">
+                <legend>{f.label}</legend>
+                <div class="kx-cf__opts">
+                  {f.options.map((o) => (
+                    <label>
+                      <input type="checkbox" name={f.slug} value={o} />
+                      <span>{o}</span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            ))}
+
+            {priceCeil > priceFloor && (
+              <fieldset class="kx-cf__group">
+                <legend>{L.price}</legend>
+                <div class="kx-cf__price">
+                  <label>
+                    <span class="kx-visually-hidden">{L.from}</span>
+                    <input type="number" name="prix_min" inputmode="numeric" min={priceFloor} max={priceCeil} placeholder={String(priceFloor)} />
+                  </label>
+                  <span aria-hidden="true">–</span>
+                  <label>
+                    <span class="kx-visually-hidden">{L.to}</span>
+                    <input type="number" name="prix_max" inputmode="numeric" min={priceFloor} max={priceCeil} placeholder={String(priceCeil)} />
+                  </label>
+                </div>
+              </fieldset>
+            )}
+
+            <fieldset class="kx-cf__group">
+              <div class="kx-cf__opts">
+                <label><input type="checkbox" name="stock" value="1" /><span>{L.instock}</span></label>
+                <label><input type="checkbox" name="promo" value="1" /><span>{L.sale}</span></label>
+              </div>
+            </fieldset>
+
+            <button type="button" class="kx-cf__reset" data-cf-reset>{L.reset}</button>
+          </form>
+        </aside>
+      )
+    }
+
+    <div class="kx-grid" data-cf-grid>
+      {
+        products.map((p) => (
+          <div class="kx-grid__cell" {...cellData(p)}>
+            <ProductCard product={p} locale={locale} />
+          </div>
+        ))
+      }
+      <p class="kx-cf__empty" data-cf-empty hidden>
+        {L.empty} <button type="button" class="kx-cf__reset" data-cf-reset>{L.reset}</button>
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+  const root = document.querySelector<HTMLElement>("[data-cf]");
+  if (root) {
+    const form = root.querySelector<HTMLFormElement>("[data-cf-form]");
+    const grid = root.querySelector<HTMLElement>("[data-cf-grid]")!;
+    const sortSel = root.querySelector<HTMLSelectElement>("[data-cf-sort]")!;
+    const countEl = root.querySelector<HTMLElement>("[data-cf-count]")!;
+    const emptyEl = root.querySelector<HTMLElement>("[data-cf-empty]");
+    const facetsEl = root.querySelector<HTMLElement>("[data-cf-facets]");
+    const toggle = root.querySelector<HTMLButtonElement>("[data-cf-toggle]");
+    const cells = [...grid.querySelectorAll<HTMLElement>(".kx-grid__cell")];
+    const countTpl = countEl.dataset.countTpl || "{n}";
+
+    type Cell = {
+      el: HTMLElement;
+      brand: string;
+      price: number | null;
+      order: number;
+      date: number;
+      stock: boolean;
+      sale: boolean;
+      name: string;
+      attrs: Record<string, string[]>;
+    };
+    const data: Cell[] = cells.map((el) => ({
+      el,
+      brand: el.dataset.brand || "",
+      price: el.dataset.price === "" ? null : Number(el.dataset.price),
+      order: Number(el.dataset.order || 0),
+      date: Number(el.dataset.date || 0),
+      stock: el.dataset.stock === "1",
+      sale: el.dataset.sale === "1",
+      name: el.dataset.name || "",
+      attrs: JSON.parse(el.dataset.attrs || "{}"),
+    }));
+
+    const params = new URLSearchParams(location.search);
+
+    function readForm() {
+      const brands = new Set<string>();
+      const facetSel = new Map<string, Set<string>>();
+      let priceMin = -Infinity;
+      let priceMax = Infinity;
+      let instock = false;
+      let sale = false;
+      if (form) {
+        for (const el of form.querySelectorAll<HTMLInputElement>("input")) {
+          if (el.type === "checkbox" && el.checked) {
+            if (el.name === "marque") brands.add(el.value);
+            else if (el.name === "stock") instock = true;
+            else if (el.name === "promo") sale = true;
+            else {
+              if (!facetSel.has(el.name)) facetSel.set(el.name, new Set());
+              facetSel.get(el.name)!.add(el.value);
+            }
+          } else if (el.name === "prix_min" && el.value) priceMin = Number(el.value);
+          else if (el.name === "prix_max" && el.value) priceMax = Number(el.value);
+        }
+      }
+      return { brands, facetSel, priceMin, priceMax, instock, sale };
+    }
+
+    function apply(pushUrl = true) {
+      const f = readForm();
+      let visible = 0;
+
+      for (const c of data) {
+        let ok = true;
+        if (f.brands.size && !f.brands.has(c.brand)) ok = false;
+        if (ok)
+          for (const [slug, wanted] of f.facetSel) {
+            const has = c.attrs[slug] || [];
+            if (![...wanted].some((w) => has.includes(w))) {
+              ok = false;
+              break;
+            }
+          }
+        if (ok && f.instock && !c.stock) ok = false;
+        if (ok && f.sale && !c.sale) ok = false;
+        if (ok && c.price != null && (c.price < f.priceMin || c.price > f.priceMax)) ok = false;
+        c.el.hidden = !ok;
+        if (ok) visible++;
+      }
+
+      const key = sortSel.value;
+      const shown = data.filter((c) => !c.el.hidden);
+      shown.sort((a, b) => {
+        if (key === "price-asc") return (a.price ?? Infinity) - (b.price ?? Infinity);
+        if (key === "price-desc") return (b.price ?? -Infinity) - (a.price ?? -Infinity);
+        if (key === "new") return b.date - a.date;
+        if (key === "name") return a.name.localeCompare(b.name);
+        return a.order - b.order; // featured
+      });
+      for (const c of shown) grid.appendChild(c.el);
+
+      countEl.textContent = countTpl.replace("{n}", String(visible));
+      if (emptyEl) emptyEl.hidden = visible > 0;
+
+      if (pushUrl) {
+        const q = new URLSearchParams();
+        if (form) {
+          for (const el of form.querySelectorAll<HTMLInputElement>("input")) {
+            if (el.type === "checkbox" && el.checked) q.append(el.name, el.value);
+            else if (el.type === "number" && el.value) q.set(el.name, el.value);
+          }
+        }
+        if (sortSel.value !== "featured") q.set("tri", sortSel.value);
+        const qs = q.toString();
+        history.replaceState(null, "", qs ? `?${qs}` : location.pathname);
+      }
+    }
+
+    function loadFromUrl() {
+      if (params.get("tri")) sortSel.value = params.get("tri")!;
+      if (form) {
+        for (const el of form.querySelectorAll<HTMLInputElement>("input")) {
+          if (el.type === "checkbox") {
+            el.checked = params.getAll(el.name).includes(el.value);
+          } else if (el.type === "number" && params.get(el.name)) {
+            el.value = params.get(el.name)!;
+          }
+        }
+      }
+    }
+
+    let deb: number | undefined;
+    form?.addEventListener("input", (e) => {
+      const el = e.target as HTMLInputElement;
+      if (el.type === "number") {
+        clearTimeout(deb);
+        deb = window.setTimeout(() => apply(), 300);
+      } else {
+        apply();
+      }
+    });
+    sortSel.addEventListener("change", () => apply());
+    root.querySelectorAll<HTMLButtonElement>("[data-cf-reset]").forEach((b) =>
+      b.addEventListener("click", () => {
+        form?.reset();
+        apply();
+      }),
+    );
+    toggle?.addEventListener("click", () => {
+      const open = facetsEl?.hidden;
+      if (facetsEl) facetsEl.hidden = !open;
+      toggle.setAttribute("aria-expanded", String(!!open));
+    });
+
+    loadFromUrl();
+    apply(false);
+  }
+</script>
+
+<style>
+  .kx-cf__bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin: 1.5rem 0 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--kx-line);
+  }
+  .kx-cf__count {
+    margin: 0;
+    font-size: var(--kx-text-sm);
+    color: var(--kx-muted);
+    flex: 1;
+  }
+  .kx-cf__sortwrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: var(--kx-text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--kx-muted);
+  }
+  .kx-cf__sortwrap select,
+  .kx-cf__toggle {
+    font: inherit;
+    font-size: var(--kx-text-sm);
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--kx-ink);
+    padding: 0.5em 0.7em;
+    border: 1px solid var(--kx-line-strong);
+    border-radius: var(--kx-radius);
+    background: var(--kx-paper);
+    cursor: pointer;
+  }
+  .kx-cf__toggle {
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: var(--kx-text-xs);
+  }
+
+  .kx-cf__body {
+    display: block;
+  }
+  .kx-cf__facets {
+    margin-bottom: 1.5rem;
+  }
+  .kx-cf__group {
+    border: 0;
+    border-top: 1px solid var(--kx-line);
+    margin: 0;
+    padding: 0.9rem 0;
+  }
+  .kx-cf__group:first-child {
+    border-top: 0;
+  }
+  .kx-cf__group legend {
+    font-family: var(--kx-font-display);
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--kx-petrol);
+    padding: 0;
+    margin-bottom: 0.5rem;
+  }
+  .kx-cf__opts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.9rem;
+    max-height: 12rem;
+    overflow: auto;
+  }
+  .kx-cf__opts label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: var(--kx-text-sm);
+    color: var(--kx-body);
+    cursor: pointer;
+  }
+  .kx-cf__opts input {
+    accent-color: var(--kx-petrol);
+  }
+  .kx-cf__price {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .kx-cf__price input {
+    width: 6rem;
+    font: inherit;
+    padding: 0.5em 0.6em;
+    border: 1px solid var(--kx-line-strong);
+    border-radius: var(--kx-radius);
+  }
+  .kx-cf__reset {
+    margin-top: 0.5rem;
+    background: none;
+    border: 0;
+    padding: 0;
+    color: var(--kx-red);
+    font: inherit;
+    font-size: var(--kx-text-sm);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  .kx-cf__empty {
+    grid-column: 1 / -1;
+    color: var(--kx-muted);
+    font-size: var(--kx-text-sm);
+    padding: 2rem 0;
+  }
+  .kx-grid__cell[hidden] {
+    display: none;
+  }
+
+  @media (min-width: 60rem) {
+    .kx-cf__toggle {
+      display: none;
+    }
+    .kx-cf__body {
+      display: grid;
+      grid-template-columns: 15rem 1fr;
+      gap: 2.5rem;
+      align-items: start;
+    }
+    .kx-cf__facets {
+      margin-bottom: 0;
+      position: sticky;
+      top: calc(var(--kx-header-h) + 1rem);
+    }
+    .kx-cf__facets[hidden] {
+      display: block;
+    }
+  }
+</style>

@@ -1,6 +1,6 @@
 ---
 import Base from "@/layouts/Base.astro";
-import ProductCard from "@/components/ProductCard.astro";
+import CategoryFilters from "@/components/CategoryFilters.astro";
 import JsonLd from "@/components/JsonLd.astro";
 import { useTranslations, localizedPath } from "@/i18n/utils";
 import { locales, type Locale } from "@/i18n/ui";
@@ -64,7 +64,6 @@ const crumbs = breadcrumbList([
 
     <header class="kx-cat__head">
       <h1>{name}</h1>
-      <p class="kx-cat__count">{products.length}</p>
     </header>
 
     {desc && <div class="kx-cat__desc" set:html={desc} />}
@@ -83,11 +82,7 @@ const crumbs = breadcrumbList([
 
     {
       products.length > 0 ? (
-        <div class="kx-grid">
-          {products.map((p) => (
-            <ProductCard product={p} locale={locale} />
-          ))}
-        </div>
+        <CategoryFilters products={products} locale={locale} />
       ) : (
         <p class="kx-cat__empty">—</p>
       )

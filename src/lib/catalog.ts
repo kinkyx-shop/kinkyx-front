@@ -41,6 +41,7 @@ export interface Product {
   type: string;
   sku: string;
   order: number;
+  date: string | null;
   brand: string | null;
   onSale: boolean;
   stock: string;

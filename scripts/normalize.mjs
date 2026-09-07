@@ -194,6 +194,7 @@ export function normalize({ categories, products, attributes, attributeTerms, va
       type: fr.type,
       sku: fr.sku || "",
       order: fr.menu_order || 0,
+      date: fr.date_created || fr.date_modified || null,
       brand: (fr.brands && fr.brands[0]?.name) || null,
       onSale: !!fr.on_sale,
       stock: fr.stock_status || "instock",
