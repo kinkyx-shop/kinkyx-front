@@ -10,7 +10,7 @@
     "build": "npm run fetch && astro build",
     "build:nofetch": "astro build",
     "preview": "astro preview",
-    "start": "node server/static.mjs",
+    "start": "node --env-file-if-exists=.env server/static.mjs",
     "astro": "astro"
   },
   "dependencies": {
