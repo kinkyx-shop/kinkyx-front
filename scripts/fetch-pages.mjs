@@ -36,6 +36,19 @@ const KEEP = new Set([
 ]);
 const DROP_WITH_CONTENT = new Set(["script", "style", "noscript", "form", "svg", "iframe", "button", "input", "select", "textarea", "video", "audio"]);
 
+/** Décode les entités HTML fréquentes (titres WP : « &#038; », « &rsquo; »…). */
+function decodeEntities(s) {
+  return String(s || "")
+    .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, n) => String.fromCodePoint(parseInt(n, 16)))
+    .replace(/&amp;/g, "&")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&(?:rsquo|lsquo|#8217|#8216);/g, "’")
+    .replace(/&(?:quot|#8220|#8221);/g, '"')
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">");
+}
+
 function fixUrl(u) {
   if (!u) return u;
   // médias du dev → gardés absolus (proxy CDN plus tard) ; liens internes → relatifs
@@ -124,7 +137,7 @@ export async function fetchPages() {
             ? fr
             : await wp(`/wp/v2/pages/${ref.id}?_fields=id,slug,title,content`).catch(() => null);
         if (!page) continue;
-        entry.name[lg] = (page.title?.rendered || slug).replace(/<[^>]+>/g, "").trim();
+        entry.name[lg] = decodeEntities((page.title?.rendered || slug).replace(/<[^>]+>/g, "")).trim();
         entry.slug[lg] = page.slug;
         entry.html[lg] = tidy(page.content?.rendered || "");
       }

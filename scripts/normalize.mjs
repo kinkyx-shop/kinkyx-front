@@ -20,13 +20,22 @@ const LOCALES = ["fr", "en", "de"];
 // sinon « Große Größe » → « gro-e-gro-e »
 const DE_MAP = { ä: "ae", ö: "oe", ü: "ue", ß: "ss", Ä: "ae", Ö: "oe", Ü: "ue" };
 
+/** Décode les entités HTML fréquentes des noms WooCommerce (« &amp; », « &#038; »). */
+function decodeEntities(s) {
+  return String(s || "")
+    .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, n) => String.fromCodePoint(parseInt(n, 16)))
+    .replace(/&amp;/g, "&")
+    .replace(/&nbsp;/g, " ");
+}
+
 export function slugify(input) {
-  return String(input || "")
+  return decodeEntities(input)
     .replace(/[äöüßÄÖÜ]/g, (c) => DE_MAP[c] || c)
     .normalize("NFD")
     .replace(/\p{Diacritic}/gu, "") // enlève les accents décomposés
     .replace(/["'’]/g, "")
-    .replace(/[&]/g, " et ")
+    .replace(/[&]/g, " ")
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
@@ -34,7 +43,7 @@ export function slugify(input) {
 }
 
 function stripHtml(s) {
-  return String(s || "").replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+  return decodeEntities(String(s || "").replace(/<[^>]+>/g, "")).replace(/\s+/g, " ").trim();
 }
 
 function toNum(v) {
