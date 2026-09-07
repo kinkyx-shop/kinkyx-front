@@ -1,7 +1,7 @@
 import type { Locale } from "@/i18n/ui";
 import { ui } from "@/i18n/ui";
-import { SITE } from "@/consts";
-import { localizedPath, routePath } from "@/i18n/utils";
+import { SITE, ACCOUNT_URL } from "@/consts";
+import { localizedPath } from "@/i18n/utils";
 import { topCategories, childCategories, categoryPath } from "@/lib/catalog";
 import { getPage, pagePath } from "@/lib/pages";
 
@@ -57,6 +57,6 @@ export function footerLinks(locale: Locale) {
     pageLink("livraison-retour", locale, "livraison-retour", T(locale, "footer.delivery")),
     { label: T(locale, "footer.terms"), href: `${legal}/cgv/` },
     { label: T(locale, "footer.termsUse"), href: `${legal}/cgu/` },
-    { label: T(locale, "nav.account"), href: routePath("account", locale) },
+    { label: T(locale, "nav.account"), href: ACCOUNT_URL },
   ];
 }

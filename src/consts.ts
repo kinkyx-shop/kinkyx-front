@@ -13,3 +13,9 @@ export const SITE = {
 
 /** Endpoint public Store API (panier / stock / recherche côté navigateur). */
 export const STORE_API = `${SITE.checkoutUrl}/wp-json/wc/store/v1`;
+
+/**
+ * Espace client : géré par WooCommerce sur le back (connexion, commandes,
+ * adresses, téléchargements). Pas de réécriture headless — lien sortant.
+ */
+export const ACCOUNT_URL = `${SITE.checkoutUrl.replace(/\/+$/, "")}/mon-compte/`;

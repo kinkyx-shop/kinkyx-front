@@ -28,7 +28,15 @@ const serviceLinks = footerLinks(locale);
     <div class="kx-footer__col">
       <h2>{t("footer.customerService")}</h2>
       <ul>
-        {serviceLinks.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+        {
+          serviceLinks.map((l) => (
+            <li>
+              <a href={l.href} rel={l.href.startsWith("http") ? "nofollow" : undefined}>
+                {l.label}
+              </a>
+            </li>
+          ))
+        }
       </ul>
     </div>
 
