@@ -94,10 +94,14 @@ const MIME = {
   ".webmanifest": "application/manifest+json",
 };
 
-/* -------- proxy Store API -------- */
+/* -------- proxy WooCommerce / WordPress (auth htaccess injectée côté serveur) --------
+ *   /store-api/*  -> {CHECKOUT}/wp-json/wc/store/v1/*   (panier, stock)
+ *   /site-api/*   -> {CHECKOUT}/wp-json/*               (formulaires, endpoints maison)
+ */
 async function proxyStore(req, res) {
-  const path = req.url.replace(/^\/store-api/, "");
-  const target = `${STORE_BASE}${path}`;
+  const isSite = req.url.startsWith("/site-api/");
+  const path = req.url.replace(isSite ? /^\/site-api/ : /^\/store-api/, "");
+  const target = isSite ? `${CHECKOUT}/wp-json${path}` : `${STORE_BASE}${path}`;
 
   const headers = { Accept: "application/json" };
   if (BASIC) headers.Authorization = "Basic " + Buffer.from(BASIC).toString("base64");
@@ -156,7 +160,8 @@ const server = createServer(async (req, res) => {
       res.writeHead(405, { "content-type": "text/plain" });
       return res.end("method not allowed\n");
     }
-    if (req.url.startsWith("/store-api/")) return proxyStore(req, res);
+    if (req.url.startsWith("/store-api/") || req.url.startsWith("/site-api/"))
+      return proxyStore(req, res);
 
     let file = await resolveFile(req.url || "/");
     let status = 200;

@@ -1,0 +1,194 @@
+---
+import { useTranslations } from "@/i18n/utils";
+import type { Locale } from "@/i18n/ui";
+
+interface Props {
+  locale: Locale;
+  /** identifiant transmis au back (route le sujet de l'e-mail) */
+  formKey?: string;
+}
+const { locale, formKey = "contact" } = Astro.props;
+const t = useTranslations(locale);
+
+const strings = {
+  send: t("form.send"),
+  sending: t("form.sending"),
+  ok: t("form.ok"),
+  error: t("form.error"),
+};
+---
+
+<form class="kx-form" data-contact-form data-form-key={formKey} novalidate>
+  <h2>{t("form.title")}</h2>
+
+  <div class="kx-form__row">
+    <label>
+      <span>{t("form.firstname")} *</span>
+      <input name="firstname" required autocomplete="given-name" />
+    </label>
+    <label>
+      <span>{t("form.name")} *</span>
+      <input name="name" required autocomplete="family-name" />
+    </label>
+  </div>
+
+  <div class="kx-form__row">
+    <label>
+      <span>{t("form.email")} *</span>
+      <input type="email" name="email" required autocomplete="email" />
+    </label>
+    <label>
+      <span>{t("form.phone")} *</span>
+      <input type="tel" name="phone" required autocomplete="tel" />
+    </label>
+  </div>
+
+  <label>
+    <span>{t("form.message")} *</span>
+    <textarea name="message" rows="6" required></textarea>
+  </label>
+
+  <input
+    type="text"
+    name="hp"
+    tabindex="-1"
+    autocomplete="off"
+    class="kx-form__hp"
+    aria-hidden="true"
+  />
+
+  <button type="submit" class="kx-btn" data-form-submit>{t("form.send")}</button>
+  <p class="kx-form__msg" data-form-msg role="status" hidden></p>
+</form>
+
+<script type="application/json" data-form-strings set:html={JSON.stringify(strings)} />
+
+<script>
+  const form = document.querySelector<HTMLFormElement>("[data-contact-form]");
+  const strEl = document.querySelector<HTMLElement>("[data-form-strings]");
+  if (form && strEl) {
+    const S = JSON.parse(strEl.textContent || "{}") as Record<string, string>;
+    const btn = form.querySelector<HTMLButtonElement>("[data-form-submit]")!;
+    const msg = form.querySelector<HTMLElement>("[data-form-msg]")!;
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!form.reportValidity()) return;
+
+      const fd = new FormData(form);
+      const payload = {
+        firstname: String(fd.get("firstname") || ""),
+        name: String(fd.get("name") || ""),
+        email: String(fd.get("email") || ""),
+        phone: String(fd.get("phone") || ""),
+        message: String(fd.get("message") || ""),
+        hp: String(fd.get("hp") || ""),
+        form: form.dataset.formKey || "contact",
+      };
+
+      btn.disabled = true;
+      btn.textContent = S.sending;
+      msg.hidden = true;
+      msg.className = "kx-form__msg";
+
+      try {
+        const res = await fetch("/site-api/kinkyx/v1/contact", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || !data.ok) throw new Error(data.message || S.error);
+        form.reset();
+        msg.textContent = S.ok;
+        msg.classList.add("is-ok");
+      } catch (err) {
+        msg.textContent = (err as Error).message || S.error;
+        msg.classList.add("is-error");
+      } finally {
+        msg.hidden = false;
+        btn.disabled = false;
+        btn.textContent = S.send;
+      }
+    });
+  }
+</script>
+
+<style>
+  .kx-form {
+    max-width: 42rem;
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--kx-line);
+    display: grid;
+    gap: 1rem;
+  }
+  .kx-form h2 {
+    margin: 0 0 0.5rem;
+    font-size: var(--kx-text-xl);
+  }
+  .kx-form__row {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr 1fr;
+  }
+  .kx-form label {
+    display: grid;
+    gap: 0.35rem;
+    font-size: var(--kx-text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--kx-muted);
+  }
+  .kx-form input,
+  .kx-form textarea {
+    font: inherit;
+    font-size: var(--kx-text-sm);
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--kx-ink);
+    padding: 0.7em 0.8em;
+    border: 1px solid var(--kx-line-strong);
+    border-radius: var(--kx-radius);
+    background: var(--kx-paper);
+  }
+  .kx-form input:focus-visible,
+  .kx-form textarea:focus-visible {
+    outline: 2px solid var(--kx-petrol);
+    outline-offset: 1px;
+    border-color: var(--kx-petrol);
+  }
+  .kx-form textarea {
+    resize: vertical;
+    min-height: 7rem;
+  }
+  .kx-form .kx-btn {
+    justify-self: start;
+  }
+  .kx-form__hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+  .kx-form__msg {
+    margin: 0;
+    font-size: var(--kx-text-sm);
+    padding: 0.75rem 1rem;
+    border-top: 3px solid var(--kx-petrol);
+    background: var(--kx-raise);
+  }
+  .kx-form__msg.is-error {
+    border-top-color: var(--kx-red);
+  }
+  .kx-form__msg.is-ok {
+    border-top-color: var(--kx-instock);
+  }
+
+  @media (max-width: 34rem) {
+    .kx-form__row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

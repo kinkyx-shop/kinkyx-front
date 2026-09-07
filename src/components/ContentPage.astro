@@ -1,6 +1,7 @@
 ---
 import Base from "@/layouts/Base.astro";
 import JsonLd from "@/components/JsonLd.astro";
+import ContactForm from "@/components/ContactForm.astro";
 import { useTranslations, localizedPath } from "@/i18n/utils";
 import { locales, type Locale } from "@/i18n/ui";
 import { breadcrumbList } from "@/lib/jsonld";
@@ -43,6 +44,7 @@ const crumbs = breadcrumbList([
     </nav>
     <h1>{name}</h1>
     <div class="kx-prose" set:html={html} />
+    {pageKey === "latex-sur-mesure" && <ContactForm locale={locale} formKey="latex-sur-mesure" />}
   </article>
 </Base>
 
