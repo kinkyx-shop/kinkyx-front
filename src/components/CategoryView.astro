@@ -1,8 +1,10 @@
 ---
 import Base from "@/layouts/Base.astro";
 import ProductCard from "@/components/ProductCard.astro";
+import JsonLd from "@/components/JsonLd.astro";
 import { useTranslations, localizedPath } from "@/i18n/utils";
 import { locales, type Locale } from "@/i18n/ui";
+import { breadcrumbList } from "@/lib/jsonld";
 import {
   getCategory,
   childCategories,
@@ -30,6 +32,12 @@ const products = productsInCategory(category.key);
 const alternates = Object.fromEntries(
   locales.map((l) => [l, categoryPath(category, l)]),
 ) as Record<Locale, string>;
+
+const crumbs = breadcrumbList([
+  { name: t("nav.shop"), path: localizedPath("/", locale) },
+  ...trail.map((c) => ({ name: c.name[locale] || c.name.fr, path: categoryPath(c, locale) })),
+  { name, path: categoryPath(category, locale) },
+]);
 ---
 
 <Base
@@ -38,6 +46,7 @@ const alternates = Object.fromEntries(
   alternates={alternates}
   image={category.image ?? products[0]?.images[0]?.src}
 >
+  <JsonLd slot="head" data={crumbs} />
   <div class="kx-container kx-cat">
     <nav class="kx-crumbs" aria-label="Fil d'ariane">
       <a href={localizedPath("/", locale)}>{t("nav.shop")}</a>

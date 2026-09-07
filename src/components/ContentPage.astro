@@ -1,7 +1,9 @@
 ---
 import Base from "@/layouts/Base.astro";
+import JsonLd from "@/components/JsonLd.astro";
 import { useTranslations, localizedPath } from "@/i18n/utils";
 import { locales, type Locale } from "@/i18n/ui";
+import { breadcrumbList } from "@/lib/jsonld";
 import { getPage, pagePath } from "@/lib/pages";
 
 interface Props {
@@ -24,9 +26,15 @@ const description = plain.slice(0, 155);
 const alternates = Object.fromEntries(
   locales.map((l) => [l, pagePath(page, l)]),
 ) as Record<Locale, string>;
+
+const crumbs = breadcrumbList([
+  { name: t("nav.shop"), path: localizedPath("/", locale) },
+  { name, path: pagePath(page, locale) },
+]);
 ---
 
 <Base title={name} description={description} alternates={alternates}>
+  <JsonLd slot="head" data={crumbs} />
   <article class="kx-container kx-page">
     <nav class="kx-crumbs" aria-label="Fil d'ariane">
       <a href={localizedPath("/", locale)}>{t("nav.shop")}</a>

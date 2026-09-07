@@ -4,6 +4,7 @@ import ProductCard from "@/components/ProductCard.astro";
 import { useTranslations, localizedPath } from "@/i18n/utils";
 import { locales, type Locale } from "@/i18n/ui";
 import { SITE } from "@/consts";
+import { breadcrumbList } from "@/lib/jsonld";
 import {
   getProduct,
   getCategory,
@@ -67,25 +68,32 @@ const variationData = {
   },
 };
 
-// JSON-LD
-const ld = {
-  "@context": "https://schema.org",
-  "@type": "Product",
-  name,
-  image: product.images.map((i) => i.src),
-  sku: product.sku || undefined,
-  brand: product.brand ? { "@type": "Brand", name: product.brand } : undefined,
-  description: shortDesc || name,
-  offers: {
-    "@type": "AggregateOffer",
-    priceCurrency: "EUR",
-    lowPrice: product.price.min ?? undefined,
-    highPrice: product.price.max ?? product.price.min ?? undefined,
-    availability:
-      product.stock === "instock" ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-    url: new URL(alternates[locale], SITE.url).href,
+// JSON-LD : Product + fil d'ariane
+const ld = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name,
+    image: product.images.map((i) => i.src),
+    sku: product.sku || undefined,
+    brand: product.brand ? { "@type": "Brand", name: product.brand } : undefined,
+    description: shortDesc || name,
+    offers: {
+      "@type": "AggregateOffer",
+      priceCurrency: "EUR",
+      lowPrice: product.price.min ?? undefined,
+      highPrice: product.price.max ?? product.price.min ?? undefined,
+      availability:
+        product.stock === "instock" ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      url: new URL(alternates[locale], SITE.url).href,
+    },
   },
-};
+  breadcrumbList([
+    { name: t("nav.shop"), path: localizedPath("/", locale) },
+    ...trail.map((c) => ({ name: c.name[locale] || c.name.fr, path: categoryPath(c, locale) })),
+    { name, path: productPath(product, locale) },
+  ]),
+];
 ---
 
 <Base title={name} description={shortDesc || `${name} — Kinkyx`} alternates={alternates} image={product.images[0]?.src}>
@@ -202,7 +210,7 @@ const ld = {
     }
   </div>
 
-  <script type="application/ld+json" set:html={JSON.stringify(ld)} />
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(ld).replace(/</g, "\\u003c")} />
   <script type="application/json" data-variation-data set:html={JSON.stringify(variationData)} />
   <script>
     import { addItem } from "../scripts/cart";

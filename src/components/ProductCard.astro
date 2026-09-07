@@ -44,6 +44,9 @@ const hasRange =
 <style>
   .kx-card {
     background: var(--kx-paper);
+    /* n'affiche pas les cartes hors écran (grandes catégories) */
+    content-visibility: auto;
+    contain-intrinsic-size: auto 340px;
   }
   .kx-card__link {
     display: flex;

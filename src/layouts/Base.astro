@@ -59,6 +59,7 @@ const fullTitle = title === SITE.name ? title : `${title} — ${SITE.name}`;
     <link rel="canonical" href={canonical} />
     {hreflangs.map((h) => <link rel="alternate" hreflang={h.hreflang} href={h.href} />)}
     <link rel="alternate" hreflang="x-default" href={xDefault} />
+    <link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={SITE.name} />
@@ -66,16 +67,26 @@ const fullTitle = title === SITE.name ? title : `${title} — ${SITE.name}`;
     {description && <meta property="og:description" content={description} />}
     <meta property="og:url" content={canonical} />
     {image && <meta property="og:image" content={image} />}
+    <meta property="og:locale" content={htmlLang[locale].replace("-", "_")} />
+    {
+      locales
+        .filter((l) => l !== locale)
+        .map((l) => <meta property="og:locale:alternate" content={htmlLang[l].replace("-", "_")} />)
+    }
     <meta name="twitter:card" content="summary_large_image" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href={new URL(SITE.checkoutUrl).origin} crossorigin />
+    <link rel="dns-prefetch" href={new URL(SITE.checkoutUrl).origin} />
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Questrial&family=Quattrocento+Sans:wght@400;700&display=swap"
     />
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <slot name="head" />
   </head>
   <body>
     <a class="kx-skip" href="#main">Aller au contenu</a>

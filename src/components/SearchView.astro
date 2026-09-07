@@ -1,0 +1,203 @@
+---
+import Base from "@/layouts/Base.astro";
+import { useTranslations, routePath } from "@/i18n/utils";
+import { locales, type Locale } from "@/i18n/ui";
+import { buildSearchIndex } from "@/lib/search";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const docs = buildSearchIndex(locale);
+
+// alternates : la même page de recherche dans chaque langue
+const alternates = Object.fromEntries(
+  locales.map((l) => [l, routePath("search", l)]),
+) as Record<Locale, string>;
+
+const strings = {
+  count: t("search.count"),
+  none: t("search.none"),
+  hint: t("search.hint"),
+};
+---
+
+<Base title={t("search.title")} description={t("search.placeholder")} alternates={alternates} noindex>
+  <section class="kx-container kx-search">
+    <h1>{t("search.title")}</h1>
+
+    <form class="kx-search__form" role="search" action={routePath("search", locale)}>
+      <input
+        type="search"
+        name="q"
+        id="kx-q"
+        autocomplete="off"
+        autocapitalize="off"
+        spellcheck="false"
+        placeholder={t("search.placeholder")}
+        aria-label={t("search.title")}
+      />
+    </form>
+
+    <p class="kx-search__status" data-search-status aria-live="polite">{t("search.hint")}</p>
+    <ul class="kx-search__results kx-grid" data-search-results></ul>
+  </section>
+
+  <script
+    type="application/json"
+    data-search-data
+    set:html={JSON.stringify(docs).replace(/</g, "\\u003c")}
+  />
+  <script
+    type="application/json"
+    data-search-strings
+    set:html={JSON.stringify(strings).replace(/</g, "\\u003c")}
+  />
+
+  <script>
+    type Doc = { t: string; u: string; s?: string; img?: string; p?: string; kw?: string };
+
+    const input = document.getElementById("kx-q") as HTMLInputElement | null;
+    const status = document.querySelector<HTMLElement>("[data-search-status]");
+    const list = document.querySelector<HTMLElement>("[data-search-results]");
+    const dataEl = document.querySelector<HTMLElement>("[data-search-data]");
+    const strEl = document.querySelector<HTMLElement>("[data-search-strings]");
+    if (!input || !status || !list || !dataEl || !strEl) throw new Error("search: markup manquant");
+
+    const S = JSON.parse(strEl.textContent || "{}") as Record<string, string>;
+    const raw = JSON.parse(dataEl.textContent || "[]") as Doc[];
+
+    const deburr = (s: string) =>
+      s
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/\p{Diacritic}/gu, "")
+        .replace(/[^a-z0-9]+/g, " ")
+        .trim();
+
+    const docs = raw.map((d) => ({ d, n: deburr([d.t, d.s, d.kw].filter(Boolean).join(" ")) }));
+
+    const esc = (s: string) =>
+      s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
+
+    function score(n: string, tokens: string[]): number {
+      let sc = 0;
+      for (const tok of tokens) {
+        const i = n.indexOf(tok);
+        if (i < 0) return -1;
+        sc += i === 0 || n[i - 1] === " " ? 3 : 1; // début de mot = mieux
+      }
+      return sc;
+    }
+
+    function render(q: string) {
+      const query = deburr(q);
+      const tokens = query.split(" ").filter((x) => x.length > 1);
+
+      if (!tokens.length) {
+        list.innerHTML = "";
+        status.textContent = S.hint || "";
+        return;
+      }
+
+      const hits = docs
+        .map((x) => ({ d: x.d, s: score(x.n, tokens) }))
+        .filter((x) => x.s >= 0)
+        .sort((a, b) => b.s - a.s || a.d.t.localeCompare(b.d.t))
+        .slice(0, 60);
+
+      if (!hits.length) {
+        list.innerHTML = "";
+        status.textContent = (S.none || "{q}").replace("{q}", q);
+        return;
+      }
+
+      status.textContent = (S.count || "{n}").replace("{n}", String(hits.length));
+      list.innerHTML = hits
+        .map(({ d }) => {
+          const media = d.img
+            ? `<img src="${esc(d.img)}" alt="" loading="lazy" decoding="async" width="300" height="300">`
+            : `<span class="kx-card__noimg" aria-hidden="true">Kinkyx</span>`;
+          return `<li class="kx-card"><a class="kx-card__link" href="${esc(d.u)}">
+  <div class="kx-card__media">${media}</div>
+  <div class="kx-card__body">
+    <h3 class="kx-card__title">${esc(d.t)}</h3>
+    ${d.s ? `<p class="kx-card__sub">${esc(d.s)}</p>` : ""}
+    ${d.p ? `<p class="kx-card__price">${esc(d.p)}</p>` : ""}
+  </div></a></li>`;
+        })
+        .join("");
+    }
+
+    let timer: number | undefined;
+    function onInput() {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        const q = input!.value.trim();
+        render(q);
+        const url = new URL(location.href);
+        if (q) url.searchParams.set("q", q);
+        else url.searchParams.delete("q");
+        history.replaceState(null, "", url);
+      }, 120);
+    }
+
+    input.addEventListener("input", onInput);
+    // n'empêche pas le submit d'aboutir à une URL propre ?q=
+    input.form?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      onInput();
+    });
+
+    const initial = new URLSearchParams(location.search).get("q") || "";
+    if (initial) {
+      input.value = initial;
+      render(initial);
+    }
+    input.focus();
+  </script>
+</Base>
+
+<style>
+  .kx-search {
+    padding-block: 1.75rem 4rem;
+  }
+  .kx-search h1 {
+    margin-bottom: 1.25rem;
+  }
+  .kx-search__form {
+    margin-bottom: 1rem;
+  }
+  .kx-search__form input {
+    width: 100%;
+    padding: 0.85em 1em;
+    font: inherit;
+    border: 1px solid var(--kx-line-strong);
+    border-radius: var(--kx-radius);
+    background: var(--kx-paper);
+  }
+  .kx-search__form input:focus-visible {
+    outline: 2px solid var(--kx-petrol);
+    outline-offset: 1px;
+  }
+  .kx-search__status {
+    font-size: var(--kx-text-sm);
+    color: var(--kx-muted);
+    margin: 0 0 1.5rem;
+  }
+  .kx-search__results {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .kx-search__results:empty {
+    display: none;
+  }
+  .kx-card__sub {
+    margin: 0 0 0.2rem;
+    font-size: var(--kx-text-xs);
+    color: var(--kx-muted);
+  }
+</style>

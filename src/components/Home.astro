@@ -1,9 +1,11 @@
 ---
 import ProductCard from "@/components/ProductCard.astro";
+import JsonLd from "@/components/JsonLd.astro";
 import { useTranslations } from "@/i18n/utils";
 import type { Locale } from "@/i18n/ui";
 import { catalog, isStub, topCategories, categoryPath } from "@/lib/catalog";
 import { getPage, pagePath } from "@/lib/pages";
+import { organization, website } from "@/lib/jsonld";
 
 interface Props {
   locale: Locale;
@@ -48,6 +50,8 @@ const roadmap = [
     </section>
   ) : (
     <>
+      <JsonLd data={[organization(), website(locale)]} />
+      {heroImg && <link rel="preload" as="image" href={heroImg} fetchpriority="high" />}
       <section class="kx-hero">
         {heroImg && <img class="kx-hero__bg" src={heroImg} alt="" fetchpriority="high" width="1600" height="900" />}
         <div class="kx-hero__inner kx-container">
