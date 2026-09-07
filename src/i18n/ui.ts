@@ -18,6 +18,15 @@ export const htmlLang: Record<Locale, string> = {
   de: "de-DE",
 };
 
+// slugs de pages fonctionnelles, par langue
+export const routes = {
+  cart: { fr: "panier", en: "cart", de: "warenkorb" },
+  account: { fr: "mon-compte", en: "my-account", de: "mein-konto" },
+  search: { fr: "recherche", en: "search", de: "suche" },
+  shop: { fr: "boutique", en: "shop", de: "shop" },
+} as const;
+export type RouteKey = keyof typeof routes;
+
 export const ui = {
   fr: {
     "nav.shop": "La boutique",

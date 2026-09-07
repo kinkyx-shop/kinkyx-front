@@ -1,0 +1,303 @@
+---
+import Base from "@/layouts/Base.astro";
+import { useTranslations, localizedPath, routePath } from "@/i18n/utils";
+import { locales, type Locale } from "@/i18n/ui";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const title = t("nav.cart");
+const alternates = Object.fromEntries(
+  locales.map((l) => [l, routePath("cart", l)]),
+) as Record<Locale, string>;
+
+const L = {
+  empty: t("cart.empty"),
+  subtotal: t("cart.subtotal"),
+  checkout: t("cart.checkout"),
+  continue: t("cart.continue"),
+  remove: locale === "fr" ? "Retirer" : locale === "de" ? "Entfernen" : "Remove",
+  qty: locale === "fr" ? "Quantité" : locale === "de" ? "Menge" : "Quantity",
+  loading: "…",
+  taxes:
+    locale === "fr"
+      ? "Frais de port et taxes calculés à la commande."
+      : locale === "de"
+        ? "Versand und Steuern werden an der Kasse berechnet."
+        : "Shipping & taxes calculated at checkout.",
+};
+---
+
+<Base title={title} alternates={alternates} noindex>
+  <div class="kx-container kx-cart">
+    <h1>{title}</h1>
+
+    <div data-cart-root data-locale={locale} data-shop-href={localizedPath("/", locale)}>
+      <p class="kx-cart__loading">{L.loading}</p>
+    </div>
+  </div>
+
+  <script type="application/json" data-cart-strings set:html={JSON.stringify(L)} />
+  <script>
+    import { refresh, setQuantity, removeItem, handoffUrl, money, type CartResponse } from "../scripts/cart";
+
+    const root = document.querySelector<HTMLElement>("[data-cart-root]");
+    const strings = JSON.parse(
+      document.querySelector<HTMLElement>("[data-cart-strings]")?.textContent || "{}",
+    );
+    const locale = root?.dataset.locale || "fr";
+    const shopHref = root?.dataset.shopHref || "/";
+
+    const esc = (s: string) =>
+      String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
+
+    function render(cart: CartResponse) {
+      if (!root) return;
+      const items = cart.items ?? [];
+      const unit = cart.totals?.currency_minor_unit ?? 2;
+      const sym = cart.totals?.currency_symbol ?? "€";
+
+      if (items.length === 0) {
+        root.innerHTML = `<div class="kx-cart__empty">
+          <p>${esc(strings.empty)}</p>
+          <a class="kx-btn kx-btn--ghost" href="${esc(shopHref)}">${esc(strings.continue)}</a>
+        </div>`;
+        return;
+      }
+
+      const rows = items
+        .map((it) => {
+          const img = it.images?.[0]?.thumbnail || it.images?.[0]?.src || "";
+          const variation = (it.variation ?? [])
+            .map((v) => `${esc(v.attribute)} : ${esc(v.value)}`)
+            .join(" · ");
+          const line = money(it.totals?.line_total, unit, sym);
+          return `<li class="kx-line" data-key="${esc(it.key)}">
+            <div class="kx-line__media">${img ? `<img src="${esc(img)}" alt="" width="90" height="90">` : ""}</div>
+            <div class="kx-line__body">
+              <p class="kx-line__name">${esc(it.name)}</p>
+              ${variation ? `<p class="kx-line__variation">${variation}</p>` : ""}
+              <button type="button" class="kx-line__remove" data-remove>${esc(strings.remove)}</button>
+            </div>
+            <div class="kx-line__qty">
+              <label class="kx-visually-hidden" for="q-${esc(it.key)}">${esc(strings.qty)}</label>
+              <button type="button" data-dec aria-label="-">−</button>
+              <input id="q-${esc(it.key)}" type="number" min="1" value="${it.quantity}" data-qty>
+              <button type="button" data-inc aria-label="+">+</button>
+            </div>
+            <div class="kx-line__total">${line}</div>
+          </li>`;
+        })
+        .join("");
+
+      root.innerHTML = `
+        <ul class="kx-lines">${rows}</ul>
+        <div class="kx-cart__foot">
+          <div class="kx-cart__sum">
+            <span>${esc(strings.subtotal)}</span>
+            <strong>${money(cart.totals?.total_items, unit, sym)}</strong>
+          </div>
+          <p class="kx-cart__taxes">${esc(strings.taxes)}</p>
+          <button type="button" class="kx-btn kx-cart__checkout" data-checkout>${esc(strings.checkout)}</button>
+          <a class="kx-cart__continue" href="${esc(shopHref)}">${esc(strings.continue)}</a>
+        </div>`;
+
+      root.querySelectorAll<HTMLElement>(".kx-line").forEach((li) => {
+        const key = li.dataset.key!;
+        const input = li.querySelector<HTMLInputElement>("[data-qty]")!;
+        const commit = async (q: number) => {
+          if (q < 1) return;
+          li.style.opacity = "0.5";
+          try {
+            render(await setQuantity(key, q));
+          } catch {
+            li.style.opacity = "1";
+          }
+        };
+        li.querySelector("[data-inc]")?.addEventListener("click", () => commit(Number(input.value) + 1));
+        li.querySelector("[data-dec]")?.addEventListener("click", () => commit(Number(input.value) - 1));
+        input.addEventListener("change", () => commit(Math.max(1, Number(input.value) || 1)));
+        li.querySelector("[data-remove]")?.addEventListener("click", async () => {
+          li.style.opacity = "0.5";
+          try {
+            render(await removeItem(key));
+          } catch {
+            li.style.opacity = "1";
+          }
+        });
+      });
+
+      root.querySelector("[data-checkout]")?.addEventListener("click", () => {
+        window.location.href = handoffUrl(items, locale);
+      });
+    }
+
+    refresh()
+      .then(render)
+      .catch(() => {
+        if (root) root.innerHTML = `<div class="kx-cart__empty"><p>${esc(strings.empty)}</p><a class="kx-btn kx-btn--ghost" href="${esc(shopHref)}">${esc(strings.continue)}</a></div>`;
+      });
+  </script>
+</Base>
+
+<style>
+  .kx-cart {
+    padding-block: 1.75rem 4rem;
+    min-height: 50vh;
+  }
+  .kx-cart h1 {
+    margin-bottom: 1.75rem;
+  }
+  .kx-cart__loading {
+    color: var(--kx-muted);
+  }
+  .kx-cart__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
+    color: var(--kx-muted);
+  }
+
+  .kx-lines {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--kx-line);
+  }
+  .kx-line {
+    display: grid;
+    grid-template-columns: 90px 1fr auto auto;
+    gap: 1rem;
+    align-items: center;
+    padding: 1.1rem 0;
+    border-bottom: 1px solid var(--kx-line);
+  }
+  .kx-line__media img {
+    width: 90px;
+    height: 90px;
+    object-fit: cover;
+    background: var(--kx-raise);
+  }
+  .kx-line__name {
+    margin: 0 0 0.2rem;
+    font-size: var(--kx-text-sm);
+    color: var(--kx-ink);
+  }
+  .kx-line__variation {
+    margin: 0 0 0.4rem;
+    font-size: var(--kx-text-xs);
+    color: var(--kx-muted);
+  }
+  .kx-line__remove {
+    background: none;
+    border: 0;
+    padding: 0;
+    font-size: var(--kx-text-xs);
+    color: var(--kx-muted);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  .kx-line__remove:hover {
+    color: var(--kx-red);
+  }
+  .kx-line__qty {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--kx-line-strong);
+    border-radius: var(--kx-radius);
+  }
+  .kx-line__qty button {
+    width: 2rem;
+    height: 2.2rem;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    font-size: 1rem;
+    color: var(--kx-ink);
+  }
+  .kx-line__qty input {
+    width: 2.5rem;
+    height: 2.2rem;
+    border: 0;
+    border-inline: 1px solid var(--kx-line-strong);
+    text-align: center;
+    font: inherit;
+    -moz-appearance: textfield;
+  }
+  .kx-line__qty input::-webkit-outer-spin-button,
+  .kx-line__qty input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+  .kx-line__total {
+    font-variant-numeric: tabular-nums;
+    color: var(--kx-petrol);
+    font-size: var(--kx-text-sm);
+    white-space: nowrap;
+  }
+
+  .kx-cart__foot {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.75rem;
+    max-width: 24rem;
+    margin-left: auto;
+  }
+  .kx-cart__sum {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    font-size: var(--kx-text-lg);
+  }
+  .kx-cart__sum strong {
+    color: var(--kx-petrol);
+    font-variant-numeric: tabular-nums;
+  }
+  .kx-cart__taxes {
+    margin: 0;
+    font-size: var(--kx-text-xs);
+    color: var(--kx-muted);
+    align-self: flex-start;
+  }
+  .kx-cart__checkout {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+  .kx-cart__continue {
+    font-size: var(--kx-text-xs);
+    color: var(--kx-muted);
+  }
+
+  @media (max-width: 40rem) {
+    .kx-line {
+      grid-template-columns: 70px 1fr;
+      grid-template-areas:
+        "media body"
+        "qty total";
+      row-gap: 0.75rem;
+    }
+    .kx-line__media {
+      grid-area: media;
+    }
+    .kx-line__body {
+      grid-area: body;
+    }
+    .kx-line__qty {
+      grid-area: qty;
+    }
+    .kx-line__total {
+      grid-area: total;
+      text-align: right;
+      align-self: center;
+    }
+    .kx-line__media img {
+      width: 70px;
+      height: 70px;
+    }
+  }
+</style>

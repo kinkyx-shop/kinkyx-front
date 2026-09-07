@@ -1,6 +1,6 @@
 ---
 import LangSwitcher from "@/components/LangSwitcher.astro";
-import { useTranslations, localizedPath } from "@/i18n/utils";
+import { useTranslations, localizedPath, routePath } from "@/i18n/utils";
 import type { Locale } from "@/i18n/ui";
 import { topCategories, childCategories, categoryPath, isStub } from "@/lib/catalog";
 
@@ -62,10 +62,11 @@ const nav = roots.length
 
     <div class="kx-header__actions">
       <LangSwitcher />
-      <a class="kx-header__icon" href={localizedPath("/recherche/", locale)} aria-label={t("nav.search")}>⌕</a>
-      <a class="kx-header__icon" href={localizedPath("/mon-compte/", locale)} aria-label={t("nav.account")}>◔</a>
-      <a class="kx-header__icon kx-cart-link" href={localizedPath("/panier/", locale)} aria-label={t("nav.cart")}>
-        ⛰ <span class="kx-cart-count" data-cart-count hidden>0</span>
+      <a class="kx-header__icon" href={routePath("search", locale)} aria-label={t("nav.search")}>⌕</a>
+      <a class="kx-header__icon" href={routePath("account", locale)} aria-label={t("nav.account")}>◔</a>
+      <a class="kx-header__icon kx-cart-link" href={routePath("cart", locale)} aria-label={t("nav.cart")}>
+        <span aria-hidden="true">🛒</span>
+        <span class="kx-cart-count" data-cart-count hidden>0</span>
       </a>
     </div>
   </div>

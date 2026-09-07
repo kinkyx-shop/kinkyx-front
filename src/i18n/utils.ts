@@ -1,4 +1,4 @@
-import { ui, defaultLocale, locales, type Locale, type UIKey } from "./ui";
+import { ui, routes, defaultLocale, locales, type Locale, type UIKey, type RouteKey } from "./ui";
 
 /** Locale déduite d'une URL ("/en/…" -> "en", sinon "fr"). */
 export function getLocale(url: URL): Locale {
@@ -25,6 +25,11 @@ export function stripLocale(path: string): string {
   const parts = path.split("/").filter(Boolean);
   if ((locales as readonly string[]).includes(parts[0])) parts.shift();
   return withTrailingSlash("/" + parts.join("/"));
+}
+
+/** Chemin d'une page fonctionnelle (panier, compte…) dans la bonne langue. */
+export function routePath(key: RouteKey, locale: Locale): string {
+  return localizedPath(`/${routes[key][locale]}/`, locale);
 }
 
 /** Toutes les variantes de langue d'un chemin sans préfixe (pour hreflang). */
