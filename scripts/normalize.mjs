@@ -90,16 +90,21 @@ export function normalize({ categories, products, attributes, attributeTerms, va
   /* ---------- Catégories ---------- */
   const catGroups = groupByTranslation(categories);
   const catByFrId = new Map();
-  const slugUsed = { fr: new Set(), en: new Set(), de: new Set() };
+  // unicité des slugs PAR PARENT (pas globale) : deux « Top » sous des branches
+  // différentes gardent le slug « top », leur chemin complet suffit à les distinguer.
+  const slugUsed = new Map(); // clé `${parentId}|${lg}` -> Set<slug>
 
   const cats = catGroups.map((g) => {
     const fr = g.fr;
     const name = {}, slug = {}, desc = {};
+    const pk = fr.parent || 0;
     for (const lg of LOCALES) {
       const m = g[lg] || fr;
       name[lg] = stripHtml(m.name);
       desc[lg] = stripHtml(m.description);
-      slug[lg] = uniqueSlug(slugify(m.name), slugUsed[lg]);
+      const bucket = `${pk}|${lg}`;
+      if (!slugUsed.has(bucket)) slugUsed.set(bucket, new Set());
+      slug[lg] = uniqueSlug(slugify(m.name), slugUsed.get(bucket));
     }
     const cat = {
       key: fr.id,
