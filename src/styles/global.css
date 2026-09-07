@@ -146,8 +146,12 @@ img {
 
 .kx-card {
   background: var(--kx-paper);
+  /* indispensable : sans ça la largeur intrinsèque de la carte (accentuée par
+     content-visibility) empêche les pistes 1fr de se partager l'espace */
+  min-width: 0;
   content-visibility: auto;
-  contain-intrinsic-size: auto 340px;
+  /* largeur auto (jamais imposée), hauteur estimée à ~340px pour éviter les sauts */
+  contain-intrinsic-size: auto 300px auto 340px;
 }
 .kx-card__link {
   display: flex;
