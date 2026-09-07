@@ -12,13 +12,65 @@ import { createServer } from "node:http";
 import { stat, readFile } from "node:fs/promises";
 import { join, extname, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
+import { spawn } from "node:child_process";
 
 const ROOT = fileURLToPath(new URL("../dist/", import.meta.url));
+const APP_DIR = fileURLToPath(new URL("../", import.meta.url));
+const REBUILD_SCRIPT = fileURLToPath(new URL("../scripts/rebuild.mjs", import.meta.url));
 const PORT = Number(process.env.PORT) || 3000;
 
 const CHECKOUT = (process.env.PUBLIC_CHECKOUT_URL || "https://dev.kinkyx-shop.com").replace(/\/+$/, "");
 const STORE_BASE = `${CHECKOUT}/wp-json/wc/store/v1`;
 const BASIC = process.env.SITE_BASIC_AUTH || "";
+
+/* -------- webhook de reconstruction -------- */
+const REBUILD_SECRET = process.env.REBUILD_SECRET || "";
+const REBUILD_DEBOUNCE_MS = 20_000; // regroupe les rafales de webhooks
+let rebuildTimer = null;
+let rebuilding = false;
+let rebuildQueued = false;
+
+function runRebuild() {
+  if (rebuilding) {
+    rebuildQueued = true;
+    return;
+  }
+  rebuilding = true;
+  console.log("[rebuild] démarrage");
+  const child = spawn(process.execPath, [REBUILD_SCRIPT], { cwd: APP_DIR, stdio: "inherit" });
+  child.on("exit", (code) => {
+    rebuilding = false;
+    console.log(`[rebuild] terminé (code ${code})`);
+    if (rebuildQueued) {
+      rebuildQueued = false;
+      scheduleRebuild();
+    }
+  });
+}
+
+function scheduleRebuild() {
+  if (rebuildTimer) clearTimeout(rebuildTimer);
+  rebuildTimer = setTimeout(() => {
+    rebuildTimer = null;
+    runRebuild();
+  }, REBUILD_DEBOUNCE_MS);
+}
+
+function handleRebuildHook(req, res) {
+  if (!REBUILD_SECRET) {
+    res.writeHead(503, { "content-type": "application/json" });
+    return res.end(JSON.stringify({ error: "rebuild désactivé (REBUILD_SECRET absent)" }));
+  }
+  const url = new URL(req.url, "http://x");
+  const key = url.searchParams.get("key") || req.headers["x-kx-key"] || "";
+  if (key !== REBUILD_SECRET) {
+    res.writeHead(401, { "content-type": "application/json" });
+    return res.end(JSON.stringify({ error: "clé invalide" }));
+  }
+  scheduleRebuild();
+  res.writeHead(202, { "content-type": "application/json" });
+  res.end(JSON.stringify({ ok: true, queued: true, running: rebuilding }));
+}
 
 const MIME = {
   ".html": "text/html; charset=utf-8",
@@ -97,6 +149,11 @@ const server = createServer(async (req, res) => {
     if (req.url === "/healthz") {
       res.writeHead(200, { "content-type": "text/plain" });
       return res.end("ok\n");
+    }
+    if (req.url.split("?")[0] === "/_hooks/rebuild") {
+      if (req.method === "POST" || req.method === "GET") return handleRebuildHook(req, res);
+      res.writeHead(405, { "content-type": "text/plain" });
+      return res.end("method not allowed\n");
     }
     if (req.url.startsWith("/store-api/")) return proxyStore(req, res);
 
