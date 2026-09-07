@@ -1,0 +1,12 @@
+---
+import ProductView from "@/components/ProductView.astro";
+import { productStaticPaths } from "@/lib/routes";
+
+export function getStaticPaths() {
+  return productStaticPaths("de");
+}
+
+const { productKey } = Astro.props as { productKey: number };
+---
+
+<ProductView locale="de" productKey={productKey} />

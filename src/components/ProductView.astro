@@ -1,0 +1,493 @@
+---
+import Base from "@/layouts/Base.astro";
+import ProductCard from "@/components/ProductCard.astro";
+import { useTranslations, localizedPath } from "@/i18n/utils";
+import { locales, type Locale } from "@/i18n/ui";
+import { SITE } from "@/consts";
+import {
+  getProduct,
+  getCategory,
+  ancestors,
+  productsInCategory,
+  categoryPath,
+  productPath,
+  formatPrice,
+} from "@/lib/catalog";
+
+interface Props {
+  locale: Locale;
+  productKey: number;
+}
+const { locale, productKey } = Astro.props;
+const t = useTranslations(locale);
+
+const product = getProduct(productKey);
+if (!product) throw new Error(`Produit introuvable : ${productKey}`);
+
+const name = product.name[locale] || product.name.fr;
+const shortDesc = product.short[locale] || product.short.fr;
+const desc = product.desc[locale] || product.desc.fr;
+
+const primaryCat = product.categoryKeys.map(getCategory).find(Boolean);
+const trail = primaryCat ? [...ancestors(primaryCat), primaryCat] : [];
+
+const varAttrs = product.attributes.filter((a) => a.forVariation && a.options.length);
+const specAttrs = product.attributes.filter((a) => !a.forVariation && a.options.length);
+const isVariable = product.type === "variable" && product.variations.length > 0;
+
+const priceMain =
+  product.price.max != null && product.price.min != null && product.price.max > product.price.min
+    ? `${t("product.from")} ${formatPrice(product.price.min)}`
+    : formatPrice(product.price.min);
+
+const related = primaryCat
+  ? productsInCategory(primaryCat.key).filter((p) => p.key !== product.key).slice(0, 4)
+  : [];
+
+const alternates = Object.fromEntries(
+  locales.map((l) => [l, productPath(product, l)]),
+) as Record<Locale, string>;
+
+// données pour le sélecteur client
+const variationData = {
+  productId: product.key,
+  isVariable,
+  attrs: varAttrs.map((a) => ({ slug: a.slug, label: a.label, options: a.options })),
+  variations: product.variations.map((v) => ({
+    id: v.id,
+    attrs: v.attrs,
+    price: v.price,
+    stock: v.stock,
+  })),
+  labels: {
+    add: t("product.addToCart"),
+    select: t("product.selectOptions"),
+    oos: t("product.outOfStock"),
+    added: locale === "fr" ? "Ajouté au panier" : locale === "de" ? "Zum Warenkorb hinzugefügt" : "Added to cart",
+  },
+};
+
+// JSON-LD
+const ld = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  name,
+  image: product.images.map((i) => i.src),
+  sku: product.sku || undefined,
+  brand: product.brand ? { "@type": "Brand", name: product.brand } : undefined,
+  description: shortDesc || name,
+  offers: {
+    "@type": "AggregateOffer",
+    priceCurrency: "EUR",
+    lowPrice: product.price.min ?? undefined,
+    highPrice: product.price.max ?? product.price.min ?? undefined,
+    availability:
+      product.stock === "instock" ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+    url: new URL(alternates[locale], SITE.url).href,
+  },
+};
+---
+
+<Base title={name} description={shortDesc || `${name} — Kinkyx`} alternates={alternates} image={product.images[0]?.src}>
+  <div class="kx-container kx-pdp">
+    <nav class="kx-crumbs" aria-label="Fil d'ariane">
+      <a href={localizedPath("/", locale)}>{t("nav.shop")}</a>
+      {
+        trail.map((c) => (
+          <>
+            <span aria-hidden="true">/</span>
+            <a href={categoryPath(c, locale)}>{c.name[locale] || c.name.fr}</a>
+          </>
+        ))
+      }
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">{name}</span>
+    </nav>
+
+    <div class="kx-pdp__main">
+      <div class="kx-gallery">
+        <div class="kx-gallery__main">
+          {
+            product.images[0] ? (
+              <img id="kx-gallery-main" src={product.images[0].src} alt={product.images[0].alt || name} width="900" height="900" />
+            ) : (
+              <span class="kx-gallery__noimg">Kinkyx</span>
+            )
+          }
+        </div>
+        {
+          product.images.length > 1 && (
+            <ul class="kx-gallery__thumbs">
+              {product.images.map((im, i) => (
+                <li>
+                  <button type="button" data-src={im.src} aria-label={`Image ${i + 1}`} class:list={{ "is-active": i === 0 }}>
+                    <img src={im.src} alt="" loading="lazy" width="120" height="120" />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )
+        }
+      </div>
+
+      <div class="kx-pdp__info">
+        {product.brand && <p class="kx-pdp__brand">{product.brand}</p>}
+        <h1>{name}</h1>
+        <p class="kx-pdp__price" data-price>{priceMain}</p>
+        {shortDesc && <p class="kx-pdp__short">{shortDesc}</p>}
+
+        <form class="kx-buy" data-buy>
+          {
+            varAttrs.map((a) => (
+              <label class="kx-buy__field">
+                <span>{a.label}</span>
+                <select name={a.slug} data-var-select required>
+                  <option value="">—</option>
+                  {a.options.map((o) => (
+                    <option value={o}>{o}</option>
+                  ))}
+                </select>
+              </label>
+            ))
+          }
+          <button type="submit" class="kx-btn kx-buy__submit" data-add disabled={isVariable}>
+            {isVariable ? variationData.labels.select : variationData.labels.add}
+          </button>
+          <p class="kx-buy__msg" data-msg role="status" hidden></p>
+        </form>
+
+        {product.sku && <p class="kx-pdp__sku">{t("product.sku")} <span>{product.sku}</span></p>}
+      </div>
+    </div>
+
+    {
+      (desc || specAttrs.length > 0) && (
+        <div class="kx-pdp__tabs">
+          {desc && (
+            <section>
+              <h2>{t("product.description")}</h2>
+              <div class="kx-prose" set:html={desc} />
+            </section>
+          )}
+          {specAttrs.length > 0 && (
+            <section>
+              <h2>{t("product.details")}</h2>
+              <table class="kx-specs">
+                <tbody>
+                  {specAttrs.map((a) => (
+                    <tr>
+                      <th scope="row">{a.label}</th>
+                      <td>{a.options.join(", ")}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </section>
+          )}
+        </div>
+      )
+    }
+
+    {
+      related.length > 0 && (
+        <section class="kx-related">
+          <h2>{t("product.related")}</h2>
+          <div class="kx-grid">
+            {related.map((p) => (
+              <ProductCard product={p} locale={locale} />
+            ))}
+          </div>
+        </section>
+      )
+    }
+  </div>
+
+  <script type="application/ld+json" set:html={JSON.stringify(ld)} />
+  <script type="application/json" data-variation-data set:html={JSON.stringify(variationData)} />
+  <script>
+    import { addItem } from "../scripts/cart";
+
+    // galerie : miniatures -> image principale
+    const mainImg = document.getElementById("kx-gallery-main") as HTMLImageElement | null;
+    document.querySelectorAll<HTMLButtonElement>(".kx-gallery__thumbs button").forEach((b) => {
+      b.addEventListener("click", () => {
+        const src = b.dataset.src;
+        if (src && mainImg) mainImg.src = src;
+        document.querySelectorAll(".kx-gallery__thumbs button").forEach((x) => x.classList.remove("is-active"));
+        b.classList.add("is-active");
+      });
+    });
+
+    const el = document.querySelector<HTMLScriptElement>("[data-variation-data]");
+    if (el) {
+      const data = JSON.parse(el.textContent || "{}");
+      const form = document.querySelector<HTMLFormElement>("[data-buy]");
+      const btn = document.querySelector<HTMLButtonElement>("[data-add]");
+      const msg = document.querySelector<HTMLElement>("[data-msg]");
+      const priceEl = document.querySelector<HTMLElement>("[data-price]");
+      const selects = [...document.querySelectorAll<HTMLSelectElement>("[data-var-select]")];
+
+      const eur = (n: number) =>
+        new Intl.NumberFormat("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n) + " €";
+
+      let currentId: number | null = data.isVariable ? null : data.productId;
+
+      function match() {
+        if (!data.isVariable) return;
+        const chosen: Record<string, string> = {};
+        for (const s of selects) {
+          if (!s.value) {
+            currentId = null;
+            btn!.disabled = true;
+            btn!.textContent = data.labels.select;
+            return;
+          }
+          chosen[s.name] = s.value;
+        }
+        const v = data.variations.find((x: any) =>
+          Object.entries(chosen).every(([k, val]) => String(x.attrs[k]) === String(val)),
+        );
+        if (!v) {
+          currentId = null;
+          btn!.disabled = true;
+          btn!.textContent = data.labels.oos;
+          return;
+        }
+        currentId = v.id;
+        if (v.price != null && priceEl) priceEl.textContent = eur(v.price);
+        const oos = v.stock !== "instock";
+        btn!.disabled = oos;
+        btn!.textContent = oos ? data.labels.oos : data.labels.add;
+      }
+
+      selects.forEach((s) => s.addEventListener("change", match));
+
+      form?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (currentId == null) return;
+        btn!.disabled = true;
+        const label = btn!.textContent;
+        btn!.textContent = "…";
+        try {
+          await addItem(currentId, 1);
+          msg!.hidden = false;
+          msg!.textContent = data.labels.added;
+          btn!.textContent = label;
+          btn!.disabled = data.isVariable && currentId == null;
+        } catch (err) {
+          msg!.hidden = false;
+          msg!.textContent = (err as Error).message;
+          btn!.textContent = label;
+          btn!.disabled = false;
+        }
+      });
+    }
+  </script>
+</Base>
+
+<style>
+  .kx-pdp {
+    padding-block: 1.5rem 3.5rem;
+  }
+  .kx-crumbs {
+    font-size: var(--kx-text-xs);
+    color: var(--kx-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: center;
+    margin-bottom: 1.6rem;
+  }
+  .kx-crumbs a {
+    color: var(--kx-muted);
+    text-decoration: none;
+  }
+  .kx-crumbs a:hover {
+    color: var(--kx-red);
+  }
+  .kx-crumbs [aria-current] {
+    color: var(--kx-ink);
+  }
+
+  .kx-pdp__main {
+    display: grid;
+    gap: 2.5rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 52rem) {
+    .kx-pdp__main {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+      gap: 3rem;
+    }
+  }
+
+  .kx-gallery__main {
+    aspect-ratio: 1 / 1;
+    background: var(--kx-raise);
+    overflow: hidden;
+  }
+  .kx-gallery__main img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .kx-gallery__noimg {
+    display: grid;
+    place-items: center;
+    height: 100%;
+    font-family: var(--kx-font-display);
+    letter-spacing: 0.2em;
+    color: var(--kx-line-strong);
+  }
+  .kx-gallery__thumbs {
+    list-style: none;
+    display: flex;
+    gap: 0.5rem;
+    margin: 0.6rem 0 0;
+    padding: 0;
+    flex-wrap: wrap;
+  }
+  .kx-gallery__thumbs button {
+    width: 64px;
+    height: 64px;
+    padding: 0;
+    border: 1px solid var(--kx-line);
+    background: none;
+    cursor: pointer;
+  }
+  .kx-gallery__thumbs button.is-active {
+    border-color: var(--kx-petrol);
+  }
+  .kx-gallery__thumbs img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .kx-pdp__brand {
+    font-size: var(--kx-text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--kx-muted);
+    margin: 0 0 0.4rem;
+  }
+  .kx-pdp__info h1 {
+    margin: 0 0 0.6rem;
+  }
+  .kx-pdp__price {
+    font-size: var(--kx-text-xl);
+    color: var(--kx-petrol);
+    font-variant-numeric: tabular-nums;
+    margin: 0 0 1rem;
+  }
+  .kx-pdp__short {
+    color: var(--kx-body);
+    font-size: var(--kx-text-sm);
+    margin-bottom: 1.5rem;
+  }
+
+  .kx-buy {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    max-width: 22rem;
+  }
+  .kx-buy__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    font-size: var(--kx-text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--kx-muted);
+  }
+  .kx-buy__field select {
+    font: inherit;
+    font-size: var(--kx-text-sm);
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--kx-ink);
+    padding: 0.7em 0.8em;
+    border: 1px solid var(--kx-line-strong);
+    border-radius: var(--kx-radius);
+    background: var(--kx-paper);
+  }
+  .kx-buy__submit {
+    margin-top: 0.3rem;
+  }
+  .kx-buy__submit[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .kx-buy__msg {
+    margin: 0;
+    font-size: var(--kx-text-sm);
+    color: var(--kx-instock);
+  }
+
+  .kx-pdp__sku {
+    margin-top: 1.2rem;
+    font-size: var(--kx-text-xs);
+    color: var(--kx-muted);
+  }
+  .kx-pdp__sku span {
+    color: var(--kx-ink);
+  }
+
+  .kx-pdp__tabs {
+    margin-top: 3.5rem;
+    display: grid;
+    gap: 2.5rem;
+    max-width: var(--kx-measure);
+  }
+  .kx-pdp__tabs h2 {
+    font-size: var(--kx-text-lg);
+    border-bottom: 1px solid var(--kx-line);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  .kx-prose {
+    font-size: var(--kx-text-sm);
+    color: var(--kx-body);
+    line-height: 1.7;
+  }
+  .kx-prose :global(p) {
+    margin: 0 0 0.8em;
+  }
+  .kx-specs {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--kx-text-sm);
+  }
+  .kx-specs th,
+  .kx-specs td {
+    text-align: left;
+    padding: 0.55rem 0;
+    border-bottom: 1px solid var(--kx-line);
+    vertical-align: top;
+  }
+  .kx-specs th {
+    width: 40%;
+    color: var(--kx-muted);
+    font-weight: 400;
+  }
+
+  .kx-related {
+    margin-top: 4rem;
+  }
+  .kx-related h2 {
+    font-size: var(--kx-text-lg);
+    margin-bottom: 1.25rem;
+  }
+  .kx-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.75rem 1.25rem;
+  }
+  @media (max-width: 40rem) {
+    .kx-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem 0.75rem;
+    }
+  }
+</style>
