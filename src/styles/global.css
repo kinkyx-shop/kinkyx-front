@@ -121,3 +121,102 @@ img {
   white-space: nowrap;
   border: 0;
 }
+
+/* ---- grille produits + carte (partagées : catégorie, accueil, recherche,
+   produits associés). Toujours 2 colonnes en mobile, jusqu'à 4 en desktop. ---- */
+.kx-grid {
+  display: grid;
+  gap: 1.25rem 0.75rem;
+  grid-template-columns: repeat(2, 1fr);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+@media (min-width: 34rem) {
+  .kx-grid {
+    gap: 1.75rem 1.25rem;
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (min-width: 60rem) {
+  .kx-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.kx-card {
+  background: var(--kx-paper);
+  content-visibility: auto;
+  contain-intrinsic-size: auto 340px;
+}
+.kx-card__link {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+  height: 100%;
+}
+.kx-card__media {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  background: var(--kx-raise);
+  overflow: hidden;
+}
+.kx-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+.kx-card__link:hover .kx-card__media img {
+  transform: scale(1.04);
+}
+.kx-card__noimg {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--kx-font-display);
+  letter-spacing: 0.2em;
+  color: var(--kx-line-strong);
+}
+.kx-card__badge {
+  position: absolute;
+  top: 0.6rem;
+  left: 0.6rem;
+  width: 2.2rem;
+  height: 2.2rem;
+  display: grid;
+  place-items: center;
+  background: var(--kx-red);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+.kx-card__body {
+  padding: 0.75rem 0.15rem 0;
+}
+.kx-card__title {
+  font-family: var(--kx-font-body);
+  font-size: var(--kx-text-sm);
+  font-weight: 400;
+  color: var(--kx-ink);
+  margin: 0 0 0.25rem;
+  line-height: 1.35;
+}
+.kx-card__sub {
+  margin: 0 0 0.2rem;
+  font-size: var(--kx-text-xs);
+  color: var(--kx-muted);
+}
+.kx-card__price {
+  margin: 0;
+  font-size: var(--kx-text-sm);
+  color: var(--kx-petrol);
+  font-variant-numeric: tabular-nums;
+}
+.kx-card__from {
+  color: var(--kx-muted);
+  font-size: var(--kx-text-xs);
+}
