@@ -1,0 +1,12 @@
+---
+import ContentPage from "@/components/ContentPage.astro";
+import { pageStaticPaths } from "@/lib/pages";
+
+export function getStaticPaths() {
+  return pageStaticPaths("de");
+}
+
+const { pageKey } = Astro.props as { pageKey: string };
+---
+
+<ContentPage locale="de" pageKey={pageKey} />

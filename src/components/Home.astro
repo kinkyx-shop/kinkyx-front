@@ -3,6 +3,7 @@ import ProductCard from "@/components/ProductCard.astro";
 import { useTranslations } from "@/i18n/utils";
 import type { Locale } from "@/i18n/ui";
 import { catalog, isStub, topCategories, categoryPath } from "@/lib/catalog";
+import { getPage, pagePath } from "@/lib/pages";
 
 interface Props {
   locale: Locale;
@@ -10,94 +11,155 @@ interface Props {
 const { locale } = Astro.props;
 const t = useTranslations(locale);
 
-const roots = topCategories();
+const roots = topCategories().filter((c) => ["latex", "chaussures"].includes(c.slug.fr));
+const univers = roots.length ? roots : topCategories().slice(0, 3);
 const newest = catalog.products.slice(0, 10);
+const bespoke = getPage("latex-sur-mesure");
+const heroImg =
+  univers[0]?.image ||
+  catalog.products.find((p) => p.images[0])?.images[0]?.src ||
+  null;
 
 const roadmap = [
   ["L0", "Socle · routage i18n · design", true],
   ["L1", "Catalogue & navigation", !isStub],
-  ["L2", "Fiche produit & variations", false],
-  ["L3", "Panier & passage en caisse", false],
-  ["L4", "Pages de contenu", false],
+  ["L2", "Fiche produit & variations", !isStub],
+  ["L3", "Panier & passage en caisse", !isStub],
+  ["L4", "Pages de contenu", !isStub],
   ["L5", "Recherche · perf · SEO", false],
   ["L6", "Bascule", false],
 ] as const;
 ---
 
-<section class="kx-home">
-  <div class="kx-container">
-    <p class="kx-eyebrow">Kinkyx</p>
-    <h1>{t("meta.tagline")}</h1>
+{
+  isStub ? (
+    <section class="kx-home kx-container">
+      <p class="kx-eyebrow">Kinkyx</p>
+      <h1>{t("meta.tagline")}</h1>
+      <p class="kx-home__lead">Nouvelle version en construction — catalogue non branché.</p>
+      <ol class="kx-roadmap">
+        {roadmap.map(([id, text, done]) => (
+          <li class:list={{ "is-done": done }}>
+            <span class="kx-roadmap__id">{id}</span>
+            <span>{text}</span>
+          </li>
+        ))}
+      </ol>
+    </section>
+  ) : (
+    <>
+      <section class="kx-hero">
+        {heroImg && <img class="kx-hero__bg" src={heroImg} alt="" fetchpriority="high" width="1600" height="900" />}
+        <div class="kx-hero__inner kx-container">
+          <p class="kx-eyebrow kx-hero__eyebrow">Kinkyx</p>
+          <h1>{t("meta.tagline")}</h1>
+          <p class="kx-hero__sub">{t("home.sub")}</p>
+          <a class="kx-btn kx-hero__cta" href={topCategories()[0] ? categoryPath(topCategories()[0], locale) : "/"}>
+            {t("home.cta")}
+          </a>
+        </div>
+      </section>
 
-    {
-      isStub ? (
-        <>
-          <p class="kx-home__lead">Nouvelle version en construction — le catalogue n'est pas encore branché.</p>
-          <ol class="kx-roadmap">
-            {roadmap.map(([id, text, done]) => (
-              <li class:list={{ "is-done": done }}>
-                <span class="kx-roadmap__id">{id}</span>
-                <span>{text}</span>
-              </li>
+      <section class="kx-container kx-block">
+        <h2>{t("home.universes")}</h2>
+        <ul class="kx-univers">
+          {univers.map((c) => (
+            <li>
+              <a href={categoryPath(c, locale)}>
+                {c.image && <img src={c.image} alt="" loading="lazy" width="640" height="480" />}
+                <span>{c.name[locale] || c.name.fr}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {bespoke && (
+        <section class="kx-bespoke">
+          <div class="kx-container kx-bespoke__inner">
+            <div>
+              <h2>{t("home.bespokeTitle")}</h2>
+              <p>{t("home.bespokeText")}</p>
+              <a class="kx-btn kx-btn--ghost" href={pagePath(bespoke, locale)}>
+                {t("home.bespokeCta")}
+              </a>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {newest.length > 0 && (
+        <section class="kx-container kx-block">
+          <h2>{t("home.newIn")}</h2>
+          <div class="kx-grid">
+            {newest.map((p) => (
+              <ProductCard product={p} locale={locale} />
             ))}
-          </ol>
-        </>
-      ) : (
-        <>
-          <p class="kx-home__lead">
-            {catalog.products.length} pièces · {roots.length} univers
-          </p>
-
-          <ul class="kx-univers">
-            {roots.map((c) => (
-              <li>
-                <a href={categoryPath(c, locale)}>
-                  {c.image && <img src={c.image} alt="" loading="lazy" width="480" height="360" />}
-                  <span>{c.name[locale] || c.name.fr}</span>
-                </a>
-              </li>
-            ))}
-          </ul>
-
-          {newest.length > 0 && (
-            <>
-              <h2 class="kx-home__h2">{locale === "fr" ? "Dernières nouveautés" : locale === "de" ? "Neuheiten" : "New in"}</h2>
-              <div class="kx-grid">
-                {newest.map((p) => (
-                  <ProductCard product={p} locale={locale} />
-                ))}
-              </div>
-            </>
-          )}
-        </>
-      )
-    }
-  </div>
-</section>
+          </div>
+        </section>
+      )}
+    </>
+  )
+}
 
 <style>
-  .kx-home {
-    padding-block: clamp(2.5rem, 6vw, 4.5rem) 4rem;
+  .kx-hero {
+    position: relative;
+    background: var(--kx-petrol);
+    color: #fff;
+    overflow: hidden;
   }
-  .kx-home h1 {
-    max-width: 20ch;
+  .kx-hero__bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.4;
   }
-  .kx-home__lead {
-    color: var(--kx-muted);
+  .kx-hero__inner {
+    position: relative;
+    padding-block: clamp(3.5rem, 10vw, 7rem);
+    max-width: 46rem;
+  }
+  .kx-hero__eyebrow {
+    color: rgba(255, 255, 255, 0.7);
+  }
+  .kx-hero h1 {
+    color: #fff;
+    font-size: clamp(2.1rem, 5vw, 3.2rem);
+    margin: 0.4rem 0 0.8rem;
+  }
+  .kx-hero__sub {
+    color: rgba(255, 255, 255, 0.88);
     font-size: var(--kx-text-lg);
+    max-width: 40ch;
+    margin-bottom: 1.75rem;
   }
-  .kx-home__h2 {
-    margin-top: 3rem;
-    border-top: 1px solid var(--kx-line);
-    padding-top: 1.5rem;
+  .kx-hero__cta {
+    background: #fff;
+    border-color: #fff;
+    color: var(--kx-petrol);
+  }
+  .kx-hero__cta:hover {
+    background: var(--kx-red);
+    border-color: var(--kx-red);
+    color: #fff;
+  }
+
+  .kx-block {
+    padding-block: 3rem;
+  }
+  .kx-block h2 {
+    margin-bottom: 1.5rem;
   }
 
   .kx-univers {
     list-style: none;
-    margin: 2rem 0 0;
+    margin: 0;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 1rem;
   }
   .kx-univers a {
@@ -112,12 +174,12 @@ const roadmap = [
     width: 100%;
     height: 100%;
     object-fit: cover;
-    opacity: 0.72;
+    opacity: 0.75;
     transition: transform 0.4s ease, opacity 0.2s ease;
   }
   .kx-univers a:hover img {
     transform: scale(1.05);
-    opacity: 0.6;
+    opacity: 0.62;
   }
   .kx-univers span {
     position: absolute;
@@ -125,18 +187,41 @@ const roadmap = [
     bottom: 0.9rem;
     color: #fff;
     font-family: var(--kx-font-display);
-    font-size: 1.25rem;
+    font-size: 1.35rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
   }
 
+  .kx-bespoke {
+    background: var(--kx-raise);
+    border-block: 1px solid var(--kx-line);
+  }
+  .kx-bespoke__inner {
+    padding-block: 3rem;
+    max-width: var(--kx-measure);
+  }
+  .kx-bespoke__inner h2 {
+    margin-bottom: 0.75rem;
+  }
+  .kx-bespoke__inner p {
+    color: var(--kx-body);
+    font-size: var(--kx-text-sm);
+    margin-bottom: 1.25rem;
+  }
+
   .kx-grid {
-    margin-top: 1.5rem;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 1.75rem 1.25rem;
   }
 
+  .kx-home {
+    padding-block: 3rem 4rem;
+  }
+  .kx-home__lead {
+    color: var(--kx-muted);
+    font-size: var(--kx-text-lg);
+  }
   .kx-roadmap {
     list-style: none;
     margin: 2rem 0 0;

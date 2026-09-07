@@ -1,24 +1,33 @@
 // @ts-check
 import { defineConfig } from "astro/config";
+import { loadEnv } from "vite";
+import sitemap from "@astrojs/sitemap";
+
+const env = loadEnv(process.env.NODE_ENV || "production", process.cwd(), "");
+const site = env.PUBLIC_SITE_URL || process.env.PUBLIC_SITE_URL || "https://www.kinkyx-shop.com";
 
 // Front statique multilingue. FR à la racine, /en/ et /de/ préfixés.
 export default defineConfig({
-  site: "https://www.kinkyx-shop.com",
+  site,
   output: "static",
   trailingSlash: "always",
-  build: {
-    format: "directory",
-  },
+  build: { format: "directory" },
   i18n: {
     defaultLocale: "fr",
     locales: ["fr", "en", "de"],
-    routing: {
-      prefixDefaultLocale: false,
-      redirectToDefaultLocale: false,
-    },
+    routing: { prefixDefaultLocale: false, redirectToDefaultLocale: false },
   },
+  integrations: [
+    sitemap({
+      i18n: {
+        defaultLocale: "fr",
+        locales: { fr: "fr-FR", en: "en-GB", de: "de-DE" },
+      },
+      filter: (page) =>
+        !/\/(panier|cart|warenkorb|mon-compte|my-account|mein-konto|recherche|search|suche)\/?$/.test(page),
+    }),
+  ],
   image: {
-    // Domaines autorisés pour l'optimisation d'images distantes (backend WooCommerce).
-    domains: ["www.kinkyx-shop.com", "dev.kinkyx-shop.com", "8d927e44.delivery.rocketcdn.me"],
+    domains: ["www.kinkyx-shop.com", "dev.kinkyx-shop.com", "back.kinkyx-shop.com", "8d927e44.delivery.rocketcdn.me"],
   },
 });

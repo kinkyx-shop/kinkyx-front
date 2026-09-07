@@ -1,0 +1,120 @@
+---
+import Base from "@/layouts/Base.astro";
+import { useTranslations, localizedPath } from "@/i18n/utils";
+import { locales, type Locale } from "@/i18n/ui";
+import { getPage, pagePath } from "@/lib/pages";
+
+interface Props {
+  locale: Locale;
+  pageKey: string;
+}
+const { locale, pageKey } = Astro.props;
+const t = useTranslations(locale);
+
+const page = getPage(pageKey);
+if (!page) throw new Error(`Page introuvable : ${pageKey}`);
+
+const name = page.name[locale] || page.name.fr;
+const html = page.html[locale] || page.html.fr;
+
+// description : 1re phrase du contenu
+const plain = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+const description = plain.slice(0, 155);
+
+const alternates = Object.fromEntries(
+  locales.map((l) => [l, pagePath(page, l)]),
+) as Record<Locale, string>;
+---
+
+<Base title={name} description={description} alternates={alternates}>
+  <article class="kx-container kx-page">
+    <nav class="kx-crumbs" aria-label="Fil d'ariane">
+      <a href={localizedPath("/", locale)}>{t("nav.shop")}</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">{name}</span>
+    </nav>
+    <h1>{name}</h1>
+    <div class="kx-prose" set:html={html} />
+  </article>
+</Base>
+
+<style>
+  .kx-page {
+    padding-block: 1.75rem 4rem;
+  }
+  .kx-crumbs {
+    font-size: var(--kx-text-xs);
+    color: var(--kx-muted);
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+  .kx-crumbs a {
+    color: var(--kx-muted);
+    text-decoration: none;
+  }
+  .kx-crumbs a:hover {
+    color: var(--kx-red);
+  }
+  .kx-crumbs [aria-current] {
+    color: var(--kx-ink);
+  }
+  .kx-page h1 {
+    margin-bottom: 1.5rem;
+  }
+  .kx-prose {
+    max-width: var(--kx-measure);
+    color: var(--kx-body);
+    line-height: 1.75;
+    font-size: var(--kx-text-sm);
+  }
+  .kx-prose :global(h2) {
+    font-size: var(--kx-text-xl);
+    margin: 2.25rem 0 0.75rem;
+  }
+  .kx-prose :global(h3) {
+    font-size: var(--kx-text-lg);
+    margin: 1.75rem 0 0.5rem;
+  }
+  .kx-prose :global(p) {
+    margin: 0 0 1em;
+  }
+  .kx-prose :global(ul),
+  .kx-prose :global(ol) {
+    margin: 0 0 1em;
+    padding-left: 1.4em;
+  }
+  .kx-prose :global(li) {
+    margin: 0.3em 0;
+  }
+  .kx-prose :global(a) {
+    color: var(--kx-red-dark);
+    text-underline-offset: 2px;
+  }
+  .kx-prose :global(img) {
+    border-radius: var(--kx-radius);
+    margin: 1.5em 0;
+  }
+  .kx-prose :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5em 0;
+    font-size: var(--kx-text-sm);
+  }
+  .kx-prose :global(th),
+  .kx-prose :global(td) {
+    border: 1px solid var(--kx-line);
+    padding: 0.55rem 0.7rem;
+    text-align: left;
+  }
+  .kx-prose :global(th) {
+    background: var(--kx-raise);
+  }
+  .kx-prose :global(blockquote) {
+    margin: 1.5em 0;
+    padding-left: 1em;
+    border-left: 3px solid var(--kx-line-strong);
+    color: var(--kx-muted);
+  }
+</style>

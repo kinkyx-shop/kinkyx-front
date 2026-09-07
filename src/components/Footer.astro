@@ -1,7 +1,8 @@
 ---
-import { useTranslations, localizedPath } from "@/i18n/utils";
+import { useTranslations } from "@/i18n/utils";
 import { SITE } from "@/consts";
 import type { Locale } from "@/i18n/ui";
+import { footerLinks } from "@/lib/nav";
 
 interface Props {
   locale: Locale;
@@ -10,12 +11,7 @@ const { locale } = Astro.props;
 const t = useTranslations(locale);
 const year = new Date().getFullYear();
 
-const serviceLinks = [
-  { label: t("footer.delivery"), href: localizedPath("/livraison-retour/", locale) },
-  { label: t("footer.privacy"), href: localizedPath("/confidentialite/", locale) },
-  { label: t("footer.termsUse"), href: localizedPath("/cgu/", locale) },
-  { label: t("footer.terms"), href: localizedPath("/cgv/", locale) },
-];
+const serviceLinks = footerLinks(locale);
 ---
 
 <footer class="kx-footer">

@@ -1,33 +1,18 @@
 ---
 import LangSwitcher from "@/components/LangSwitcher.astro";
-import { useTranslations, localizedPath, routePath } from "@/i18n/utils";
+import { useTranslations, routePath } from "@/i18n/utils";
 import type { Locale } from "@/i18n/ui";
-import { topCategories, childCategories, categoryPath, isStub } from "@/lib/catalog";
+import { isStub } from "@/lib/catalog";
+import { mainNav } from "@/lib/nav";
 
 interface Props {
   locale: Locale;
 }
 const { locale } = Astro.props;
 const t = useTranslations(locale);
-const home = localizedPath("/", locale);
+const home = locale === "fr" ? "/" : `/${locale}/`;
 
-// Menu principal : catégories racines du catalogue + leurs enfants.
-// Repli minimal si le catalogue n'est pas encore construit.
-const roots = topCategories();
-const nav = roots.length
-  ? roots.map((c) => ({
-      label: c.name[locale] || c.name.fr,
-      href: categoryPath(c, locale),
-      children: childCategories(c.key).map((cc) => ({
-        label: cc.name[locale] || cc.name.fr,
-        href: categoryPath(cc, locale),
-      })),
-    }))
-  : [
-      { label: t("nav.latex"), href: localizedPath("/latex/", locale), children: [] },
-      { label: t("nav.shoes"), href: localizedPath("/chaussures/", locale), children: [] },
-      { label: t("nav.bespoke"), href: localizedPath("/latex-sur-mesure/", locale), children: [] },
-    ];
+const nav = mainNav(locale);
 ---
 
 <header class="kx-header">

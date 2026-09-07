@@ -34,6 +34,9 @@ if (alternates) {
   ) as Record<Locale, string>;
 }
 
+const forceNoindex =
+  import.meta.env.PUBLIC_NOINDEX === "1" || import.meta.env.PUBLIC_NOINDEX === "true";
+
 const canonical = new URL(altPaths[locale], SITE.url).href;
 const hreflangs = locales.map((l) => ({
   hreflang: htmlLang[l],
@@ -51,7 +54,7 @@ const fullTitle = title === SITE.name ? title : `${title} — ${SITE.name}`;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     {description && <meta name="description" content={description} />}
-    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    {(noindex || forceNoindex) && <meta name="robots" content="noindex, nofollow" />}
 
     <link rel="canonical" href={canonical} />
     {hreflangs.map((h) => <link rel="alternate" hreflang={h.hreflang} href={h.href} />)}

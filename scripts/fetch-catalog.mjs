@@ -11,6 +11,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { wc, wcAll, ping } from "../src/lib/woo.mjs";
 import { normalize } from "./normalize.mjs";
+import { fetchPages } from "./fetch-pages.mjs";
 
 const DATA = new URL("../data/", import.meta.url);
 const RAW = new URL("../data/raw/", import.meta.url);
@@ -32,6 +33,7 @@ async function emptyCatalog(reason) {
     products: [],
     attributes: {},
   });
+  await writeFile(new URL("pages.json", DATA), JSON.stringify({}));
   console.warn(`\n⚠ Catalogue vide (${reason}). Le build continue.\n`);
 }
 
@@ -107,6 +109,9 @@ async function main() {
     catalog.generatedAt = new Date().toISOString();
     catalog.mode = "full";
     await save(DATA, "catalog", catalog);
+
+    console.log("→ Pages de contenu…");
+    await fetchPages().catch((e) => console.warn("  pages KO :", e.message));
 
     console.log(
       `\n✓ ${catalog.products.length} produits · ${catalog.categories.length} catégories · ` +

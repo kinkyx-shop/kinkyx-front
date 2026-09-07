@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+Disallow: /panier/
+Disallow: /cart/
+Disallow: /warenkorb/
+Disallow: /mon-compte/
+Disallow: /my-account/
+Disallow: /mein-konto/
+Disallow: /recherche/
+Disallow: /search/
+Disallow: /suche/
+Disallow: /store-api/
+
+Sitemap: https://www.kinkyx-shop.com/sitemap-index.xml
