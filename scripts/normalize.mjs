@@ -16,8 +16,13 @@
 
 const LOCALES = ["fr", "en", "de"];
 
+// translittération allemande AVANT le retrait des diacritiques,
+// sinon « Große Größe » → « gro-e-gro-e »
+const DE_MAP = { ä: "ae", ö: "oe", ü: "ue", ß: "ss", Ä: "ae", Ö: "oe", Ü: "ue" };
+
 export function slugify(input) {
   return String(input || "")
+    .replace(/[äöüßÄÖÜ]/g, (c) => DE_MAP[c] || c)
     .normalize("NFD")
     .replace(/\p{Diacritic}/gu, "") // enlève les accents décomposés
     .replace(/["'’]/g, "")

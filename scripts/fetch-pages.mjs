@@ -14,7 +14,10 @@ const API = (process.env.WOO_API_URL || "https://dev.kinkyx-shop.com/wp-json").r
 const BASIC = process.env.SITE_BASIC_AUTH || "";
 const OUT = new URL("../data/", import.meta.url);
 
-// slug FR → { clé interne }.  Les traductions sont résolues via l'API Polylang.
+// slug FR → { clé interne }.  Les traductions sont résolues via l'API Polylang
+// (mu-plugins kinkyx-rest-lang + kinkyx-rest-pages sur le back).
+// NB : cgv / cgu sont rendues par un template Elementor (Theme Builder), leur
+// `content.rendered` est vide via l'API → exclues ici, liens footer → back.
 const PAGES = [
   "latex-sur-mesure",
   "guide-des-tailles",
@@ -22,8 +25,6 @@ const PAGES = [
   "livraison-retour",
   "revendeur",
   "shooting",
-  "cgv",
-  "cgu",
 ];
 
 const KEEP = new Set([
