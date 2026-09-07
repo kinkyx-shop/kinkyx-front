@@ -105,7 +105,7 @@ const cellData = (p: Product) => {
   <div class="kx-cf__body">
     {
       hasControls && (
-        <aside class="kx-cf__facets" data-cf-facets hidden>
+        <aside class="kx-cf__facets" data-cf-facets>
           <form data-cf-form>
             {brands.length > 1 && (
               <fieldset class="kx-cf__group">
@@ -166,13 +166,7 @@ const cellData = (p: Product) => {
     }
 
     <div class="kx-grid" data-cf-grid>
-      {
-        products.map((p) => (
-          <div class="kx-grid__cell" {...cellData(p)}>
-            <ProductCard product={p} locale={locale} />
-          </div>
-        ))
-      }
+      {products.map((p) => <ProductCard product={p} locale={locale} attrs={cellData(p)} />)}
       <p class="kx-cf__empty" data-cf-empty hidden>
         {L.empty} <button type="button" class="kx-cf__reset" data-cf-reset>{L.reset}</button>
       </p>
@@ -190,7 +184,7 @@ const cellData = (p: Product) => {
     const emptyEl = root.querySelector<HTMLElement>("[data-cf-empty]");
     const facetsEl = root.querySelector<HTMLElement>("[data-cf-facets]");
     const toggle = root.querySelector<HTMLButtonElement>("[data-cf-toggle]");
-    const cells = [...grid.querySelectorAll<HTMLElement>(".kx-grid__cell")];
+    const cells = [...grid.querySelectorAll<HTMLElement>(".kx-card")];
     const countTpl = countEl.dataset.countTpl || "{n}";
 
     type Cell = {
@@ -323,9 +317,8 @@ const cellData = (p: Product) => {
       }),
     );
     toggle?.addEventListener("click", () => {
-      const open = facetsEl?.hidden;
-      if (facetsEl) facetsEl.hidden = !open;
-      toggle.setAttribute("aria-expanded", String(!!open));
+      const open = facetsEl?.classList.toggle("is-open") ?? false;
+      toggle.setAttribute("aria-expanded", String(open));
     });
 
     loadFromUrl();
@@ -381,7 +374,11 @@ const cellData = (p: Product) => {
     display: block;
   }
   .kx-cf__facets {
+    display: none;
     margin-bottom: 1.5rem;
+  }
+  .kx-cf__facets.is-open {
+    display: block;
   }
   .kx-cf__group {
     border: 0;
@@ -448,9 +445,6 @@ const cellData = (p: Product) => {
     font-size: var(--kx-text-sm);
     padding: 2rem 0;
   }
-  .kx-grid__cell[hidden] {
-    display: none;
-  }
 
   @media (min-width: 60rem) {
     .kx-cf__toggle {
@@ -462,13 +456,14 @@ const cellData = (p: Product) => {
       gap: 2.5rem;
       align-items: start;
     }
-    .kx-cf__facets {
+    .kx-cf__facets,
+    .kx-cf__facets.is-open {
+      display: block;
       margin-bottom: 0;
       position: sticky;
       top: calc(var(--kx-header-h) + 1rem);
-    }
-    .kx-cf__facets[hidden] {
-      display: block;
+      max-height: calc(100vh - var(--kx-header-h) - 2rem);
+      overflow: auto;
     }
   }
 </style>

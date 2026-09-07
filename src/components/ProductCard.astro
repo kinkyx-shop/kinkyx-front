@@ -6,8 +6,10 @@ import { type Product, productPath, priceLabel, formatPrice } from "@/lib/catalo
 interface Props {
   product: Product;
   locale: Locale;
+  /** attributs data-* posés sur la carte (utilisés pour le filtrage catégorie) */
+  attrs?: Record<string, string | number>;
 }
-const { product, locale } = Astro.props;
+const { product, locale, attrs = {} } = Astro.props;
 const t = useTranslations(locale);
 
 const href = productPath(product, locale);
@@ -19,7 +21,7 @@ const hasRange =
   product.price.max != null && product.price.min != null && product.price.max > product.price.min;
 ---
 
-<article class="kx-card">
+<article class="kx-card" {...attrs}>
   <a class="kx-card__link" href={href}>
     <div class="kx-card__media">
       {
