@@ -68,7 +68,8 @@ function handleRebuildHook(req, res) {
     return res.end(JSON.stringify({ error: "clé invalide" }));
   }
   scheduleRebuild();
-  res.writeHead(202, { "content-type": "application/json" });
+  // 200 (pas 202) : la validation du webhook WooCommerce n'accepte que 200/201.
+  res.writeHead(200, { "content-type": "application/json" });
   res.end(JSON.stringify({ ok: true, queued: true, running: rebuilding }));
 }
 
