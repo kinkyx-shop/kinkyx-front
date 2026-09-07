@@ -2,6 +2,12 @@
 import { getLocale, stripLocale, localizedPath } from "@/i18n/utils";
 import { locales, localeNames, type Locale } from "@/i18n/ui";
 
+interface Props {
+  /** URLs équivalentes par langue (slugs traduits) ; sinon simple échange de préfixe */
+  alternates?: Partial<Record<Locale, string>>;
+}
+const { alternates } = Astro.props;
+
 const current = getLocale(Astro.url);
 const base = stripLocale(Astro.url.pathname);
 
@@ -9,7 +15,7 @@ const items = locales.map((l: Locale) => ({
   locale: l,
   label: localeNames[l],
   short: l.toUpperCase(),
-  href: localizedPath(base, l),
+  href: alternates?.[l] ?? localizedPath(base, l),
   active: l === current,
 }));
 ---

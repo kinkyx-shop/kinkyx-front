@@ -79,7 +79,7 @@ const fullTitle = title === SITE.name ? title : `${title} — ${SITE.name}`;
   </head>
   <body>
     <a class="kx-skip" href="#main">Aller au contenu</a>
-    <Header locale={locale} />
+    <Header locale={locale} alternates={altPaths} />
     <main id="main">
       <slot />
     </main>

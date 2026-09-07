@@ -7,8 +7,10 @@ import { mainNav } from "@/lib/nav";
 
 interface Props {
   locale: Locale;
+  /** URLs équivalentes par langue de la page courante (slugs traduits) */
+  alternates?: Partial<Record<Locale, string>>;
 }
-const { locale } = Astro.props;
+const { locale, alternates } = Astro.props;
 const t = useTranslations(locale);
 const home = locale === "fr" ? "/" : `/${locale}/`;
 
@@ -46,7 +48,7 @@ const nav = mainNav(locale);
     </nav>
 
     <div class="kx-header__actions">
-      <LangSwitcher />
+      <LangSwitcher alternates={alternates} />
       <a class="kx-header__icon" href={routePath("search", locale)} aria-label={t("nav.search")}>⌕</a>
       <a class="kx-header__icon" href={routePath("account", locale)} aria-label={t("nav.account")}>◔</a>
       <a class="kx-header__icon kx-cart-link" href={routePath("cart", locale)} aria-label={t("nav.cart")}>
