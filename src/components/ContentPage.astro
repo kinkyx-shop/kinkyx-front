@@ -18,7 +18,22 @@ const page = getPage(pageKey);
 if (!page) throw new Error(`Page introuvable : ${pageKey}`);
 
 const name = page.name[locale] || page.name.fr;
-const html = page.html[locale] || page.html.fr;
+let html = page.html[locale] || page.html.fr;
+
+// Page sur-mesure : on sort la 1re image du contenu pour la placer à côté du
+// formulaire (2 colonnes en desktop).
+const isBespoke = pageKey === "latex-sur-mesure";
+let bespokeImg: string | null = null;
+if (isBespoke) {
+  const m = html.match(/<img\b[^>]*>/i);
+  if (m) {
+    bespokeImg = (m[0].match(/\bsrc="([^"]+)"/) || [])[1] || null;
+    html = html
+      .replace(m[0], "")
+      .replace(/<figure[^>]*>\s*<\/figure>/gi, "")
+      .replace(/<p>\s*<\/p>/gi, "");
+  }
+}
 
 // description : 1re phrase du contenu
 const plain = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
@@ -44,13 +59,60 @@ const crumbs = breadcrumbList([
     </nav>
     <h1>{name}</h1>
     <div class="kx-prose" set:html={html} />
-    {pageKey === "latex-sur-mesure" && <ContactForm locale={locale} formKey="latex-sur-mesure" />}
+    {
+      isBespoke && (
+        <div class="kx-bespoke-split">
+          {bespokeImg && (
+            <img
+              class="kx-bespoke-split__img"
+              src={bespokeImg}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              width="800"
+              height="1000"
+            />
+          )}
+          <ContactForm locale={locale} formKey="latex-sur-mesure" />
+        </div>
+      )
+    }
   </article>
 </Base>
 
 <style>
   .kx-page {
     padding-block: 1.75rem 4rem;
+  }
+
+  /* sur-mesure : image + formulaire côte à côte en desktop */
+  .kx-bespoke-split {
+    margin-top: 2.5rem;
+  }
+  .kx-bespoke-split__img {
+    width: 100%;
+    height: auto;
+    border-radius: var(--kx-radius);
+    object-fit: cover;
+    margin-bottom: 1.5rem;
+  }
+  .kx-bespoke-split :global(.kx-form) {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+  }
+  @media (min-width: 52rem) {
+    .kx-bespoke-split {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: 3rem;
+      align-items: start;
+    }
+    .kx-bespoke-split__img {
+      margin-bottom: 0;
+      position: sticky;
+      top: calc(var(--kx-header-h) + 1rem);
+    }
   }
   .kx-crumbs {
     font-size: var(--kx-text-xs);
