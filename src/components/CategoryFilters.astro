@@ -47,6 +47,7 @@ const L = {
   price: locale === "de" ? "Preis (€)" : locale === "en" ? "Price (€)" : "Prix (€)",
   from: locale === "de" ? "von" : locale === "en" ? "from" : "de",
   to: locale === "de" ? "bis" : locale === "en" ? "to" : "à",
+  more: locale === "de" ? "Mehr anzeigen ({n})" : locale === "en" ? "Show more ({n})" : "Voir plus ({n})",
   instock: locale === "de" ? "Nur auf Lager" : locale === "en" ? "In stock only" : "En stock",
   sale: locale === "de" ? "Im Angebot" : locale === "en" ? "On sale" : "En promo",
   empty:
@@ -172,6 +173,8 @@ const cellData = (p: Product) => {
       </p>
     </div>
   </div>
+
+  <button type="button" class="kx-cf__more" data-cf-more data-more-tpl={L.more} hidden></button>
 </div>
 
 <script>
@@ -184,8 +187,12 @@ const cellData = (p: Product) => {
     const emptyEl = root.querySelector<HTMLElement>("[data-cf-empty]");
     const facetsEl = root.querySelector<HTMLElement>("[data-cf-facets]");
     const toggle = root.querySelector<HTMLButtonElement>("[data-cf-toggle]");
+    const moreBtn = root.querySelector<HTMLButtonElement>("[data-cf-more]");
     const cells = [...grid.querySelectorAll<HTMLElement>(".kx-card")];
     const countTpl = countEl.dataset.countTpl || "{n}";
+    const moreTpl = moreBtn?.dataset.moreTpl || "+{n}";
+    const PAGE = 24;
+    let limit = PAGE;
 
     type Cell = {
       el: HTMLElement;
@@ -267,10 +274,18 @@ const cellData = (p: Product) => {
         if (key === "name") return a.name.localeCompare(b.name);
         return a.order - b.order; // featured
       });
-      for (const c of shown) grid.appendChild(c.el);
+      shown.forEach((c, i) => {
+        c.el.hidden = i >= limit;
+        grid.appendChild(c.el);
+      });
 
       countEl.textContent = countTpl.replace("{n}", String(visible));
       if (emptyEl) emptyEl.hidden = visible > 0;
+      if (moreBtn) {
+        const rest = Math.max(0, visible - limit);
+        moreBtn.hidden = rest === 0;
+        moreBtn.textContent = moreTpl.replace("{n}", String(rest));
+      }
 
       if (pushUrl) {
         const q = new URLSearchParams();
@@ -302,6 +317,7 @@ const cellData = (p: Product) => {
     let deb: number | undefined;
     form?.addEventListener("input", (e) => {
       const el = e.target as HTMLInputElement;
+      limit = PAGE;
       if (el.type === "number") {
         clearTimeout(deb);
         deb = window.setTimeout(() => apply(), 300);
@@ -309,13 +325,21 @@ const cellData = (p: Product) => {
         apply();
       }
     });
-    sortSel.addEventListener("change", () => apply());
+    sortSel.addEventListener("change", () => {
+      limit = PAGE;
+      apply();
+    });
     root.querySelectorAll<HTMLButtonElement>("[data-cf-reset]").forEach((b) =>
       b.addEventListener("click", () => {
         form?.reset();
+        limit = PAGE;
         apply();
       }),
     );
+    moreBtn?.addEventListener("click", () => {
+      limit += PAGE;
+      apply(false);
+    });
     toggle?.addEventListener("click", () => {
       const open = facetsEl?.classList.toggle("is-open") ?? false;
       toggle.setAttribute("aria-expanded", String(open));
@@ -444,6 +468,25 @@ const cellData = (p: Product) => {
     color: var(--kx-muted);
     font-size: var(--kx-text-sm);
     padding: 2rem 0;
+  }
+  .kx-cf__more {
+    display: block;
+    margin: 2.5rem auto 0;
+    padding: 0.85em 2em;
+    font: inherit;
+    font-size: var(--kx-text-sm);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--kx-petrol);
+    background: var(--kx-paper);
+    border: 1px solid var(--kx-petrol);
+    border-radius: var(--kx-radius);
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .kx-cf__more:hover {
+    background: var(--kx-petrol);
+    color: #fff;
   }
 
   @media (min-width: 60rem) {
