@@ -1,0 +1,144 @@
+---
+import { useTranslations } from "@/i18n/utils";
+import { getPage, pagePath } from "@/lib/pages";
+import { localizedPath } from "@/i18n/utils";
+import type { Locale } from "@/i18n/ui";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+// WordPress utilise les CGU comme politique de confidentialité
+const cgu = getPage("cgu");
+const moreHref = cgu ? pagePath(cgu, locale) : localizedPath("/cgu/", locale);
+---
+
+<div class="kx-consent" data-consent-banner role="dialog" aria-label="Cookies" aria-live="polite">
+  <div class="kx-consent__in">
+    <p class="kx-consent__text">
+      {t("consent.text")}
+      <a href={moreHref}>{t("consent.more")}</a>
+    </p>
+
+    <div class="kx-consent__prefs" hidden data-consent-prefs>
+      <label><input type="checkbox" data-consent-analytics checked /> {t("consent.analytics")}</label>
+      <label><input type="checkbox" data-consent-ads checked /> {t("consent.ads")}</label>
+    </div>
+
+    <div class="kx-consent__actions">
+      <button type="button" class="kx-consent__link" data-consent-toggle>{t("consent.customize")}</button>
+      <button type="button" class="kx-btn kx-btn--ghost" data-consent-reject>{t("consent.reject")}</button>
+      <button type="button" class="kx-btn" data-consent-accept>{t("consent.accept")}</button>
+      <button type="button" class="kx-btn" data-consent-save hidden>{t("consent.save")}</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const banner = document.querySelector<HTMLElement>("[data-consent-banner]");
+  if (banner) {
+    const prefs = banner.querySelector<HTMLElement>("[data-consent-prefs]")!;
+    const aOn = banner.querySelector<HTMLInputElement>("[data-consent-analytics]")!;
+    const dOn = banner.querySelector<HTMLInputElement>("[data-consent-ads]")!;
+    const btnToggle = banner.querySelector<HTMLButtonElement>("[data-consent-toggle]")!;
+    const btnAccept = banner.querySelector<HTMLButtonElement>("[data-consent-accept]")!;
+    const btnSave = banner.querySelector<HTMLButtonElement>("[data-consent-save]")!;
+
+    btnToggle.addEventListener("click", () => {
+      const show = prefs.hidden;
+      prefs.hidden = !show;
+      btnAccept.hidden = show;
+      btnSave.hidden = !show;
+    });
+    btnAccept.addEventListener("click", () => window.kxConsent?.set(true, true));
+    banner
+      .querySelector("[data-consent-reject]")!
+      .addEventListener("click", () => window.kxConsent?.set(false, false));
+    btnSave.addEventListener("click", () => window.kxConsent?.set(aOn.checked, dOn.checked));
+  }
+</script>
+
+<style is:global>
+  .kx-consent {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 80;
+    background: var(--kx-petrol);
+    color: #fff;
+    display: none;
+  }
+  html.kx-consent-open .kx-consent {
+    display: block;
+  }
+  .kx-consent__in {
+    max-width: var(--kx-container);
+    margin-inline: auto;
+    padding: 1rem clamp(1rem, 4vw, 2rem);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.5rem;
+  }
+  .kx-consent__text {
+    flex: 1;
+    min-width: 15rem;
+    margin: 0;
+    font-size: var(--kx-text-sm);
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.9);
+  }
+  .kx-consent__text a {
+    color: #fff;
+    text-underline-offset: 2px;
+  }
+  .kx-consent__prefs {
+    display: flex;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+    width: 100%;
+    font-size: var(--kx-text-sm);
+  }
+  .kx-consent__prefs label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    cursor: pointer;
+  }
+  .kx-consent__prefs input {
+    accent-color: #fff;
+  }
+  .kx-consent__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+  .kx-consent__actions .kx-btn {
+    background: #fff;
+    border-color: #fff;
+    color: var(--kx-petrol);
+    padding: 0.6em 1.1em;
+    font-size: var(--kx-text-xs);
+  }
+  .kx-consent__actions .kx-btn--ghost {
+    background: transparent;
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+  .kx-consent__actions .kx-btn:hover {
+    background: var(--kx-red);
+    border-color: var(--kx-red);
+    color: #fff;
+  }
+  .kx-consent__link {
+    background: none;
+    border: 0;
+    color: rgba(255, 255, 255, 0.8);
+    font: inherit;
+    font-size: var(--kx-text-xs);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+</style>

@@ -19,3 +19,15 @@ export const STORE_API = `${SITE.checkoutUrl}/wp-json/wc/store/v1`;
  * adresses, téléchargements). Pas de réécriture headless — lien sortant.
  */
 export const ACCOUNT_URL = `${SITE.checkoutUrl.replace(/\/+$/, "")}/mon-compte/`;
+
+/**
+ * Suivi. Chargé UNIQUEMENT après consentement (voir scripts/consent.ts).
+ * Un ID vide = script non chargé.
+ *  - analytics : mesure d'audience (GA4)
+ *  - ads       : publicité (Pixel Meta, Pixel TikTok)
+ */
+export const ANALYTICS = {
+  ga4: "G-L38H6BSKBP",
+  metaPixel: "1730714131633448",
+  tiktokPixel: "",
+} as const;
