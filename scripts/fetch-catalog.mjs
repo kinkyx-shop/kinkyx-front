@@ -17,48 +17,35 @@ const DATA = new URL("../data/", import.meta.url);
 const RAW = new URL("../data/raw/", import.meta.url);
 const STRICT = process.argv.includes("--strict");
 
-const GOOGLE_PLACE_ID = process.env.GOOGLE_PLACE_ID || "ChIJ6eLxuilzjEcRmoupBEWBIgI";
-const GOOGLE_PLACES_KEY = process.env.GOOGLE_PLACES_KEY || "";
-
-/** Avis Google via l'API Places (5 max). Vide si pas de clé. */
+/**
+ * Avis Google : servis par WordPress (mu-plugin kinkyx-google-reviews) qui
+ * interroge l'API Places avec la clé du plugin GRW — la clé est restreinte à
+ * l'IP du serveur WP, donc l'appel direct depuis le Builder échoue.
+ */
 async function fetchGoogleReviews() {
-  if (!GOOGLE_PLACES_KEY) {
-    console.log("  (pas de GOOGLE_PLACES_KEY — avis Google ignorés)");
-    return { rating: null, total: 0, url: null, reviews: [] };
-  }
-  const u = new URL("https://maps.googleapis.com/maps/api/place/details/json");
-  u.searchParams.set("place_id", GOOGLE_PLACE_ID);
-  u.searchParams.set("fields", "name,rating,user_ratings_total,url,reviews");
-  u.searchParams.set("reviews_no_translations", "true");
-  u.searchParams.set("reviews_sort", "newest");
-  u.searchParams.set("language", "fr");
-  u.searchParams.set("key", GOOGLE_PLACES_KEY);
+  const base = (process.env.WOO_API_URL || "").replace(/\/+$/, "");
+  const empty = { rating: null, total: 0, url: null, reviews: [] };
+  if (!base) return empty;
+  const headers = { Accept: "application/json" };
+  const basic = process.env.SITE_BASIC_AUTH || "";
+  if (basic) headers.Authorization = "Basic " + Buffer.from(basic).toString("base64");
   try {
-    const r = await fetch(u);
-    const j = await r.json();
-    if (j.status !== "OK") {
-      console.warn(`  avis Google : ${j.status} ${j.error_message || ""}`);
-      return { rating: null, total: 0, url: null, reviews: [] };
+    const r = await fetch(`${base}/kinkyx/v1/google-reviews`, { headers });
+    if (!r.ok) {
+      console.warn(`  avis Google : HTTP ${r.status}`);
+      return empty;
     }
-    const res = j.result || {};
+    const j = await r.json();
+    if (j.error) console.warn(`  avis Google : ${j.error}`);
     return {
-      rating: res.rating ?? null,
-      total: res.user_ratings_total ?? 0,
-      url: res.url || null,
-      reviews: (res.reviews || [])
-        .filter((rv) => rv.text && rv.rating)
-        .map((rv) => ({
-          author: rv.author_name || "Client",
-          photo: rv.profile_photo_url || null,
-          rating: rv.rating,
-          when: rv.relative_time_description || "",
-          time: rv.time || 0,
-          text: String(rv.text).trim(),
-        })),
+      rating: j.rating ?? null,
+      total: j.total ?? 0,
+      url: j.url ?? null,
+      reviews: Array.isArray(j.reviews) ? j.reviews : [],
     };
   } catch (e) {
     console.warn(`  avis Google indisponibles : ${e.message}`);
-    return { rating: null, total: 0, url: null, reviews: [] };
+    return empty;
   }
 }
 
