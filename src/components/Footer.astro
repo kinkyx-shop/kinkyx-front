@@ -48,11 +48,24 @@ const serviceLinks = footerLinks(locale);
 
     <div class="kx-footer__col">
       <h2>{t("footer.newsletter")}</h2>
-      <form class="kx-newsletter" action={`${SITE.checkoutUrl}/?newsletter=1`} method="post">
-        <label class="kx-visually-hidden" for="kx-nl">Email</label>
+      <form
+        class="kx-newsletter"
+        data-newsletter
+        data-lang={locale}
+        action={`${SITE.checkoutUrl}/?newsletter=1`}
+        method="post"
+      >
+        <label class="kx-visually-hidden" for="kx-nl">{t("footer.newsletter")}</label>
         <input id="kx-nl" type="email" name="email" required placeholder="email@exemple.com" />
+        <input type="text" name="hp" tabindex="-1" autocomplete="off" class="kx-newsletter__hp" aria-hidden="true" />
         <button class="kx-btn" type="submit">{t("footer.newsletterCta")}</button>
       </form>
+      <p class="kx-newsletter__msg" data-newsletter-msg role="status" hidden></p>
+      <script
+        type="application/json"
+        data-newsletter-strings
+        set:html={JSON.stringify({ ok: t("footer.newsletterOk"), error: t("footer.newsletterError"), cta: t("footer.newsletterCta") })}
+      />
     </div>
   </div>
 
@@ -60,6 +73,46 @@ const serviceLinks = footerLinks(locale);
     <span>© {year} {SITE.name}. {t("footer.rights")}.</span>
   </div>
 </footer>
+
+<script>
+  const nl = document.querySelector<HTMLFormElement>("[data-newsletter]");
+  const nlMsg = document.querySelector<HTMLElement>("[data-newsletter-msg]");
+  const nlStr = document.querySelector<HTMLElement>("[data-newsletter-strings]");
+  if (nl && nlMsg && nlStr) {
+    const S = JSON.parse(nlStr.textContent || "{}") as Record<string, string>;
+    const nlBtn = nl.querySelector<HTMLButtonElement>("button")!;
+    nl.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!nl.reportValidity()) return;
+      const fd = new FormData(nl);
+      nlBtn.disabled = true;
+      nlMsg.hidden = true;
+      nlMsg.className = "kx-newsletter__msg";
+      try {
+        const res = await fetch("/site-api/kinkyx/v1/newsletter", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            email: String(fd.get("email") || ""),
+            hp: String(fd.get("hp") || ""),
+            lang: nl.dataset.lang || "",
+          }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || !data.ok) throw new Error();
+        nl.reset();
+        nlMsg.textContent = S.ok;
+        nlMsg.classList.add("is-ok");
+      } catch {
+        nlMsg.textContent = S.error;
+        nlMsg.classList.add("is-error");
+      } finally {
+        nlMsg.hidden = false;
+        nlBtn.disabled = false;
+      }
+    });
+  }
+</script>
 
 <style>
   .kx-footer {
@@ -130,6 +183,20 @@ const serviceLinks = footerLinks(locale);
     border-radius: var(--kx-radius);
     font: inherit;
     font-size: var(--kx-text-sm);
+  }
+  .kx-newsletter__hp {
+    display: none;
+  }
+  .kx-newsletter__msg {
+    margin: 0.6rem 0 0;
+    font-size: var(--kx-text-xs);
+    color: var(--kx-body);
+  }
+  .kx-newsletter__msg.is-ok {
+    color: var(--kx-instock);
+  }
+  .kx-newsletter__msg.is-error {
+    color: var(--kx-red);
   }
   .kx-footer__legal {
     padding-block: 1.25rem;
