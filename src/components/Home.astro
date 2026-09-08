@@ -7,6 +7,7 @@ import type { Locale } from "@/i18n/ui";
 import { catalog, isStub, topCategories, categoryPath } from "@/lib/catalog";
 import { getPage, pagePath } from "@/lib/pages";
 import { organization, website } from "@/lib/jsonld";
+import { universRoots } from "@/lib/nav";
 
 interface Props {
   locale: Locale;
@@ -14,7 +15,7 @@ interface Props {
 const { locale } = Astro.props;
 const t = useTranslations(locale);
 
-const roots = topCategories().filter((c) => ["latex", "chaussures"].includes(c.slug.fr));
+const roots = universRoots();
 const univers = roots.length ? roots : topCategories().slice(0, 3);
 const newest = catalog.products.slice(0, 10);
 const bespoke = getPage("latex-sur-mesure");
@@ -87,7 +88,7 @@ const roadmap = [
           <p class="kx-eyebrow kx-hero__eyebrow">Kinkyx</p>
           <h1>{t("meta.tagline")}</h1>
           <p class="kx-hero__sub">{t("home.sub")}</p>
-          <a class="kx-btn kx-hero__cta" href={topCategories()[0] ? categoryPath(topCategories()[0], locale) : "/"}>
+          <a class="kx-btn kx-hero__cta" href={univers[0] ? categoryPath(univers[0], locale) : "/"}>
             {t("home.cta")}
           </a>
         </div>

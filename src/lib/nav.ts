@@ -18,9 +18,16 @@ function pageLink(key: string, locale: Locale, fallbackSlug: string, label: stri
   return { label: p ? p.name[locale] || p.name.fr : label, href: p ? pagePath(p, locale) : localizedPath(`/${fallbackSlug}/`, locale) };
 }
 
+// ordre imposé des univers (le menu_order WooCommerce ne fait pas foi)
+const UNIVERS_ORDER = ["latex", "chaussures"];
+export const universRoots = () =>
+  topCategories()
+    .filter((c) => UNIVERS_ORDER.includes(c.slug.fr))
+    .sort((a, b) => UNIVERS_ORDER.indexOf(a.slug.fr) - UNIVERS_ORDER.indexOf(b.slug.fr));
+
 /** Menu principal : 2 univers catalogue + Sur-mesure + Guide des tailles. */
 export function mainNav(locale: Locale): NavItem[] {
-  const roots = topCategories().filter((c) => ["latex", "chaussures"].includes(c.slug.fr));
+  const roots = universRoots();
 
   const catNodes: NavItem[] = roots.map((c) => ({
     label: c.name[locale] || c.name.fr,
