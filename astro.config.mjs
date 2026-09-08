@@ -24,7 +24,7 @@ export default defineConfig({
         locales: { fr: "fr-FR", en: "en-GB", de: "de-DE" },
       },
       filter: (page) =>
-        !/\/(panier|cart|warenkorb|mon-compte|my-account|mein-konto|recherche|search|suche)\/?$/.test(page),
+        !/\/(panier|cart|warenkorb|mon-compte|my-account|mein-konto|recherche|search|suche|favoris|favorites|merkliste)\/?$/.test(page),
     }),
   ],
   image: {

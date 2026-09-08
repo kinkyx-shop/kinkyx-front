@@ -23,6 +23,17 @@ const hasRange =
 ---
 
 <article class="kx-card" {...attrs}>
+  <button
+    type="button"
+    class="kx-card__wish"
+    data-wish-toggle
+    data-key={product.key}
+    aria-pressed="false"
+    aria-label={t("wishlist.add")}
+    title={t("wishlist.add")}
+  >
+    ♥
+  </button>
   <a class="kx-card__link" href={href}>
     <div class="kx-card__media">
       {

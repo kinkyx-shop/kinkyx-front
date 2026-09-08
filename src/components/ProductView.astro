@@ -190,9 +190,22 @@ const ld = [
               </label>
             ))
           }
-          <button type="submit" class="kx-btn kx-buy__submit" data-add disabled={isVariable}>
-            {isVariable ? variationData.labels.select : variationData.labels.add}
-          </button>
+          <div class="kx-buy__actions">
+            <button type="submit" class="kx-btn kx-buy__submit" data-add disabled={isVariable}>
+              {isVariable ? variationData.labels.select : variationData.labels.add}
+            </button>
+            <button
+              type="button"
+              class="kx-buy__wish"
+              data-wish-toggle
+              data-key={product.key}
+              aria-pressed="false"
+              aria-label={t("wishlist.add")}
+              title={t("wishlist.add")}
+            >
+              ♥
+            </button>
+          </div>
           <p class="kx-buy__msg" data-msg role="status" hidden></p>
         </form>
 
@@ -470,12 +483,35 @@ const ld = [
     border-radius: var(--kx-radius);
     background: var(--kx-paper);
   }
-  .kx-buy__submit {
+  .kx-buy__actions {
+    display: flex;
+    gap: 0.6rem;
+    align-items: stretch;
     margin-top: 0.3rem;
+  }
+  .kx-buy__submit {
+    flex: 1;
   }
   .kx-buy__submit[disabled] {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+  .kx-buy__wish {
+    flex: none;
+    width: 3rem;
+    border: 1px solid var(--kx-line-strong);
+    border-radius: var(--kx-radius);
+    background: var(--kx-paper);
+    color: var(--kx-line-strong);
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: color 0.12s ease, border-color 0.12s ease;
+  }
+  .kx-buy__wish:hover,
+  .kx-buy__wish.is-on {
+    color: var(--kx-red);
+    border-color: var(--kx-red);
   }
   .kx-buy__msg {
     margin: 0;

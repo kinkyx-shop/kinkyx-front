@@ -9,6 +9,10 @@ Disallow: /mein-konto/
 Disallow: /recherche/
 Disallow: /search/
 Disallow: /suche/
+Disallow: /favoris/
+Disallow: /favorites/
+Disallow: /merkliste/
 Disallow: /store-api/
+Disallow: /site-api/
 
 Sitemap: https://www.kinkyx-shop.com/sitemap-index.xml

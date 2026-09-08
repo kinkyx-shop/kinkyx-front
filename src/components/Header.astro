@@ -65,6 +65,10 @@ const nav = mainNav(locale);
         <a class="kx-header__icon" href={routePath("search", locale)} aria-label={t("nav.search")}>⌕</a>
         <a class="kx-header__icon" href={ACCOUNT_URL} rel="nofollow" aria-label={t("nav.account")}>◔</a>
       </div>
+      <a class="kx-header__icon kx-cart-link" href={routePath("wishlist", locale)} aria-label={t("wishlist.title")}>
+        <span aria-hidden="true">♡</span>
+        <span class="kx-cart-count" data-wishlist-count hidden>0</span>
+      </a>
       <a class="kx-header__icon kx-cart-link" href={routePath("cart", locale)} aria-label={t("nav.cart")}>
         <span aria-hidden="true">🛒</span>
         <span class="kx-cart-count" data-cart-count hidden>0</span>

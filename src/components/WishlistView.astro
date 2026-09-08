@@ -1,0 +1,117 @@
+---
+import Base from "@/layouts/Base.astro";
+import { useTranslations, localizedPath, routePath } from "@/i18n/utils";
+import { locales, type Locale } from "@/i18n/ui";
+import { catalog, isStub, productPath, formatPrice } from "@/lib/catalog";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+// index minimal de tous les produits, indexé par clé
+const index: Record<number, { t: string; u: string; img?: string; srcset?: string; p: string; sale: boolean }> = {};
+if (!isStub) {
+  for (const p of catalog.products) {
+    const range =
+      p.price.max != null && p.price.min != null && p.price.max > p.price.min;
+    index[p.key] = {
+      t: p.name[locale] || p.name.fr,
+      u: productPath(p, locale),
+      img: p.images[0]?.src,
+      srcset: p.images[0]?.srcset ?? undefined,
+      p: (range ? t("product.from") + " " : "") + formatPrice(p.price.min),
+      sale: p.price.onSale,
+    };
+  }
+}
+
+const alternates = Object.fromEntries(
+  locales.map((l) => [l, routePath("wishlist", l)]),
+) as Record<Locale, string>;
+
+const strings = { add: t("wishlist.add") };
+---
+
+<Base title={t("wishlist.title")} description={t("wishlist.title")} alternates={alternates} noindex>
+  <section class="kx-container kx-wish">
+    <h1>{t("wishlist.title")}</h1>
+
+    <div class="kx-grid" data-wish-grid hidden></div>
+
+    <p class="kx-wish__empty" data-wish-empty>
+      {t("wishlist.empty")}
+      <a href={localizedPath("/", locale)}>{t("wishlist.browse")}</a>
+    </p>
+  </section>
+
+  <script type="application/json" data-wish-index set:html={JSON.stringify(index).replace(/</g, "\\u003c")} />
+  <script type="application/json" data-wish-strings set:html={JSON.stringify(strings)} />
+
+  <script>
+    import { list } from "@/scripts/wishlist";
+
+    const grid = document.querySelector<HTMLElement>("[data-wish-grid]")!;
+    const empty = document.querySelector<HTMLElement>("[data-wish-empty]")!;
+    const idxEl = document.querySelector<HTMLElement>("[data-wish-index]")!;
+    const strEl = document.querySelector<HTMLElement>("[data-wish-strings]")!;
+    const INDEX = JSON.parse(idxEl.textContent || "{}") as Record<
+      string,
+      { t: string; u: string; img?: string; srcset?: string; p: string; sale: boolean }
+    >;
+    const S = JSON.parse(strEl.textContent || "{}") as Record<string, string>;
+    const esc = (s: string) =>
+      s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
+
+    function render() {
+      const keys = list().filter((k) => INDEX[k]);
+      if (!keys.length) {
+        grid.hidden = true;
+        grid.innerHTML = "";
+        empty.hidden = false;
+        return;
+      }
+      empty.hidden = true;
+      grid.hidden = false;
+      grid.innerHTML = keys
+        .map((k) => {
+          const d = INDEX[k];
+          const media = d.img
+            ? `<img src="${esc(d.img)}"${d.srcset ? ` srcset="${esc(d.srcset)}"` : ""} sizes="(min-width:60rem) 22vw,(min-width:34rem) 31vw,47vw" alt="" loading="lazy" decoding="async" width="600" height="600">`
+            : `<span class="kx-card__noimg" aria-hidden="true">Kinkyx</span>`;
+          return `<article class="kx-card">
+  <button type="button" class="kx-card__wish is-on" data-wish-toggle data-key="${k}" aria-pressed="true" aria-label="${esc(S.add)}" title="${esc(S.add)}">&#9829;</button>
+  <a class="kx-card__link" href="${esc(d.u)}">
+    <div class="kx-card__media">${media}${d.sale ? '<span class="kx-card__badge">-</span>' : ""}</div>
+    <div class="kx-card__body">
+      <h3 class="kx-card__title">${esc(d.t)}</h3>
+      <p class="kx-card__price">${esc(d.p)}</p>
+    </div>
+  </a>
+</article>`;
+        })
+        .join("");
+    }
+
+    render();
+    document.addEventListener("kx:wishlist", render);
+  </script>
+</Base>
+
+<style>
+  .kx-wish {
+    padding-block: 1.75rem 4rem;
+  }
+  .kx-wish h1 {
+    margin-bottom: 1.5rem;
+  }
+  .kx-wish__empty {
+    color: var(--kx-muted);
+    font-size: var(--kx-text-sm);
+  }
+  .kx-wish__empty a {
+    color: var(--kx-red);
+    margin-left: 0.4rem;
+  }
+</style>
