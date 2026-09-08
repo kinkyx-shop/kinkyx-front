@@ -18,7 +18,7 @@ function pageLink(key: string, locale: Locale, fallbackSlug: string, label: stri
   return { label: p ? p.name[locale] || p.name.fr : label, href: p ? pagePath(p, locale) : localizedPath(`/${fallbackSlug}/`, locale) };
 }
 
-/** Menu principal : 2 univers catalogue + Sur-mesure + Infos. */
+/** Menu principal : 2 univers catalogue + Sur-mesure + Guide des tailles. */
 export function mainNav(locale: Locale): NavItem[] {
   const roots = topCategories().filter((c) => ["latex", "chaussures"].includes(c.slug.fr));
 
@@ -32,18 +32,13 @@ export function mainNav(locale: Locale): NavItem[] {
   }));
 
   const bespoke = pageLink("latex-sur-mesure", locale, "latex-sur-mesure", T(locale, "nav.bespoke"));
+  const sizes = pageLink("guide-des-tailles", locale, "guide-des-tailles", "Guide des tailles");
 
-  const infoChildren = [
-    pageLink("atelier", locale, "atelier", "Atelier"),
-    pageLink("guide-des-tailles", locale, "guide-des-tailles", "Guide des tailles"),
-    pageLink("revendeur", locale, "revendeur", "Revendeurs"),
-    pageLink("shooting", locale, "shooting", "Shooting"),
-  ];
-
+  // atelier / revendeur / shooting : pages non rédigées côté boutique -> hors nav
   return [
     ...catNodes,
     { label: bespoke.label, href: bespoke.href, children: [] },
-    { label: T(locale, "nav.info"), href: infoChildren[0].href, children: infoChildren },
+    { label: sizes.label, href: sizes.href, children: [] },
   ];
 }
 

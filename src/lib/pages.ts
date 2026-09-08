@@ -22,10 +22,7 @@ const src = rawPages as Record<string, RawPage>;
 const FR_SLUG: Record<string, string> = {
   "latex-sur-mesure": "latex-sur-mesure",
   "guide-des-tailles": "guide-des-tailles",
-  atelier: "atelier",
   "livraison-retour": "livraison-retour",
-  revendeur: "revendeur",
-  shooting: "shooting",
   cgv: "cgv",
   cgu: "cgu",
 };

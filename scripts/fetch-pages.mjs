@@ -21,12 +21,11 @@ const OUT = new URL("../data/", import.meta.url);
 const PAGES = [
   "latex-sur-mesure",
   "guide-des-tailles",
-  "atelier",
   "livraison-retour",
-  "revendeur",
-  "shooting",
   "cgv",
   "cgu",
+  // atelier / revendeur / shooting : contenu de démo / vide côté WP — réintégrer
+  // quand la boutique aura rédigé du vrai contenu.
 ];
 
 const KEEP = new Set([
@@ -154,6 +153,9 @@ function tidy(html, key) {
   stripPlaceholders(root, key);
   let out = root.toString();
   out = out
+    // coquilles connues des pages boutique
+    .replace(/\bdefault de fabrication\b/gi, "défaut de fabrication")
+    .replace(/\bles pris varient\b/gi, "les prix varient")
     // traînée de lorem collée à du vrai texte (« … New Zealand Lorem ipsum … »)
     .replace(/\s*Lorem ipsum[^<]*/gi, "")
     // éléments devenus vides
