@@ -31,12 +31,27 @@ const alternates = Object.fromEntries(
   locales.map((l) => [l, routePath("wishlist", l)]),
 ) as Record<Locale, string>;
 
-const strings = { add: t("wishlist.add") };
+const strings = {
+  add: t("wishlist.add"),
+  share: t("wishlist.share"),
+  copied: t("wishlist.copied"),
+  shared: t("wishlist.shared"),
+  addAll: t("wishlist.addAll"),
+  mine: t("wishlist.mine"),
+  title: t("wishlist.title"),
+};
 ---
 
 <Base title={t("wishlist.title")} description={t("wishlist.title")} alternates={alternates} noindex>
   <section class="kx-container kx-wish">
-    <h1>{t("wishlist.title")}</h1>
+    <div class="kx-wish__head">
+      <h1 data-wish-heading>{t("wishlist.title")}</h1>
+      <div class="kx-wish__toolbar">
+        <button type="button" class="kx-btn kx-btn--ghost" data-wish-share hidden>{t("wishlist.share")}</button>
+        <button type="button" class="kx-btn" data-wish-addall hidden>{t("wishlist.addAll")}</button>
+        <a class="kx-btn kx-btn--ghost" data-wish-mine href={routePath("wishlist", locale)} hidden>{t("wishlist.mine")}</a>
+      </div>
+    </div>
 
     <div class="kx-grid" data-wish-grid hidden></div>
 
@@ -46,42 +61,55 @@ const strings = { add: t("wishlist.add") };
     </p>
   </section>
 
+  <p class="kx-wish__toast" data-wish-toast hidden></p>
+
   <script type="application/json" data-wish-index set:html={JSON.stringify(index).replace(/</g, "\\u003c")} />
   <script type="application/json" data-wish-strings set:html={JSON.stringify(strings)} />
 
   <script>
-    import { list } from "@/scripts/wishlist";
+    import { list, toggle, has } from "@/scripts/wishlist";
 
     const grid = document.querySelector<HTMLElement>("[data-wish-grid]")!;
     const empty = document.querySelector<HTMLElement>("[data-wish-empty]")!;
-    const idxEl = document.querySelector<HTMLElement>("[data-wish-index]")!;
-    const strEl = document.querySelector<HTMLElement>("[data-wish-strings]")!;
-    const INDEX = JSON.parse(idxEl.textContent || "{}") as Record<
+    const heading = document.querySelector<HTMLElement>("[data-wish-heading]")!;
+    const bShare = document.querySelector<HTMLButtonElement>("[data-wish-share]")!;
+    const bAddAll = document.querySelector<HTMLButtonElement>("[data-wish-addall]")!;
+    const aMine = document.querySelector<HTMLAnchorElement>("[data-wish-mine]")!;
+    const toast = document.querySelector<HTMLElement>("[data-wish-toast]")!;
+    const INDEX = JSON.parse(document.querySelector("[data-wish-index]")!.textContent || "{}") as Record<
       string,
       { t: string; u: string; img?: string; srcset?: string; p: string; sale: boolean }
     >;
-    const S = JSON.parse(strEl.textContent || "{}") as Record<string, string>;
+    const S = JSON.parse(document.querySelector("[data-wish-strings]")!.textContent || "{}") as Record<string, string>;
+
     const esc = (s: string) =>
       s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
 
-    function render() {
-      const keys = list().filter((k) => INDEX[k]);
-      if (!keys.length) {
-        grid.hidden = true;
-        grid.innerHTML = "";
-        empty.hidden = false;
-        return;
-      }
-      empty.hidden = true;
-      grid.hidden = false;
-      grid.innerHTML = keys
-        .map((k) => {
-          const d = INDEX[k];
-          const media = d.img
-            ? `<img src="${esc(d.img)}"${d.srcset ? ` srcset="${esc(d.srcset)}"` : ""} sizes="(min-width:60rem) 22vw,(min-width:34rem) 31vw,47vw" alt="" loading="lazy" decoding="async" width="600" height="600">`
-            : `<span class="kx-card__noimg" aria-hidden="true">Kinkyx</span>`;
-          return `<article class="kx-card">
-  <button type="button" class="kx-card__wish is-on" data-wish-toggle data-key="${k}" aria-pressed="true" aria-label="${esc(S.add)}" title="${esc(S.add)}">&#9829;</button>
+    // liste partagée : ?l=27741.8261.13405
+    const sharedRaw = new URLSearchParams(location.search).get("l");
+    const shared = sharedRaw
+      ? sharedRaw
+          .split(/[.\-,]/)
+          .map((n) => parseInt(n, 10))
+          .filter((n) => Number.isFinite(n) && INDEX[n])
+      : null;
+
+    let toastT: number | undefined;
+    function flash(msg: string) {
+      toast.textContent = msg;
+      toast.hidden = false;
+      clearTimeout(toastT);
+      toastT = window.setTimeout(() => (toast.hidden = true), 2500);
+    }
+
+    function card(k: number) {
+      const d = INDEX[k];
+      const on = has(k);
+      const media = d.img
+        ? `<img src="${esc(d.img)}"${d.srcset ? ` srcset="${esc(d.srcset)}"` : ""} sizes="(min-width:60rem) 22vw,(min-width:34rem) 31vw,47vw" alt="" loading="lazy" decoding="async" width="600" height="600">`
+        : `<span class="kx-card__noimg" aria-hidden="true">Kinkyx</span>`;
+      return `<article class="kx-card">
+  <button type="button" class="kx-card__wish${on ? " is-on" : ""}" data-wish-toggle data-key="${k}" aria-pressed="${on}" aria-label="${esc(S.add)}" title="${esc(S.add)}">&#9829;</button>
   <a class="kx-card__link" href="${esc(d.u)}">
     <div class="kx-card__media">${media}${d.sale ? '<span class="kx-card__badge">-</span>' : ""}</div>
     <div class="kx-card__body">
@@ -90,9 +118,49 @@ const strings = { add: t("wishlist.add") };
     </div>
   </a>
 </article>`;
-        })
-        .join("");
     }
+
+    function render() {
+      const isShared = Array.isArray(shared);
+      const keys = (isShared ? shared! : list().filter((k) => INDEX[k])) as number[];
+
+      heading.textContent = isShared ? S.shared || S.title : S.title;
+      aMine.hidden = !isShared;
+      bShare.hidden = isShared || keys.length === 0;
+      bAddAll.hidden = !isShared || keys.every((k) => has(k));
+
+      if (!keys.length) {
+        grid.hidden = true;
+        grid.innerHTML = "";
+        empty.hidden = isShared; // en mode partagé vide, on ne montre pas le message "vos favoris"
+        return;
+      }
+      empty.hidden = true;
+      grid.hidden = false;
+      grid.innerHTML = keys.map(card).join("");
+    }
+
+    bShare.addEventListener("click", async () => {
+      const keys = list().filter((k) => INDEX[k]);
+      if (!keys.length) return;
+      const url = `${location.origin}${location.pathname}?l=${keys.join(".")}`;
+      try {
+        if (navigator.share) {
+          await navigator.share({ title: S.title, url });
+        } else {
+          await navigator.clipboard.writeText(url);
+          flash(S.copied);
+        }
+      } catch {
+        /* annulé */
+      }
+    });
+
+    bAddAll.addEventListener("click", () => {
+      (shared || []).forEach((k) => {
+        if (!has(k)) toggle(k);
+      });
+    });
 
     render();
     document.addEventListener("kx:wishlist", render);
@@ -103,8 +171,25 @@ const strings = { add: t("wishlist.add") };
   .kx-wish {
     padding-block: 1.75rem 4rem;
   }
-  .kx-wish h1 {
+  .kx-wish__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
     margin-bottom: 1.5rem;
+  }
+  .kx-wish__head h1 {
+    margin: 0;
+  }
+  .kx-wish__toolbar {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+  .kx-wish__toolbar .kx-btn {
+    font-size: var(--kx-text-xs);
+    padding: 0.6em 1.1em;
   }
   .kx-wish__empty {
     color: var(--kx-muted);
@@ -113,5 +198,19 @@ const strings = { add: t("wishlist.add") };
   .kx-wish__empty a {
     color: var(--kx-red);
     margin-left: 0.4rem;
+  }
+  .kx-wish__toast {
+    position: fixed;
+    left: 50%;
+    bottom: 1.5rem;
+    transform: translateX(-50%);
+    z-index: 90;
+    margin: 0;
+    background: var(--kx-petrol);
+    color: #fff;
+    padding: 0.7em 1.2em;
+    border-radius: var(--kx-radius);
+    font-size: var(--kx-text-sm);
+    box-shadow: var(--kx-shadow);
   }
 </style>
