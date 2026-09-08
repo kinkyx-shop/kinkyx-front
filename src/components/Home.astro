@@ -21,6 +21,10 @@ const newest = catalog.products.slice(0, 10);
 const bespoke = getPage("latex-sur-mesure");
 const google = catalog.google;
 const gReviews = (google?.reviews ?? []).slice(0, 4);
+
+const latexRoot = roots.find((c) => c.slug.fr === "latex") ?? roots[0];
+const bespokeBg = latexRoot?.image ?? null;
+const bespokeBgSrcset = latexRoot?.imageSrcset ?? null;
 const heroPic =
   univers[0]?.image
     ? { src: univers[0].image, srcset: univers[0].imageSrcset ?? null }
@@ -154,6 +158,18 @@ const roadmap = [
 
       {bespoke && (
         <section class="kx-bespoke">
+          {bespokeBg && (
+            <img
+              class="kx-bespoke__bg"
+              src={bespokeBg}
+              srcset={bespokeBgSrcset ?? undefined}
+              sizes="100vw"
+              alt=""
+              loading="lazy"
+              width="1600"
+              height="900"
+            />
+          )}
           <div class="kx-container kx-bespoke__inner">
             <div>
               <h2>{t("home.bespokeTitle")}</h2>
@@ -342,20 +358,42 @@ const roadmap = [
   }
 
   .kx-bespoke {
-    background: var(--kx-raise);
-    border-block: 1px solid var(--kx-line);
+    position: relative;
+    overflow: hidden;
+    margin-block: 3.5rem;
+    background: var(--kx-petrol);
+    color: #fff;
+  }
+  .kx-bespoke__bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.32;
   }
   .kx-bespoke__inner {
-    padding-block: 3rem;
+    position: relative;
+    padding-block: 4rem;
     max-width: var(--kx-measure);
   }
   .kx-bespoke__inner h2 {
+    color: #fff;
     margin-bottom: 0.75rem;
   }
   .kx-bespoke__inner p {
-    color: var(--kx-body);
+    color: rgba(255, 255, 255, 0.88);
     font-size: var(--kx-text-sm);
     margin-bottom: 1.25rem;
+  }
+  .kx-bespoke__inner .kx-btn--ghost {
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.55);
+  }
+  .kx-bespoke__inner .kx-btn--ghost:hover {
+    background: #fff;
+    border-color: #fff;
+    color: var(--kx-petrol);
   }
 
   .kx-home {
