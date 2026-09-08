@@ -45,7 +45,14 @@ export interface Product {
   brand: string | null;
   onSale: boolean;
   stock: string;
-  images: { src: string; alt: string | null; id: number }[];
+  images: {
+    src: string;
+    srcset?: string | null;
+    w?: number | null;
+    h?: number | null;
+    alt: string | null;
+    id: number;
+  }[];
   frPermalink: string | null;
   name: L10n;
   slug: L10n;

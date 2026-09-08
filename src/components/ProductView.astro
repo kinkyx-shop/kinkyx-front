@@ -117,7 +117,16 @@ const ld = [
         <div class="kx-gallery__main">
           {
             product.images[0] ? (
-              <img id="kx-gallery-main" src={product.images[0].src} alt={product.images[0].alt || name} width="900" height="900" />
+              <img
+                id="kx-gallery-main"
+                src={product.images[0].src}
+                srcset={product.images[0].srcset ?? undefined}
+                sizes="(min-width: 52rem) 46vw, 92vw"
+                alt={product.images[0].alt || name}
+                fetchpriority="high"
+                width="900"
+                height="900"
+              />
             ) : (
               <span class="kx-gallery__noimg">Kinkyx</span>
             )
@@ -128,8 +137,14 @@ const ld = [
             <ul class="kx-gallery__thumbs">
               {product.images.map((im, i) => (
                 <li>
-                  <button type="button" data-src={im.src} aria-label={`Image ${i + 1}`} class:list={{ "is-active": i === 0 }}>
-                    <img src={im.src} alt="" loading="lazy" width="120" height="120" />
+                  <button
+                    type="button"
+                    data-src={im.src}
+                    data-srcset={im.srcset ?? ""}
+                    aria-label={`Image ${i + 1}`}
+                    class:list={{ "is-active": i === 0 }}
+                  >
+                    <img src={im.src} srcset={im.srcset ?? undefined} sizes="72px" alt="" loading="lazy" width="120" height="120" />
                   </button>
                 </li>
               ))}
@@ -220,7 +235,11 @@ const ld = [
     document.querySelectorAll<HTMLButtonElement>(".kx-gallery__thumbs button").forEach((b) => {
       b.addEventListener("click", () => {
         const src = b.dataset.src;
-        if (src && mainImg) mainImg.src = src;
+        if (src && mainImg) {
+          mainImg.src = src;
+          if (b.dataset.srcset) mainImg.srcset = b.dataset.srcset;
+          else mainImg.removeAttribute("srcset");
+        }
         document.querySelectorAll(".kx-gallery__thumbs button").forEach((x) => x.classList.remove("is-active"));
         b.classList.add("is-active");
       });

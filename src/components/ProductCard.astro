@@ -14,8 +14,9 @@ const t = useTranslations(locale);
 
 const href = productPath(product, locale);
 const name = product.name[locale] || product.name.fr;
-const img = product.images[0]?.src ?? null;
-const alt = product.images[0]?.alt || name;
+const pic = product.images[0] ?? null;
+const img = pic?.src ?? null;
+const alt = pic?.alt || name;
 
 const hasRange =
   product.price.max != null && product.price.min != null && product.price.max > product.price.min;
@@ -26,7 +27,16 @@ const hasRange =
     <div class="kx-card__media">
       {
         img ? (
-          <img src={img} alt={alt} loading="lazy" decoding="async" width="600" height="600" />
+          <img
+            src={img}
+            srcset={pic?.srcset ?? undefined}
+            sizes="(min-width: 60rem) 22vw, (min-width: 34rem) 31vw, 47vw"
+            alt={alt}
+            loading="lazy"
+            decoding="async"
+            width="600"
+            height="600"
+          />
         ) : (
           <span class="kx-card__noimg" aria-hidden="true">Kinkyx</span>
         )
