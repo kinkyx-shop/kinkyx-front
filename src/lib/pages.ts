@@ -26,6 +26,8 @@ const FR_SLUG: Record<string, string> = {
   "livraison-retour": "livraison-retour",
   revendeur: "revendeur",
   shooting: "shooting",
+  cgv: "cgv",
+  cgu: "cgu",
 };
 
 export const pages: Page[] = Object.values(src).map((p) => {

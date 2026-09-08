@@ -16,8 +16,8 @@ const OUT = new URL("../data/", import.meta.url);
 
 // slug FR → { clé interne }.  Les traductions sont résolues via l'API Polylang
 // (mu-plugins kinkyx-rest-lang + kinkyx-rest-pages sur le back).
-// NB : cgv / cgu sont rendues par un template Elementor (Theme Builder), leur
-// `content.rendered` est vide via l'API → exclues ici, liens footer → back.
+// NB : cgv / cgu ont leur contenu dans un template Elementor séparé — le
+// mu-plugin kinkyx-rest-pages le réinjecte dans content.rendered.
 const PAGES = [
   "latex-sur-mesure",
   "guide-des-tailles",
@@ -25,6 +25,8 @@ const PAGES = [
   "livraison-retour",
   "revendeur",
   "shooting",
+  "cgv",
+  "cgu",
 ];
 
 const KEEP = new Set([

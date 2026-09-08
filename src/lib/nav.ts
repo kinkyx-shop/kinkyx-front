@@ -1,6 +1,6 @@
 import type { Locale } from "@/i18n/ui";
 import { ui } from "@/i18n/ui";
-import { SITE, ACCOUNT_URL } from "@/consts";
+import { ACCOUNT_URL } from "@/consts";
 import { localizedPath } from "@/i18n/utils";
 import { topCategories, childCategories, categoryPath } from "@/lib/catalog";
 import { getPage, pagePath } from "@/lib/pages";
@@ -49,14 +49,10 @@ export function mainNav(locale: Locale): NavItem[] {
 
 /** Liens du pied de page « service client ». */
 export function footerLinks(locale: Locale) {
-  // CGV/CGU : rendues par un template Elementor côté WordPress (pas de contenu
-  // exploitable via l'API) → on pointe vers le back tant qu'elles ne sont pas
-  // réécrites en contenu propre (voir L6).
-  const legal = SITE.checkoutUrl.replace(/\/+$/, "");
   return [
     pageLink("livraison-retour", locale, "livraison-retour", T(locale, "footer.delivery")),
-    { label: T(locale, "footer.terms"), href: `${legal}/cgv/` },
-    { label: T(locale, "footer.termsUse"), href: `${legal}/cgu/` },
+    pageLink("cgv", locale, "cgv", T(locale, "footer.terms")),
+    pageLink("cgu", locale, "cgu", T(locale, "footer.termsUse")),
     { label: T(locale, "nav.account"), href: ACCOUNT_URL },
   ];
 }
