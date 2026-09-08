@@ -33,12 +33,11 @@ const alternates = Object.fromEntries(
 
 const strings = {
   add: t("wishlist.add"),
-  share: t("wishlist.share"),
   copied: t("wishlist.copied"),
   shared: t("wishlist.shared"),
-  addAll: t("wishlist.addAll"),
-  mine: t("wishlist.mine"),
   title: t("wishlist.title"),
+  shareSubject: t("wishlist.shareSubject"),
+  shareText: t("wishlist.shareText"),
 };
 ---
 
@@ -47,7 +46,17 @@ const strings = {
     <div class="kx-wish__head">
       <h1 data-wish-heading>{t("wishlist.title")}</h1>
       <div class="kx-wish__toolbar">
-        <button type="button" class="kx-btn kx-btn--ghost" data-wish-share hidden>{t("wishlist.share")}</button>
+        <div class="kx-share" data-wish-share hidden>
+          <button type="button" class="kx-btn kx-btn--ghost" data-share-btn aria-expanded="false" aria-haspopup="true">
+            {t("wishlist.share")}
+          </button>
+          <div class="kx-share__menu" data-share-menu hidden>
+            <a data-share-wa target="_blank" rel="noopener">{t("wishlist.shareWhatsapp")}</a>
+            <a data-share-mail>{t("wishlist.shareEmail")}</a>
+            <button type="button" data-share-native hidden>{t("wishlist.shareNative")}</button>
+            <button type="button" data-share-copy>{t("wishlist.shareCopy")}</button>
+          </div>
+        </div>
         <button type="button" class="kx-btn" data-wish-addall hidden>{t("wishlist.addAll")}</button>
         <a class="kx-btn kx-btn--ghost" data-wish-mine href={routePath("wishlist", locale)} hidden>{t("wishlist.mine")}</a>
       </div>
@@ -72,7 +81,13 @@ const strings = {
     const grid = document.querySelector<HTMLElement>("[data-wish-grid]")!;
     const empty = document.querySelector<HTMLElement>("[data-wish-empty]")!;
     const heading = document.querySelector<HTMLElement>("[data-wish-heading]")!;
-    const bShare = document.querySelector<HTMLButtonElement>("[data-wish-share]")!;
+    const bShare = document.querySelector<HTMLElement>("[data-wish-share]")!;
+    const shareBtn = document.querySelector<HTMLButtonElement>("[data-share-btn]")!;
+    const shareMenu = document.querySelector<HTMLElement>("[data-share-menu]")!;
+    const shareWa = document.querySelector<HTMLAnchorElement>("[data-share-wa]")!;
+    const shareMail = document.querySelector<HTMLAnchorElement>("[data-share-mail]")!;
+    const shareNative = document.querySelector<HTMLButtonElement>("[data-share-native]")!;
+    const shareCopy = document.querySelector<HTMLButtonElement>("[data-share-copy]")!;
     const bAddAll = document.querySelector<HTMLButtonElement>("[data-wish-addall]")!;
     const aMine = document.querySelector<HTMLAnchorElement>("[data-wish-mine]")!;
     const toast = document.querySelector<HTMLElement>("[data-wish-toast]")!;
@@ -140,20 +155,50 @@ const strings = {
       grid.innerHTML = keys.map(card).join("");
     }
 
-    bShare.addEventListener("click", async () => {
+    function shareUrl() {
       const keys = list().filter((k) => INDEX[k]);
-      if (!keys.length) return;
-      const url = `${location.origin}${location.pathname}?l=${keys.join(".")}`;
+      return keys.length ? `${location.origin}${location.pathname}?l=${keys.join(".")}` : "";
+    }
+    function closeMenu() {
+      shareMenu.hidden = true;
+      shareBtn.setAttribute("aria-expanded", "false");
+    }
+
+    shareBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const url = shareUrl();
+      if (!url) return;
+      const msg = `${S.shareText} ${url}`;
+      shareWa.href = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+      shareMail.href = `mailto:?subject=${encodeURIComponent(S.shareSubject)}&body=${encodeURIComponent(msg)}`;
+      shareNative.hidden = typeof navigator.share !== "function";
+      const open = shareMenu.hidden;
+      shareMenu.hidden = !open;
+      shareBtn.setAttribute("aria-expanded", String(open));
+    });
+    shareNative.addEventListener("click", async () => {
+      closeMenu();
       try {
-        if (navigator.share) {
-          await navigator.share({ title: S.title, url });
-        } else {
-          await navigator.clipboard.writeText(url);
-          flash(S.copied);
-        }
+        await navigator.share({ title: S.title, url: shareUrl() });
       } catch {
         /* annulé */
       }
+    });
+    shareCopy.addEventListener("click", async () => {
+      closeMenu();
+      try {
+        await navigator.clipboard.writeText(shareUrl());
+        flash(S.copied);
+      } catch {
+        /* refusé */
+      }
+    });
+    [shareWa, shareMail].forEach((a) => a.addEventListener("click", closeMenu));
+    document.addEventListener("click", (e) => {
+      if (!shareMenu.hidden && !bShare.contains(e.target as Node)) closeMenu();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeMenu();
     });
 
     bAddAll.addEventListener("click", () => {
@@ -186,10 +231,48 @@ const strings = {
     display: flex;
     gap: 0.6rem;
     flex-wrap: wrap;
+    align-items: flex-start;
   }
   .kx-wish__toolbar .kx-btn {
     font-size: var(--kx-text-xs);
     padding: 0.6em 1.1em;
+  }
+  .kx-share {
+    position: relative;
+  }
+  .kx-share__menu {
+    position: absolute;
+    top: calc(100% + 0.35rem);
+    left: 0;
+    z-index: 20;
+    min-width: 11rem;
+    background: var(--kx-paper);
+    border: 1px solid var(--kx-line);
+    box-shadow: var(--kx-shadow);
+    border-radius: var(--kx-radius);
+    padding: 0.35rem;
+    display: flex;
+    flex-direction: column;
+  }
+  .kx-share__menu a,
+  .kx-share__menu button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: 0;
+    padding: 0.6em 0.7em;
+    font: inherit;
+    font-size: var(--kx-text-sm);
+    color: var(--kx-ink);
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: var(--kx-radius);
+  }
+  .kx-share__menu a:hover,
+  .kx-share__menu button:hover {
+    background: var(--kx-raise);
+    color: var(--kx-red);
   }
   .kx-wish__empty {
     color: var(--kx-muted);
