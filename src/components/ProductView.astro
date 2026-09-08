@@ -69,6 +69,10 @@ const variationData = {
     add: t("product.addToCart"),
     select: t("product.selectOptions"),
     oos: t("product.outOfStock"),
+    notifyOk: t("notify.ok"),
+    notifyError: t("notify.error"),
+    notifySending: t("notify.sending"),
+    notifySubmit: t("notify.submit"),
     added: locale === "fr" ? "Ajouté au panier" : locale === "de" ? "Zum Warenkorb hinzugefügt" : "Added to cart",
   },
 };
@@ -207,6 +211,21 @@ const ld = [
             </button>
           </div>
           <p class="kx-buy__msg" data-msg role="status" hidden></p>
+
+          {
+            (product.stock !== "instock" || isVariable) && (
+              <details class="kx-notify" data-notify>
+                <summary>{t("notify.title")}</summary>
+                <div class="kx-notify__row">
+                  <input type="email" name="notify_email" required placeholder={t("notify.placeholder")} aria-label={t("notify.title")} />
+                  <input type="hidden" data-notify-var value="" />
+                  <input type="text" name="notify_hp" tabindex="-1" autocomplete="off" class="kx-form__hp" aria-hidden="true" />
+                  <button type="button" class="kx-btn kx-btn--ghost" data-notify-submit>{t("notify.submit")}</button>
+                </div>
+                <p class="kx-notify__msg" data-notify-msg role="status" hidden />
+              </details>
+            )
+          }
         </form>
 
         {product.sku && <p class="kx-pdp__sku">{t("product.sku")} <span>{product.sku}</span></p>}
@@ -319,7 +338,61 @@ const ld = [
         btn!.textContent = oos ? data.labels.oos : data.labels.add;
       }
 
-      selects.forEach((s) => s.addEventListener("change", match));
+      const notifyVar = document.querySelector<HTMLInputElement>("[data-notify-var]");
+      function syncNotifyVar() {
+        if (notifyVar) notifyVar.value = data.isVariable && currentId != null ? String(currentId) : "";
+      }
+
+      selects.forEach((s) =>
+        s.addEventListener("change", () => {
+          match();
+          syncNotifyVar();
+        }),
+      );
+
+      // --- prévenez-moi quand dispo ---
+      const nBtn = document.querySelector<HTMLButtonElement>("[data-notify-submit]");
+      const nMsg = document.querySelector<HTMLElement>("[data-notify-msg]");
+      const nInput = document.querySelector<HTMLInputElement>('[name="notify_email"]');
+      const nHp = document.querySelector<HTMLInputElement>('[name="notify_hp"]');
+      nBtn?.addEventListener("click", async () => {
+        if (!nInput || !nInput.reportValidity()) return;
+        nBtn.disabled = true;
+        const label = nBtn.textContent;
+        nBtn.textContent = data.labels.notifySending;
+        if (nMsg) {
+          nMsg.hidden = true;
+          nMsg.className = "kx-notify__msg";
+        }
+        try {
+          const res = await fetch("/site-api/kinkyx/v1/notify", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({
+              product: data.productId,
+              variation: Number(notifyVar?.value) || null,
+              email: nInput.value,
+              hp: nHp?.value || "",
+            }),
+          });
+          const j = await res.json().catch(() => ({}));
+          if (!res.ok || !j.ok) throw new Error();
+          nInput.value = "";
+          if (nMsg) {
+            nMsg.textContent = data.labels.notifyOk;
+            nMsg.classList.add("is-ok");
+          }
+        } catch {
+          if (nMsg) {
+            nMsg.textContent = data.labels.notifyError;
+            nMsg.classList.add("is-error");
+          }
+        } finally {
+          if (nMsg) nMsg.hidden = false;
+          nBtn.disabled = false;
+          nBtn.textContent = label;
+        }
+      });
 
       form?.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -517,6 +590,46 @@ const ld = [
     margin: 0;
     font-size: var(--kx-text-sm);
     color: var(--kx-instock);
+  }
+
+  .kx-notify {
+    margin-top: 0.5rem;
+    font-size: var(--kx-text-sm);
+  }
+  .kx-notify summary {
+    cursor: pointer;
+    color: var(--kx-muted);
+    font-size: var(--kx-text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .kx-notify__row {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+  .kx-notify__row input[type="email"] {
+    flex: 1;
+    min-width: 0;
+    font: inherit;
+    font-size: var(--kx-text-sm);
+    padding: 0.6em 0.7em;
+    border: 1px solid var(--kx-line-strong);
+    border-radius: var(--kx-radius);
+  }
+  .kx-notify__row .kx-btn {
+    flex: none;
+    padding-inline: 1em;
+  }
+  .kx-notify__msg {
+    margin: 0.5rem 0 0;
+    font-size: var(--kx-text-xs);
+  }
+  .kx-notify__msg.is-ok {
+    color: var(--kx-instock);
+  }
+  .kx-notify__msg.is-error {
+    color: var(--kx-red);
   }
 
   .kx-pdp__sku {
