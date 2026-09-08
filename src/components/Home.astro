@@ -1,6 +1,7 @@
 ---
 import ProductCard from "@/components/ProductCard.astro";
 import JsonLd from "@/components/JsonLd.astro";
+import Stars from "@/components/Stars.astro";
 import { useTranslations } from "@/i18n/utils";
 import type { Locale } from "@/i18n/ui";
 import { catalog, isStub, topCategories, categoryPath } from "@/lib/catalog";
@@ -17,6 +18,8 @@ const roots = topCategories().filter((c) => ["latex", "chaussures"].includes(c.s
 const univers = roots.length ? roots : topCategories().slice(0, 3);
 const newest = catalog.products.slice(0, 10);
 const bespoke = getPage("latex-sur-mesure");
+const google = catalog.google;
+const gReviews = (google?.reviews ?? []).slice(0, 4);
 const heroPic =
   univers[0]?.image
     ? { src: univers[0].image, srcset: univers[0].imageSrcset ?? null }
@@ -138,6 +141,40 @@ const roadmap = [
           </div>
         </section>
       )}
+
+      {gReviews.length > 0 && (
+        <section class="kx-gr">
+          <div class="kx-container">
+            <div class="kx-gr__head">
+              <h2>{t("home.googleTitle")}</h2>
+              {google?.rating != null && (
+                <p class="kx-gr__agg">
+                  <Stars value={google.rating} size="1.15rem" />
+                  <strong>{google.rating.toFixed(1).replace(".", ",")}</strong>
+                  <span>· {google.total} {t("home.googleCount")}</span>
+                </p>
+              )}
+            </div>
+            <ul class="kx-gr__list">
+              {gReviews.map((r) => (
+                <li class="kx-gr__item">
+                  <div class="kx-gr__meta">
+                    <Stars value={r.rating} size="0.9rem" />
+                    <span class="kx-gr__author">{r.author}</span>
+                    <span class="kx-gr__when">{r.when}</span>
+                  </div>
+                  <p class="kx-gr__text">{r.text}</p>
+                </li>
+              ))}
+            </ul>
+            {google?.url && (
+              <a class="kx-btn kx-btn--ghost kx-gr__more" href={google.url} target="_blank" rel="noopener">
+                {t("home.googleAll")}
+              </a>
+            )}
+          </div>
+        </section>
+      )}
     </>
   )
 }
@@ -192,6 +229,77 @@ const roadmap = [
   }
   .kx-block h2 {
     margin-bottom: 1.5rem;
+  }
+
+  .kx-gr {
+    background: var(--kx-raise);
+    border-block: 1px solid var(--kx-line);
+    padding-block: 3rem;
+  }
+  .kx-gr__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem 1.5rem;
+    margin-bottom: 1.75rem;
+  }
+  .kx-gr__head h2 {
+    margin: 0;
+  }
+  .kx-gr__agg {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    font-size: var(--kx-text-sm);
+    color: var(--kx-muted);
+  }
+  .kx-gr__agg strong {
+    color: var(--kx-ink);
+    font-size: 1.1rem;
+  }
+  .kx-gr__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  }
+  .kx-gr__item {
+    background: var(--kx-paper);
+    border: 1px solid var(--kx-line);
+    border-radius: var(--kx-radius);
+    padding: 1rem 1.1rem;
+  }
+  .kx-gr__meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.6rem;
+    margin-bottom: 0.5rem;
+  }
+  .kx-gr__author {
+    font-weight: 700;
+    font-size: var(--kx-text-sm);
+  }
+  .kx-gr__when {
+    font-size: var(--kx-text-xs);
+    color: var(--kx-muted);
+    margin-left: auto;
+  }
+  .kx-gr__text {
+    margin: 0;
+    font-size: var(--kx-text-sm);
+    color: var(--kx-body);
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 6;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .kx-gr__more {
+    margin-top: 1.75rem;
   }
 
   .kx-univers {

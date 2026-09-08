@@ -127,6 +127,9 @@ export const ui = {
     "home.bespokeTitle": "Le latex sur-mesure",
     "home.bespokeText": "Chaque pièce est réalisée à vos mensurations dans notre atelier. Coupe, matière, finitions : tout est ajusté.",
     "home.bespokeCta": "En savoir plus",
+    "home.googleTitle": "Ils nous recommandent",
+    "home.googleCount": "avis Google",
+    "home.googleAll": "Voir tous les avis sur Google",
   },
   en: {
     "nav.shop": "Shop",
@@ -226,6 +229,9 @@ export const ui = {
     "home.bespokeTitle": "Bespoke latex",
     "home.bespokeText": "Every piece is made to your measurements in our workshop. Cut, material, finish — all adjusted to you.",
     "home.bespokeCta": "Learn more",
+    "home.googleTitle": "What our customers say",
+    "home.googleCount": "Google reviews",
+    "home.googleAll": "See all reviews on Google",
   },
   de: {
     "nav.shop": "Shop",
@@ -325,6 +331,9 @@ export const ui = {
     "home.bespokeTitle": "Latex nach Maß",
     "home.bespokeText": "Jedes Stück wird in unserer Werkstatt nach Ihren Maßen gefertigt. Schnitt, Material, Verarbeitung — alles auf Sie abgestimmt.",
     "home.bespokeCta": "Mehr erfahren",
+    "home.googleTitle": "Das sagen unsere Kundinnen",
+    "home.googleCount": "Google-Bewertungen",
+    "home.googleAll": "Alle Bewertungen bei Google ansehen",
   },
 } as const;
 

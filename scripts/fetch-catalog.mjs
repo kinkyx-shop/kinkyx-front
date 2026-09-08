@@ -17,6 +17,51 @@ const DATA = new URL("../data/", import.meta.url);
 const RAW = new URL("../data/raw/", import.meta.url);
 const STRICT = process.argv.includes("--strict");
 
+const GOOGLE_PLACE_ID = process.env.GOOGLE_PLACE_ID || "ChIJ6eLxuilzjEcRmoupBEWBIgI";
+const GOOGLE_PLACES_KEY = process.env.GOOGLE_PLACES_KEY || "";
+
+/** Avis Google via l'API Places (5 max). Vide si pas de clé. */
+async function fetchGoogleReviews() {
+  if (!GOOGLE_PLACES_KEY) {
+    console.log("  (pas de GOOGLE_PLACES_KEY — avis Google ignorés)");
+    return { rating: null, total: 0, url: null, reviews: [] };
+  }
+  const u = new URL("https://maps.googleapis.com/maps/api/place/details/json");
+  u.searchParams.set("place_id", GOOGLE_PLACE_ID);
+  u.searchParams.set("fields", "name,rating,user_ratings_total,url,reviews");
+  u.searchParams.set("reviews_no_translations", "true");
+  u.searchParams.set("reviews_sort", "newest");
+  u.searchParams.set("language", "fr");
+  u.searchParams.set("key", GOOGLE_PLACES_KEY);
+  try {
+    const r = await fetch(u);
+    const j = await r.json();
+    if (j.status !== "OK") {
+      console.warn(`  avis Google : ${j.status} ${j.error_message || ""}`);
+      return { rating: null, total: 0, url: null, reviews: [] };
+    }
+    const res = j.result || {};
+    return {
+      rating: res.rating ?? null,
+      total: res.user_ratings_total ?? 0,
+      url: res.url || null,
+      reviews: (res.reviews || [])
+        .filter((rv) => rv.text && rv.rating)
+        .map((rv) => ({
+          author: rv.author_name || "Client",
+          photo: rv.profile_photo_url || null,
+          rating: rv.rating,
+          when: rv.relative_time_description || "",
+          time: rv.time || 0,
+          text: String(rv.text).trim(),
+        })),
+    };
+  } catch (e) {
+    console.warn(`  avis Google indisponibles : ${e.message}`);
+    return { rating: null, total: 0, url: null, reviews: [] };
+  }
+}
+
 async function save(dir, name, data) {
   await writeFile(new URL(`${name}.json`, dir), JSON.stringify(data));
   const n = Array.isArray(data) ? data.length : Object.keys(data).length;
@@ -117,8 +162,14 @@ async function main() {
     await save(RAW, "reviews", reviews);
     console.log(`  raw/reviews.json  (${reviews.length})`);
 
+    console.log("→ Avis Google…");
+    const google = await fetchGoogleReviews();
+    await save(RAW, "google", google);
+    console.log(`  raw/google.json  (${google.reviews.length} avis, note ${google.rating ?? "?"})`);
+
     console.log("→ Normalisation…");
     const catalog = normalize({ categories, products, attributes, attributeTerms, variations, reviews });
+    catalog.google = google;
     catalog.generatedAt = new Date().toISOString();
     catalog.mode = "full";
     await save(DATA, "catalog", catalog);

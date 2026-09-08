@@ -83,6 +83,21 @@ export interface Product {
   variations: Variation[];
 }
 
+export interface GoogleReview {
+  author: string;
+  photo: string | null;
+  rating: number;
+  when: string;
+  time: number;
+  text: string;
+}
+export interface GoogleReviews {
+  rating: number | null;
+  total: number;
+  url: string | null;
+  reviews: GoogleReview[];
+}
+
 interface Catalog {
   generatedAt?: string;
   mode?: string;
@@ -90,6 +105,7 @@ interface Catalog {
   categories: Category[];
   products: Product[];
   attributes: Record<string, { slug: string; label: string; terms: { name: string; slug: string }[] }>;
+  google?: GoogleReviews;
 }
 
 export const catalog = raw as unknown as Catalog;
