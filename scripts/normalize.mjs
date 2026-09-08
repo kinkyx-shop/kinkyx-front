@@ -86,7 +86,22 @@ function uniqueSlug(base, used) {
   return s;
 }
 
-export function normalize({ categories, products, attributes, attributeTerms, variations }) {
+export function normalize({ categories, products, attributes, attributeTerms, variations, reviews = [] }) {
+  /* ---------- Avis groupés par produit ---------- */
+  const reviewsByProduct = new Map();
+  for (const r of reviews) {
+    const pid = r.product_id;
+    if (!pid) continue;
+    if (!reviewsByProduct.has(pid)) reviewsByProduct.set(pid, []);
+    reviewsByProduct.get(pid).push({
+      author: stripHtml(r.reviewer) || "Client",
+      rating: Number(r.rating) || 0,
+      date: r.date_created || null,
+      verified: !!r.verified,
+      html: String(r.review || "").trim(),
+    });
+  }
+
   /* ---------- Catégories ---------- */
   const catGroups = groupByTranslation(categories);
   const catByFrId = new Map();
@@ -195,12 +210,32 @@ export function normalize({ categories, products, attributes, attributeTerms, va
     const priceMin = prices.length ? Math.min(...prices) : null;
     const priceMax = prices.length ? Math.max(...prices) : null;
 
+    // avis : rassemble ceux de toutes les langues du groupe, dédoublonne, trie
+    const rev = [];
+    const seenRev = new Set();
+    for (const lg of LOCALES) {
+      for (const r of reviewsByProduct.get(g[lg]?.id) || []) {
+        const k = r.author + "|" + r.date + "|" + r.html;
+        if (seenRev.has(k)) continue;
+        seenRev.add(k);
+        rev.push(r);
+      }
+    }
+    rev.sort((a, b) => String(b.date).localeCompare(String(a.date)));
+    const ratingVals = rev.map((r) => r.rating).filter((n) => n > 0);
+    const ratingAvg = ratingVals.length
+      ? Math.round((ratingVals.reduce((s, n) => s + n, 0) / ratingVals.length) * 10) / 10
+      : toNum(fr.average_rating);
+
     return {
       key: fr.id,
       type: fr.type,
       sku: fr.sku || "",
       order: fr.menu_order || 0,
       date: fr.date_created || fr.date_modified || null,
+      rating: ratingAvg || null,
+      ratingCount: rev.length || Number(fr.rating_count) || 0,
+      reviews: rev.slice(0, 12),
       brand: (fr.brands && fr.brands[0]?.name) || null,
       onSale: !!fr.on_sale,
       stock: fr.stock_status || "instock",

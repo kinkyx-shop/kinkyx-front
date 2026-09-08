@@ -1,6 +1,8 @@
 ---
 import Base from "@/layouts/Base.astro";
 import ProductCard from "@/components/ProductCard.astro";
+import ProductReviews from "@/components/ProductReviews.astro";
+import Stars from "@/components/Stars.astro";
 import { useTranslations, localizedPath } from "@/i18n/utils";
 import { locales, type Locale } from "@/i18n/ui";
 import { SITE } from "@/consts";
@@ -49,6 +51,9 @@ const alternates = Object.fromEntries(
   locales.map((l) => [l, productPath(product, l)]),
 ) as Record<Locale, string>;
 
+const ratingCount = product.ratingCount ?? 0;
+const ratingAvg = product.rating ?? 0;
+
 // données pour le sélecteur client
 const variationData = {
   productId: product.key,
@@ -78,6 +83,10 @@ const ld = [
     sku: product.sku || undefined,
     brand: product.brand ? { "@type": "Brand", name: product.brand } : undefined,
     description: shortDesc || name,
+    aggregateRating:
+      ratingCount > 0
+        ? { "@type": "AggregateRating", ratingValue: ratingAvg, reviewCount: ratingCount }
+        : undefined,
     offers: {
       "@type": "AggregateOffer",
       priceCurrency: "EUR",
@@ -156,6 +165,14 @@ const ld = [
       <div class="kx-pdp__info">
         {product.brand && <p class="kx-pdp__brand">{product.brand}</p>}
         <h1>{name}</h1>
+        {
+          ratingCount > 0 && (
+            <a class="kx-pdp__rating" href="#avis">
+              <Stars value={ratingAvg} size="1rem" />
+              <span>{t("reviews.count").replace("{n}", String(ratingCount))}</span>
+            </a>
+          )
+        }
         <p class="kx-pdp__price" data-price>{priceMain}</p>
         {shortDesc && <p class="kx-pdp__short">{shortDesc}</p>}
 
@@ -210,6 +227,8 @@ const ld = [
         </div>
       )
     }
+
+    <ProductReviews product={product} locale={locale} />
 
     {
       related.length > 0 && (
@@ -400,6 +419,18 @@ const ld = [
   }
   .kx-pdp__info h1 {
     margin: 0 0 0.6rem;
+  }
+  .kx-pdp__rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0 0 0.9rem;
+    font-size: var(--kx-text-xs);
+    color: var(--kx-muted);
+    text-decoration: none;
+  }
+  .kx-pdp__rating:hover {
+    color: var(--kx-red);
   }
   .kx-pdp__price {
     font-size: var(--kx-text-xl);

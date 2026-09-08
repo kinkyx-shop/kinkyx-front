@@ -104,8 +104,21 @@ async function main() {
     }
     await save(RAW, "variations", variations);
 
+    console.log("→ Avis clients…");
+    let reviews = [];
+    try {
+      reviews = await wcAll("wc/v3/products/reviews", {
+        status: "approved",
+        _fields: "id,product_id,reviewer,review,rating,date_created,verified",
+      });
+    } catch (e) {
+      console.warn(`  avis indisponibles : ${e.message}`);
+    }
+    await save(RAW, "reviews", reviews);
+    console.log(`  raw/reviews.json  (${reviews.length})`);
+
     console.log("→ Normalisation…");
-    const catalog = normalize({ categories, products, attributes, attributeTerms, variations });
+    const catalog = normalize({ categories, products, attributes, attributeTerms, variations, reviews });
     catalog.generatedAt = new Date().toISOString();
     catalog.mode = "full";
     await save(DATA, "catalog", catalog);

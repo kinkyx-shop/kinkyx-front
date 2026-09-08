@@ -1,0 +1,276 @@
+---
+import Stars from "@/components/Stars.astro";
+import { useTranslations } from "@/i18n/utils";
+import type { Locale } from "@/i18n/ui";
+import type { Product } from "@/lib/catalog";
+
+interface Props {
+  locale: Locale;
+  product: Product;
+}
+const { locale, product } = Astro.props;
+const t = useTranslations(locale);
+
+const reviews = product.reviews ?? [];
+const count = product.ratingCount ?? reviews.length;
+const avg = product.rating ?? 0;
+
+const dateFmt = new Intl.DateTimeFormat(
+  locale === "de" ? "de-DE" : locale === "en" ? "en-GB" : "fr-FR",
+  { year: "numeric", month: "long", day: "numeric" },
+);
+const fmtDate = (d: string | null) => {
+  if (!d) return "";
+  const t = Date.parse(d);
+  return Number.isFinite(t) ? dateFmt.format(new Date(t)) : "";
+};
+
+const strings = {
+  ok: t("reviews.ok"),
+  error: t("reviews.error"),
+  sending: t("reviews.sending"),
+  submit: t("reviews.submit"),
+};
+---
+
+<section class="kx-reviews" id="avis">
+  <div class="kx-reviews__head">
+    <h2>{t("reviews.title")}</h2>
+    {
+      count > 0 && (
+        <p class="kx-reviews__summary">
+          <Stars value={avg} size="1.1rem" />
+          <strong>{avg.toFixed(1).replace(".", ",")}</strong>
+          <span>· {t("reviews.count").replace("{n}", String(count))}</span>
+        </p>
+      )
+    }
+  </div>
+
+  {
+    reviews.length > 0 ? (
+      <ul class="kx-reviews__list">
+        {reviews.map((r) => (
+          <li class="kx-review">
+            <div class="kx-review__meta">
+              <Stars value={r.rating} size="0.95rem" />
+              <span class="kx-review__author">{r.author}</span>
+              {r.verified && <span class="kx-review__verified">✓ {t("reviews.verified")}</span>}
+              <time class="kx-review__date">{fmtDate(r.date)}</time>
+            </div>
+            <div class="kx-review__body" set:html={r.html} />
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p class="kx-reviews__none">{t("reviews.none")}</p>
+    )
+  }
+
+  <details class="kx-reviews__form-wrap">
+    <summary>{t("reviews.write")}</summary>
+    <form class="kx-form kx-review-form" data-review-form data-product={product.key} novalidate>
+      <div class="kx-form__row">
+        <label>
+          <span>{t("form.name")} *</span>
+          <input name="name" required autocomplete="name" />
+        </label>
+        <label>
+          <span>{t("form.email")} *</span>
+          <input type="email" name="email" required autocomplete="email" />
+        </label>
+      </div>
+
+      <fieldset class="kx-rate">
+        <legend>{t("reviews.rating")} *</legend>
+        <div class="kx-rate__stars">
+          {[5, 4, 3, 2, 1].map((n) => (
+            <>
+              <input type="radio" id={`kx-rate-${n}`} name="rating" value={n} required />
+              <label for={`kx-rate-${n}`} aria-label={`${n} / 5`}>★</label>
+            </>
+          ))}
+        </div>
+      </fieldset>
+
+      <label>
+        <span>{t("reviews.comment")} *</span>
+        <textarea name="comment" rows="4" required></textarea>
+      </label>
+
+      <input type="text" name="hp" tabindex="-1" autocomplete="off" class="kx-form__hp" aria-hidden="true" />
+      <button type="submit" class="kx-btn" data-review-submit>{t("reviews.submit")}</button>
+      <p class="kx-form__msg" data-review-msg role="status" hidden />
+    </form>
+  </details>
+
+  <script type="application/json" data-review-strings set:html={JSON.stringify(strings)} />
+
+  <script>
+    const form = document.querySelector<HTMLFormElement>("[data-review-form]");
+    const strEl = document.querySelector<HTMLElement>("[data-review-strings]");
+    if (form && strEl) {
+      const S = JSON.parse(strEl.textContent || "{}") as Record<string, string>;
+      const btn = form.querySelector<HTMLButtonElement>("[data-review-submit]")!;
+      const msg = form.querySelector<HTMLElement>("[data-review-msg]")!;
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (!form.reportValidity()) return;
+        const fd = new FormData(form);
+        btn.disabled = true;
+        btn.textContent = S.sending;
+        msg.hidden = true;
+        msg.className = "kx-form__msg";
+        try {
+          const res = await fetch("/site-api/kinkyx/v1/review", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({
+              product: Number(form.dataset.product),
+              name: String(fd.get("name") || ""),
+              email: String(fd.get("email") || ""),
+              rating: Number(fd.get("rating") || 0),
+              comment: String(fd.get("comment") || ""),
+              hp: String(fd.get("hp") || ""),
+            }),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok || !data.ok) throw new Error(data.message || S.error);
+          form.reset();
+          msg.textContent = S.ok;
+          msg.classList.add("is-ok");
+        } catch (err) {
+          msg.textContent = (err as Error).message || S.error;
+          msg.classList.add("is-error");
+        } finally {
+          msg.hidden = false;
+          btn.disabled = false;
+          btn.textContent = S.submit;
+        }
+      });
+    }
+  </script>
+</section>
+
+<style>
+  .kx-reviews {
+    margin-top: 4rem;
+    max-width: var(--kx-measure);
+  }
+  .kx-reviews__head {
+    border-bottom: 1px solid var(--kx-line);
+    padding-bottom: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .kx-reviews h2 {
+    font-size: var(--kx-text-lg);
+    margin: 0 0 0.5rem;
+  }
+  .kx-reviews__summary {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    font-size: var(--kx-text-sm);
+    color: var(--kx-muted);
+  }
+  .kx-reviews__summary strong {
+    color: var(--kx-ink);
+  }
+  .kx-reviews__none {
+    color: var(--kx-muted);
+    font-size: var(--kx-text-sm);
+  }
+  .kx-reviews__list {
+    list-style: none;
+    margin: 0 0 2rem;
+    padding: 0;
+    display: grid;
+    gap: 1.5rem;
+  }
+  .kx-review__meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.75rem;
+    margin-bottom: 0.4rem;
+  }
+  .kx-review__author {
+    font-weight: 700;
+    font-size: var(--kx-text-sm);
+  }
+  .kx-review__verified {
+    font-size: var(--kx-text-xs);
+    color: var(--kx-instock);
+  }
+  .kx-review__date {
+    font-size: var(--kx-text-xs);
+    color: var(--kx-muted);
+    margin-left: auto;
+  }
+  .kx-review__body {
+    font-size: var(--kx-text-sm);
+    color: var(--kx-body);
+    line-height: 1.7;
+  }
+  .kx-review__body :global(p) {
+    margin: 0 0 0.5em;
+  }
+
+  .kx-reviews__form-wrap {
+    border-top: 1px solid var(--kx-line);
+    padding-top: 1.25rem;
+  }
+  .kx-reviews__form-wrap summary {
+    cursor: pointer;
+    font-family: var(--kx-font-display);
+    font-size: var(--kx-text-sm);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--kx-petrol);
+  }
+  .kx-review-form {
+    margin-top: 1.5rem;
+    max-width: 34rem;
+  }
+
+  /* étoiles cliquables (radios en ordre inverse + sélecteur de frères) */
+  .kx-rate {
+    border: 0;
+    margin: 0;
+    padding: 0;
+  }
+  .kx-rate legend {
+    font-size: var(--kx-text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--kx-muted);
+    margin-bottom: 0.25rem;
+  }
+  .kx-rate__stars {
+    display: inline-flex;
+    flex-direction: row-reverse;
+    font-size: 1.6rem;
+    line-height: 1;
+  }
+  .kx-rate__stars input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .kx-rate__stars label {
+    color: var(--kx-line-strong);
+    cursor: pointer;
+    padding: 0 0.05em;
+    transition: color 0.1s ease;
+  }
+  .kx-rate__stars label:hover,
+  .kx-rate__stars label:hover ~ label,
+  .kx-rate__stars input:checked ~ label {
+    color: var(--kx-red);
+  }
+  .kx-rate__stars input:focus-visible ~ label {
+    outline: 2px solid var(--kx-petrol);
+    outline-offset: 2px;
+  }
+</style>

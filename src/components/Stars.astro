@@ -1,0 +1,34 @@
+---
+interface Props {
+  value: number;
+  size?: string;
+}
+const { value, size = "1em" } = Astro.props;
+const pct = Math.max(0, Math.min(100, (Number(value) || 0) / 5 * 100));
+---
+
+<span class="kx-stars" style={`--kx-star-pct:${pct}%;--kx-star-size:${size}`} role="img" aria-label={`${value} / 5`}>
+  <span class="kx-stars__on">★★★★★</span>
+</span>
+
+<style>
+  .kx-stars {
+    display: inline-block;
+    position: relative;
+    font-size: var(--kx-star-size, 1em);
+    line-height: 1;
+    color: var(--kx-line-strong);
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+  .kx-stars::before {
+    content: "★★★★★";
+  }
+  .kx-stars__on {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    width: var(--kx-star-pct, 0%);
+    color: var(--kx-red);
+  }
+</style>

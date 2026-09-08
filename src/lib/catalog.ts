@@ -37,12 +37,23 @@ export interface ProductAttr {
   options: string[];
 }
 
+export interface Review {
+  author: string;
+  rating: number;
+  date: string | null;
+  verified: boolean;
+  html: string;
+}
+
 export interface Product {
   key: number;
   type: string;
   sku: string;
   order: number;
   date: string | null;
+  rating?: number | null;
+  ratingCount?: number;
+  reviews?: Review[];
   brand: string | null;
   onSale: boolean;
   stock: string;
