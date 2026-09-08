@@ -98,12 +98,28 @@ function clean(node) {
   }
 }
 
+// Sections à couper entièrement à partir d'un titre (contenu jamais rempli côté WP).
+const CUT_FROM = {
+  "livraison-retour": /^(faq|questions?\s+fr[ée]quent|f\.?a\.?q)/i,
+};
+
 /** Retire le texte bouche-trou (lorem ipsum) et les titres de section devenus vides. */
-function stripPlaceholders(root) {
+function stripPlaceholders(root, key) {
   const LOREM = /lorem ipsum|consectet(?:ur)? adipiscing|eiusm(?:od)? por/i;
   for (const el of root.querySelectorAll("p, li, td, h1, h2, h3, h4, h5, h6, blockquote")) {
     if (LOREM.test((el.text || "").trim())) el.remove();
   }
+
+  // coupe une section entière (titre + tout ce qui suit) sur les pages listées
+  const cut = CUT_FROM[key];
+  if (cut) {
+    const kids0 = root.childNodes.filter((n) => n.nodeType === 1);
+    const start = kids0.findIndex(
+      (n) => /^h[1-6]$/i.test(n.rawTagName || "") && cut.test((n.text || "").trim()),
+    );
+    if (start >= 0) for (const n of kids0.slice(start)) n.remove();
+  }
+
   const level = (n) => {
     const m = /^h([1-6])$/i.exec(n.rawTagName || "");
     return m ? Number(m[1]) : 0;
@@ -132,13 +148,16 @@ function stripPlaceholders(root) {
   }
 }
 
-function tidy(html) {
+function tidy(html, key) {
   const root = parse(html, { blockTextElements: { script: false, style: false } });
   clean(root);
-  stripPlaceholders(root);
+  stripPlaceholders(root, key);
   let out = root.toString();
   out = out
-    .replace(/<p>\s*(&nbsp;|\s)*<\/p>/gi, "")
+    // traînée de lorem collée à du vrai texte (« … New Zealand Lorem ipsum … »)
+    .replace(/\s*Lorem ipsum[^<]*/gi, "")
+    // éléments devenus vides
+    .replace(/<(p|li|h[1-6]|blockquote|figcaption)[^>]*>(\s|&nbsp;)*<\/\1>/gi, "")
     .replace(/(\r?\n\s*){3,}/g, "\n\n")
     .replace(/\s+</g, (m) => (m.includes("\n") ? "\n<" : " <"))
     .trim();
@@ -176,7 +195,7 @@ export async function fetchPages() {
         if (!page) continue;
         entry.name[lg] = decodeEntities((page.title?.rendered || slug).replace(/<[^>]+>/g, "")).trim();
         entry.slug[lg] = page.slug;
-        entry.html[lg] = tidy(page.content?.rendered || "");
+        entry.html[lg] = tidy(page.content?.rendered || "", slug);
       }
       result[slug] = entry;
       console.log(`  ${slug} → ${Object.keys(entry.html).join(",")}`);
