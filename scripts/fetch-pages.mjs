@@ -98,9 +98,44 @@ function clean(node) {
   }
 }
 
+/** Retire le texte bouche-trou (lorem ipsum) et les titres de section devenus vides. */
+function stripPlaceholders(root) {
+  const LOREM = /lorem ipsum|consectet(?:ur)? adipiscing|eiusm(?:od)? por/i;
+  for (const el of root.querySelectorAll("p, li, td, h1, h2, h3, h4, h5, h6, blockquote")) {
+    if (LOREM.test((el.text || "").trim())) el.remove();
+  }
+  const level = (n) => {
+    const m = /^h([1-6])$/i.exec(n.rawTagName || "");
+    return m ? Number(m[1]) : 0;
+  };
+  const kids = root.childNodes.filter((n) => n.nodeType === 1);
+  for (let i = 0; i < kids.length; i++) {
+    const lv = level(kids[i]);
+    if (!lv) continue;
+    // section vide : rien d'autre qu'un titre jusqu'au prochain titre de niveau <= lv
+    let hasContent = false;
+    for (let j = i + 1; j < kids.length; j++) {
+      const lj = level(kids[j]);
+      if (lj && lj <= lv) break;
+      if (lj) continue;
+      const tag = (kids[j].rawTagName || "").toLowerCase();
+      if (
+        (kids[j].text || "").trim() !== "" ||
+        /^(ul|ol|table|figure|img|hr)$/.test(tag) ||
+        kids[j].querySelector?.("img")
+      ) {
+        hasContent = true;
+        break;
+      }
+    }
+    if (!hasContent) kids[i].remove();
+  }
+}
+
 function tidy(html) {
   const root = parse(html, { blockTextElements: { script: false, style: false } });
   clean(root);
+  stripPlaceholders(root);
   let out = root.toString();
   out = out
     .replace(/<p>\s*(&nbsp;|\s)*<\/p>/gi, "")
