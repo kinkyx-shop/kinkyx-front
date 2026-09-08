@@ -117,31 +117,6 @@ const roadmap = [
         </ul>
       </section>
 
-      {bespoke && (
-        <section class="kx-bespoke">
-          <div class="kx-container kx-bespoke__inner">
-            <div>
-              <h2>{t("home.bespokeTitle")}</h2>
-              <p>{t("home.bespokeText")}</p>
-              <a class="kx-btn kx-btn--ghost" href={pagePath(bespoke, locale)}>
-                {t("home.bespokeCta")}
-              </a>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {newest.length > 0 && (
-        <section class="kx-container kx-block">
-          <h2>{t("home.newIn")}</h2>
-          <div class="kx-grid">
-            {newest.map((p) => (
-              <ProductCard product={p} locale={locale} />
-            ))}
-          </div>
-        </section>
-      )}
-
       {gReviews.length > 0 && (
         <section class="kx-gr">
           <div class="kx-container">
@@ -172,6 +147,31 @@ const roadmap = [
                 {t("home.googleAll")}
               </a>
             )}
+          </div>
+        </section>
+      )}
+
+      {bespoke && (
+        <section class="kx-bespoke">
+          <div class="kx-container kx-bespoke__inner">
+            <div>
+              <h2>{t("home.bespokeTitle")}</h2>
+              <p>{t("home.bespokeText")}</p>
+              <a class="kx-btn kx-btn--ghost" href={pagePath(bespoke, locale)}>
+                {t("home.bespokeCta")}
+              </a>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {newest.length > 0 && (
+        <section class="kx-container kx-block">
+          <h2>{t("home.newIn")}</h2>
+          <div class="kx-grid">
+            {newest.map((p) => (
+              <ProductCard product={p} locale={locale} />
+            ))}
           </div>
         </section>
       )}
