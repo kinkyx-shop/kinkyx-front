@@ -22,13 +22,21 @@ const bespoke = getPage("latex-sur-mesure");
 const google = catalog.google;
 const gReviews = (google?.reviews ?? []).slice(0, 4);
 
-// image de fond de la bande sur-mesure : 1re image de la page latex-sur-mesure,
-// sinon image de la catégorie Latex.
+// image de fond de la bande sur-mesure : photo de la robe latex « Kill Bill »
+// (modèle allongé), sinon 1re image de la page latex-sur-mesure, sinon image
+// de la catégorie Latex.
 const latexRoot = roots.find((c) => c.slug.fr === "latex") ?? roots[0];
 const bespokeHtml = bespoke ? bespoke.html[locale] || bespoke.html.fr : "";
 const bespokePageImg = bespokeHtml.match(/<img\b[^>]*\bsrc="([^"]+)"/i)?.[1] ?? null;
-const bespokeBg = bespokePageImg ?? latexRoot?.image ?? null;
-const bespokeBgSrcset = bespokePageImg ? null : (latexRoot?.imageSrcset ?? null);
+const killBill = catalog.products.find((p) => p.slug.fr === "robe-latex-kill-bill");
+const killBillImg =
+  killBill?.images.find((im) => /kill-bill-6\b/i.test(im.src)) ?? killBill?.images.at(-1) ?? null;
+const bespokeBg = killBillImg?.src ?? bespokePageImg ?? latexRoot?.image ?? null;
+const bespokeBgSrcset = killBillImg
+  ? (killBillImg.srcset ?? null)
+  : bespokePageImg
+    ? null
+    : (latexRoot?.imageSrcset ?? null);
 const heroPic =
   univers[0]?.image
     ? { src: univers[0].image, srcset: univers[0].imageSrcset ?? null }
