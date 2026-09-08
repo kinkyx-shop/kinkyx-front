@@ -17,10 +17,14 @@ const roots = topCategories().filter((c) => ["latex", "chaussures"].includes(c.s
 const univers = roots.length ? roots : topCategories().slice(0, 3);
 const newest = catalog.products.slice(0, 10);
 const bespoke = getPage("latex-sur-mesure");
-const heroImg =
-  univers[0]?.image ||
-  catalog.products.find((p) => p.images[0])?.images[0]?.src ||
-  null;
+const heroPic =
+  univers[0]?.image
+    ? { src: univers[0].image, srcset: univers[0].imageSrcset ?? null }
+    : (() => {
+        const im = catalog.products.find((p) => p.images[0])?.images[0];
+        return im ? { src: im.src, srcset: im.srcset ?? null } : null;
+      })();
+const heroImg = heroPic?.src ?? null;
 
 const roadmap = [
   ["L0", "Socle · routage i18n · design", true],
@@ -51,9 +55,31 @@ const roadmap = [
   ) : (
     <>
       <JsonLd data={[organization(), website(locale)]} />
-      {heroImg && <link rel="preload" as="image" href={heroImg} fetchpriority="high" />}
+      {
+        heroImg && (
+          <link
+            rel="preload"
+            as="image"
+            href={heroImg}
+            imagesrcset={heroPic?.srcset ?? undefined}
+            imagesizes="100vw"
+            fetchpriority="high"
+          />
+        )
+      }
       <section class="kx-hero">
-        {heroImg && <img class="kx-hero__bg" src={heroImg} alt="" fetchpriority="high" width="1600" height="900" />}
+        {heroImg && (
+          <img
+            class="kx-hero__bg"
+            src={heroImg}
+            srcset={heroPic?.srcset ?? undefined}
+            sizes="100vw"
+            alt=""
+            fetchpriority="high"
+            width="1600"
+            height="900"
+          />
+        )}
         <div class="kx-hero__inner kx-container">
           <p class="kx-eyebrow kx-hero__eyebrow">Kinkyx</p>
           <h1>{t("meta.tagline")}</h1>
@@ -70,7 +96,17 @@ const roadmap = [
           {univers.map((c) => (
             <li>
               <a href={categoryPath(c, locale)}>
-                {c.image && <img src={c.image} alt="" loading="lazy" width="640" height="480" />}
+                {c.image && (
+                  <img
+                    src={c.image}
+                    srcset={c.imageSrcset ?? undefined}
+                    sizes="(min-width: 34rem) 45vw, 92vw"
+                    alt=""
+                    loading="lazy"
+                    width="640"
+                    height="480"
+                  />
+                )}
                 <span>{c.name[locale] || c.name.fr}</span>
               </a>
             </li>

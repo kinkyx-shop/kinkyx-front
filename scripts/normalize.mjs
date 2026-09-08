@@ -112,6 +112,7 @@ export function normalize({ categories, products, attributes, attributeTerms, va
       count: fr.count || 0,
       order: fr.menu_order || 0,
       image: fr.image?.src || null,
+      imageSrcset: fr.image?.srcset || null,
       name, slug, desc,
       path: {},
     };

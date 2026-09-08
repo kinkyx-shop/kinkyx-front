@@ -11,6 +11,7 @@ export interface Category {
   count: number;
   order: number;
   image: string | null;
+  imageSrcset?: string | null;
   name: L10n;
   slug: L10n;
   desc: L10n;
