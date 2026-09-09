@@ -211,22 +211,22 @@ const ld = [
             </button>
           </div>
           <p class="kx-buy__msg" data-msg role="status" hidden></p>
-
-          {
-            (product.stock !== "instock" || isVariable) && (
-              <details class="kx-notify" data-notify>
-                <summary>{t("notify.title")}</summary>
-                <div class="kx-notify__row">
-                  <input type="email" name="notify_email" required placeholder={t("notify.placeholder")} aria-label={t("notify.title")} />
-                  <input type="hidden" data-notify-var value="" />
-                  <input type="text" name="notify_hp" tabindex="-1" autocomplete="off" class="kx-form__hp" aria-hidden="true" />
-                  <button type="button" class="kx-btn kx-btn--ghost" data-notify-submit>{t("notify.submit")}</button>
-                </div>
-                <p class="kx-notify__msg" data-notify-msg role="status" hidden />
-              </details>
-            )
-          }
         </form>
+
+        {
+          (product.stock !== "instock" || isVariable) && (
+            <details class="kx-notify" data-notify>
+              <summary>{t("notify.title")}</summary>
+              <div class="kx-notify__row">
+                <input type="email" name="notify_email" required placeholder={t("notify.placeholder")} aria-label={t("notify.title")} />
+                <input type="hidden" data-notify-var value="" />
+                <input type="text" name="notify_hp" tabindex="-1" autocomplete="off" class="kx-form__hp" aria-hidden="true" />
+                <button type="button" class="kx-btn kx-btn--ghost" data-notify-submit>{t("notify.submit")}</button>
+              </div>
+              <p class="kx-notify__msg" data-notify-msg role="status" hidden />
+            </details>
+          )
+        }
 
         {product.sku && <p class="kx-pdp__sku">{t("product.sku")} <span>{product.sku}</span></p>}
       </div>
@@ -593,7 +593,8 @@ const ld = [
   }
 
   .kx-notify {
-    margin-top: 0.5rem;
+    margin-top: 1rem;
+    max-width: 22rem;
     font-size: var(--kx-text-sm);
   }
   .kx-notify summary {
