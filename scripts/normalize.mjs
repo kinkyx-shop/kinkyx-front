@@ -162,13 +162,15 @@ export function normalize({ categories, products, attributes, attributeTerms, va
 
   const prods = prodGroups.map((g) => {
     const fr = g.fr;
-    const name = {}, slug = {}, short = {}, desc = {};
+    const name = {}, slug = {}, short = {}, desc = {}, fabcom = {};
     for (const lg of LOCALES) {
       const m = g[lg] || fr;
       name[lg] = stripHtml(m.name);
       short[lg] = stripHtml(m.short_description);
       desc[lg] = String(m.description || "").trim();
       slug[lg] = uniqueSlug(slugify(m.name), prodSlugUsed[lg]);
+      // délai de fabrication / d'expédition (champ perso « fabcom »), repli sur le FR
+      fabcom[lg] = stripHtml(m.kx_fabcom || "") || stripHtml(fr.kx_fabcom || "");
     }
 
     // catégories : IDs de la version FR -> clés canoniques
@@ -248,7 +250,7 @@ export function normalize({ categories, products, attributes, attributeTerms, va
         id: im.id,
       })),
       frPermalink: fr.permalink || null,
-      name, slug, short, desc,
+      name, slug, short, desc, fabcom,
       categoryKeys,
       price: {
         min: priceMin,

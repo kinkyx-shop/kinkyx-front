@@ -117,7 +117,7 @@ async function main() {
       _fields:
         "id,name,slug,permalink,type,status,sku,price,regular_price,sale_price,on_sale,price_html," +
         "stock_status,short_description,description,categories,tags,brands,images," +
-        "attributes,default_attributes,variations,external_url,button_text," +
+        "attributes,default_attributes,variations,external_url,button_text,kx_fabcom," +
         "average_rating,rating_count,date_created,date_modified,lang,translations",
     });
     await save(RAW, "products", products);

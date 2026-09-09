@@ -70,6 +70,7 @@ export interface Product {
   slug: L10n;
   short: L10n;
   desc: L10n;
+  fabcom?: L10n;
   categoryKeys: number[];
   price: {
     min: number | null;
