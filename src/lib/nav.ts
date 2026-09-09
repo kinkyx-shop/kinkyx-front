@@ -55,6 +55,6 @@ export function footerLinks(locale: Locale) {
     pageLink("livraison-retour", locale, "livraison-retour", T(locale, "footer.delivery")),
     pageLink("cgv", locale, "cgv", T(locale, "footer.terms")),
     pageLink("cgu", locale, "cgu", T(locale, "footer.termsUse")),
-    { label: T(locale, "nav.account"), href: ACCOUNT_URL },
+    { label: T(locale, "nav.account"), href: locale === "fr" ? ACCOUNT_URL : `${ACCOUNT_URL}?lang=${locale}` },
   ];
 }

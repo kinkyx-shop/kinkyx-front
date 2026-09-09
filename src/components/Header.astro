@@ -15,6 +15,9 @@ const { locale, alternates } = Astro.props;
 const t = useTranslations(locale);
 const home = locale === "fr" ? "/" : `/${locale}/`;
 
+// le back WooCommerce rend son UI dans la langue reçue en ?lang= (mu-plugin kinkyx-locale)
+const accountUrl = locale === "fr" ? ACCOUNT_URL : `${ACCOUNT_URL}?lang=${locale}`;
+
 const nav = mainNav(locale);
 ---
 
@@ -67,7 +70,7 @@ const nav = mainNav(locale);
             <circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
         </a>
-        <a class="kx-header__icon" href={ACCOUNT_URL} rel="nofollow" aria-label={t("nav.account")}>
+        <a class="kx-header__icon" href={accountUrl} rel="nofollow" aria-label={t("nav.account")}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"></path>
           </svg>
@@ -111,7 +114,7 @@ const nav = mainNav(locale);
       </ul>
       <div class="kx-drawer__foot">
         <a href={routePath("search", locale)}>{t("nav.search")}</a>
-        <a href={ACCOUNT_URL} rel="nofollow">{t("nav.account")}</a>
+        <a href={accountUrl} rel="nofollow">{t("nav.account")}</a>
         <LangSwitcher alternates={alternates} />
       </div>
     </nav>
