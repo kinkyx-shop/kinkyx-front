@@ -14,11 +14,22 @@ const t = useTranslations(locale);
 /* ---- facettes déduites des produits de la catégorie ---- */
 const brands = [...new Set(products.map((p) => p.brand).filter(Boolean))].sort() as string[];
 
+// attributs « identifiants » : jamais des filtres
+const NON_FACET = new Set([
+  "gtin", "ean", "upc", "mpn", "isbn", "sku", "reference", "ref", "code", "code-barre", "code-barres", "barcode",
+]);
+const isFacetAttr = (slug: string, label: string) => {
+  const s = slug.replace(/^pa_/, "").toLowerCase();
+  const l = label.trim().toLowerCase();
+  return !NON_FACET.has(s) && !NON_FACET.has(l);
+};
+
 type Facet = { slug: string; label: string; options: string[] };
 const attrMap = new Map<string, { label: string; options: Map<string, number> }>();
 for (const p of products) {
   for (const a of p.attributes) {
     if (!a.options.length) continue;
+    if (!isFacetAttr(a.slug, a.label)) continue;
     if (!attrMap.has(a.slug)) attrMap.set(a.slug, { label: a.label, options: new Map() });
     const bucket = attrMap.get(a.slug)!;
     for (const o of a.options) bucket.options.set(o, (bucket.options.get(o) ?? 0) + 1);
@@ -65,7 +76,7 @@ const L = {
 
 const cellData = (p: Product) => {
   const attrs: Record<string, string[]> = {};
-  for (const a of p.attributes) if (a.options.length) attrs[a.slug] = a.options;
+  for (const a of p.attributes) if (a.options.length && isFacetAttr(a.slug, a.label)) attrs[a.slug] = a.options;
   return {
     "data-brand": p.brand ?? "",
     "data-price": p.price.min ?? "",
