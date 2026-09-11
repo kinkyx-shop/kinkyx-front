@@ -2,7 +2,6 @@
 import LangSwitcher from "@/components/LangSwitcher.astro";
 import { useTranslations, routePath } from "@/i18n/utils";
 import type { Locale } from "@/i18n/ui";
-import { ACCOUNT_URL } from "@/consts";
 import { isStub } from "@/lib/catalog";
 import { mainNav } from "@/lib/nav";
 
@@ -15,8 +14,9 @@ const { locale, alternates } = Astro.props;
 const t = useTranslations(locale);
 const home = locale === "fr" ? "/" : `/${locale}/`;
 
-// le back WooCommerce rend son UI dans la langue reçue en ?lang= (mu-plugin kinkyx-locale)
-const accountUrl = locale === "fr" ? ACCOUNT_URL : `${ACCOUNT_URL}?lang=${locale}`;
+// compte client natif (Astro + API headless) depuis la Phase 1 — WooCommerce
+// n'est plus que le moteur derrière, plus de renvoi vers ses pages Elementor.
+const accountUrl = routePath("account", locale);
 
 const nav = mainNav(locale);
 ---

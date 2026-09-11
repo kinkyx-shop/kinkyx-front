@@ -1,7 +1,6 @@
 import type { Locale } from "@/i18n/ui";
 import { ui } from "@/i18n/ui";
-import { ACCOUNT_URL } from "@/consts";
-import { localizedPath } from "@/i18n/utils";
+import { localizedPath, routePath } from "@/i18n/utils";
 import { topCategories, childCategories, categoryPath } from "@/lib/catalog";
 import { getPage, pagePath } from "@/lib/pages";
 
@@ -55,6 +54,6 @@ export function footerLinks(locale: Locale) {
     pageLink("livraison-retour", locale, "livraison-retour", T(locale, "footer.delivery")),
     pageLink("cgv", locale, "cgv", T(locale, "footer.terms")),
     pageLink("cgu", locale, "cgu", T(locale, "footer.termsUse")),
-    { label: T(locale, "nav.account"), href: locale === "fr" ? ACCOUNT_URL : `${ACCOUNT_URL}?lang=${locale}` },
+    { label: T(locale, "nav.account"), href: routePath("account", locale) },
   ];
 }

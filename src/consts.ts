@@ -15,12 +15,6 @@ export const SITE = {
 export const STORE_API = `${SITE.checkoutUrl}/wp-json/wc/store/v1`;
 
 /**
- * Espace client : géré par WooCommerce sur le back (connexion, commandes,
- * adresses, téléchargements). Pas de réécriture headless — lien sortant.
- */
-export const ACCOUNT_URL = `${SITE.checkoutUrl.replace(/\/+$/, "")}/mon-compte/`;
-
-/**
  * Suivi. Chargé UNIQUEMENT après consentement (voir scripts/consent.ts).
  * Un ID vide = script non chargé.
  *  - analytics : mesure d'audience (GA4)

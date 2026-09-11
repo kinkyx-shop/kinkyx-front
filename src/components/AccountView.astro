@@ -1,0 +1,800 @@
+---
+/**
+ * Espace client headless — remplace les pages WooCommerce/Elementor.
+ * WooCommerce reste le moteur (comptes, commandes, adresses, paiement) via
+ * l'API maison kinkyx-account-api (proxy /site-api). Une seule vue par
+ * instance de page (rendu serveur pour le HTML, tout le reste — auth incluse
+ * — se joue côté client).
+ */
+import Base from "@/layouts/Base.astro";
+import { useTranslations, localizedPath, routePath } from "@/i18n/utils";
+import { locales, type Locale } from "@/i18n/ui";
+
+type View = "dashboard" | "orders" | "order" | "addresses" | "details" | "reset";
+
+interface Props {
+  locale: Locale;
+  view: View;
+}
+const { locale, view } = Astro.props;
+const t = useTranslations(locale);
+
+const titles: Record<View, string> = {
+  dashboard: t("account.dashboard"),
+  orders: t("account.orders"),
+  order: t("account.orderDetails"),
+  addresses: t("account.addresses"),
+  details: t("account.details"),
+  reset: t("account.resetTitle"),
+};
+
+const routeKeyFor: Record<View, "account" | "accountOrders" | "accountOrder" | "accountAddresses" | "accountDetails" | "accountReset"> = {
+  dashboard: "account",
+  orders: "accountOrders",
+  order: "accountOrder",
+  addresses: "accountAddresses",
+  details: "accountDetails",
+  reset: "accountReset",
+};
+
+const alternates = Object.fromEntries(
+  locales.map((l) => [l, routePath(routeKeyFor[view], l)]),
+) as Record<Locale, string>;
+
+const nav = [
+  { key: "dashboard", label: t("account.dashboard"), href: routePath("account", locale) },
+  { key: "orders", label: t("account.orders"), href: routePath("accountOrders", locale) },
+  { key: "addresses", label: t("account.addresses"), href: routePath("accountAddresses", locale) },
+  { key: "details", label: t("account.details"), href: routePath("accountDetails", locale) },
+] as const;
+
+const strings = {
+  welcome: t("account.welcome"),
+  notYou: t("account.notYou"),
+  logout: t("account.logout"),
+  dashboardIntro: t("account.dashboardIntro"),
+  noOrders: t("account.noOrders"),
+  browseProducts: t("account.browseProducts"),
+  orderNumber: t("account.orderNumber"),
+  orderDate: t("account.orderDate"),
+  orderStatus: t("account.orderStatus"),
+  orderTotal: t("account.orderTotal"),
+  view: t("account.view"),
+  backToOrders: t("account.backToOrders"),
+  product: t("account.product"),
+  quantity: t("account.quantity"),
+  shipping: t("account.shipping"),
+  paymentMethod: t("account.paymentMethod"),
+  parcelPoint: t("account.parcelPoint"),
+  billingAddress: t("account.billingAddress"),
+  shippingAddress: t("account.shippingAddress"),
+  save: t("account.save"),
+  saving: t("account.saving"),
+  saved: t("account.saved"),
+  loginRequired: t("account.loginRequired"),
+  loginSubmit: t("account.loginSubmit"),
+  registerSubmit: t("account.registerSubmit"),
+  forgotSubmit: t("account.forgotSubmit"),
+  forgotSent: t("account.forgotSent"),
+  resetSubmit: t("account.resetSubmit"),
+  resetOk: t("account.resetOk"),
+  resetInvalid: t("account.resetInvalid"),
+  errEmailExists: t("account.errEmailExists"),
+  errWeakPassword: t("account.errWeakPassword"),
+  errInvalidCredentials: t("account.errInvalidCredentials"),
+  errGeneric: t("account.errGeneric"),
+  errRate: t("account.errRate"),
+  loginUrl: routePath("account", locale),
+  ordersUrl: routePath("accountOrders", locale),
+  orderUrl: routePath("accountOrder", locale),
+  homeUrl: localizedPath("/", locale),
+};
+---
+
+<Base title={titles[view]} description={titles[view]} alternates={alternates} noindex>
+  {
+    view === "reset" ? (
+      <section class="kx-container kx-acct-solo">
+        <h1>{t("account.resetTitle")}</h1>
+        <form class="kx-acct-form" data-reset-form novalidate>
+          <label>
+            <span>{t("account.newPassword")} *</span>
+            <input type="password" name="password" required minlength="8" autocomplete="new-password" />
+          </label>
+          <input type="hidden" name="login" data-reset-login value="" />
+          <input type="hidden" name="key" data-reset-key value="" />
+          <button type="submit" class="kx-btn" data-reset-submit>
+            {t("account.resetSubmit")}
+          </button>
+          <p class="kx-acct-msg" data-reset-msg role="status" hidden />
+        </form>
+        <p class="kx-acct-invalid" data-reset-invalid hidden>
+          {t("account.resetInvalid")} <a href={routePath("account", locale)}>{t("account.login")}</a>
+        </p>
+      </section>
+    ) : (
+      <div class="kx-container kx-acct">
+        <aside class="kx-acct__nav" data-acct-nav hidden>
+          <ul>
+            {nav.map((n) => (
+              <li class:list={{ "is-active": n.key === view }}>
+                <a href={n.href}>{n.label}</a>
+              </li>
+            ))}
+            <li><button type="button" class="kx-acct__logout" data-logout>{t("account.logout")}</button></li>
+          </ul>
+        </aside>
+
+        <div class="kx-acct__main" data-view={view}>
+          <p class="kx-acct-loading" data-acct-loading>{t("account.loading")}</p>
+
+          <div class="kx-acct-guest" data-acct-guest hidden>
+            {view === "dashboard" ? (
+              <div class="kx-acct-auth">
+                <div class="kx-acct-auth__col">
+                  <h1>{t("account.login")}</h1>
+                  <form class="kx-acct-form" data-login-form novalidate>
+                    <label>
+                      <span>{t("account.loginId")} *</span>
+                      <input name="login" required autocomplete="username" />
+                    </label>
+                    <label>
+                      <span>{t("account.password")} *</span>
+                      <input type="password" name="password" required autocomplete="current-password" />
+                    </label>
+                    <button type="submit" class="kx-btn" data-login-submit>
+                      {t("account.loginSubmit")}
+                    </button>
+                    <p class="kx-acct-msg" data-login-msg role="status" hidden />
+                    <button type="button" class="kx-acct-link" data-forgot-toggle>
+                      {t("account.forgotPassword")}
+                    </button>
+                  </form>
+
+                  <form class="kx-acct-form kx-acct-forgot" data-forgot-form hidden novalidate>
+                    <p>{t("account.forgotIntro")}</p>
+                    <label>
+                      <span>{t("account.loginId")} *</span>
+                      <input name="login" required autocomplete="username" />
+                    </label>
+                    <button type="submit" class="kx-btn kx-btn--ghost" data-forgot-submit>
+                      {t("account.forgotSubmit")}
+                    </button>
+                    <p class="kx-acct-msg" data-forgot-msg role="status" hidden />
+                  </form>
+                </div>
+
+                <div class="kx-acct-auth__col">
+                  <h1>{t("account.register")}</h1>
+                  <form class="kx-acct-form" data-register-form novalidate>
+                    <div class="kx-acct-form__row">
+                      <label>
+                        <span>{t("account.firstName")} *</span>
+                        <input name="first_name" required autocomplete="given-name" />
+                      </label>
+                      <label>
+                        <span>{t("account.lastName")} *</span>
+                        <input name="last_name" required autocomplete="family-name" />
+                      </label>
+                    </div>
+                    <label>
+                      <span>{t("account.email")} *</span>
+                      <input type="email" name="email" required autocomplete="email" />
+                    </label>
+                    <label>
+                      <span>{t("account.password")} *</span>
+                      <input type="password" name="password" required minlength="8" autocomplete="new-password" />
+                    </label>
+                    <input type="text" name="hp" tabindex="-1" autocomplete="off" class="kx-acct-hp" aria-hidden="true" />
+                    <p class="kx-acct-notice">{t("account.registerNotice")}</p>
+                    <button type="submit" class="kx-btn" data-register-submit>
+                      {t("account.registerSubmit")}
+                    </button>
+                    <p class="kx-acct-msg" data-register-msg role="status" hidden />
+                  </form>
+                </div>
+              </div>
+            ) : (
+              <p class="kx-acct-notice">
+                {t("account.loginRequired")} <a href={routePath("account", locale)}>{t("account.login")}</a>
+              </p>
+            )}
+          </div>
+
+          <div class="kx-acct-app" data-acct-app hidden>
+            {view === "dashboard" && (
+              <div data-view-dashboard>
+                <h1><span data-dash-welcome /></h1>
+                <p>{t("account.dashboardIntro")}</p>
+              </div>
+            )}
+
+            {view === "orders" && (
+              <div data-view-orders>
+                <h1>{t("account.orders")}</h1>
+                <div data-orders-list />
+              </div>
+            )}
+
+            {view === "order" && (
+              <div data-view-order>
+                <a class="kx-acct-back" href={routePath("accountOrders", locale)}>
+                  ← {t("account.backToOrders")}
+                </a>
+                <h1><span data-order-title /></h1>
+                <div data-order-detail />
+              </div>
+            )}
+
+            {view === "addresses" && (
+              <div data-view-addresses>
+                <h1>{t("account.addresses")}</h1>
+                <form class="kx-acct-form kx-acct-addresses" data-addresses-form novalidate>
+                  <fieldset>
+                    <legend>{t("account.billingAddress")}</legend>
+                    <div class="kx-acct-form__row">
+                      <label><span>{t("account.firstName")}</span><input name="billing_first_name" /></label>
+                      <label><span>{t("account.lastName")}</span><input name="billing_last_name" /></label>
+                    </div>
+                    <label><span>{t("account.company")}</span><input name="billing_company" /></label>
+                    <label><span>{t("account.address1")}</span><input name="billing_address_1" /></label>
+                    <label><span>{t("account.address2")}</span><input name="billing_address_2" /></label>
+                    <div class="kx-acct-form__row">
+                      <label><span>{t("account.postcode")}</span><input name="billing_postcode" /></label>
+                      <label><span>{t("account.city")}</span><input name="billing_city" /></label>
+                    </div>
+                    <label><span>{t("account.country")}</span><input name="billing_country" placeholder="FR" /></label>
+                    <label><span>{t("account.phone")}</span><input name="billing_phone" type="tel" /></label>
+                    <label><span>{t("account.email")}</span><input name="billing_email" type="email" /></label>
+                  </fieldset>
+                  <fieldset>
+                    <legend>{t("account.shippingAddress")}</legend>
+                    <div class="kx-acct-form__row">
+                      <label><span>{t("account.firstName")}</span><input name="shipping_first_name" /></label>
+                      <label><span>{t("account.lastName")}</span><input name="shipping_last_name" /></label>
+                    </div>
+                    <label><span>{t("account.company")}</span><input name="shipping_company" /></label>
+                    <label><span>{t("account.address1")}</span><input name="shipping_address_1" /></label>
+                    <label><span>{t("account.address2")}</span><input name="shipping_address_2" /></label>
+                    <div class="kx-acct-form__row">
+                      <label><span>{t("account.postcode")}</span><input name="shipping_postcode" /></label>
+                      <label><span>{t("account.city")}</span><input name="shipping_city" /></label>
+                    </div>
+                    <label><span>{t("account.country")}</span><input name="shipping_country" placeholder="FR" /></label>
+                    <label><span>{t("account.phone")}</span><input name="shipping_phone" type="tel" /></label>
+                  </fieldset>
+                  <button type="submit" class="kx-btn" data-addresses-submit>{t("account.save")}</button>
+                  <p class="kx-acct-msg" data-addresses-msg role="status" hidden />
+                </form>
+              </div>
+            )}
+
+            {view === "details" && (
+              <div data-view-details>
+                <h1>{t("account.details")}</h1>
+                <form class="kx-acct-form" data-details-form novalidate>
+                  <div class="kx-acct-form__row">
+                    <label><span>{t("account.firstName")}</span><input name="first_name" /></label>
+                    <label><span>{t("account.lastName")}</span><input name="last_name" /></label>
+                  </div>
+                  <label><span>{t("account.email")} *</span><input type="email" name="email" required /></label>
+                  <label><span>{t("account.currentPassword")}</span><input type="password" name="current_password" autocomplete="current-password" /></label>
+                  <label>
+                    <span>{t("account.newPassword")}</span>
+                    <input type="password" name="new_password" minlength="8" autocomplete="new-password" />
+                  </label>
+                  <p class="kx-acct-notice">{t("account.leaveBlank")}</p>
+                  <button type="submit" class="kx-btn" data-details-submit>{t("account.save")}</button>
+                  <p class="kx-acct-msg" data-details-msg role="status" hidden />
+                </form>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  <script type="application/json" data-acct-strings set:html={JSON.stringify(strings)} />
+
+  <script>
+    import * as acct from "@/scripts/account";
+    import type { ApiError } from "@/scripts/account";
+
+    const S = JSON.parse(document.querySelector("[data-acct-strings]")!.textContent || "{}") as Record<string, string>;
+
+    function errMsg(err: unknown): string {
+      const e = err as ApiError;
+      const map: Record<string, string> = {
+        email_exists: S.errEmailExists,
+        weak_password: S.errWeakPassword,
+        invalid_credentials: S.errInvalidCredentials,
+        kx_rate: S.errRate,
+      };
+      return (e && map[e.code]) || (e && e.message) || S.errGeneric;
+    }
+
+    const esc = (s: string) =>
+      String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
+
+    /* --------------------------------------------------------- réinitialisation */
+    const resetForm = document.querySelector<HTMLFormElement>("[data-reset-form]");
+    if (resetForm) {
+      const params = new URLSearchParams(location.search);
+      const key = params.get("key") || "";
+      const login = params.get("login") || "";
+      if (!key || !login) {
+        resetForm.hidden = true;
+        document.querySelector<HTMLElement>("[data-reset-invalid]")!.hidden = false;
+      } else {
+        resetForm.querySelector<HTMLInputElement>("[data-reset-key]")!.value = key;
+        resetForm.querySelector<HTMLInputElement>("[data-reset-login]")!.value = login;
+        resetForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          if (!resetForm.reportValidity()) return;
+          const fd = new FormData(resetForm);
+          const btn = resetForm.querySelector<HTMLButtonElement>("[data-reset-submit]")!;
+          const msg = resetForm.querySelector<HTMLElement>("[data-reset-msg]")!;
+          btn.disabled = true;
+          try {
+            await acct.resetPassword({
+              login: String(fd.get("login")),
+              key: String(fd.get("key")),
+              password: String(fd.get("password")),
+            });
+            msg.textContent = S.resetOk;
+            msg.className = "kx-acct-msg is-ok";
+            resetForm.querySelector("input[type=password]")!.setAttribute("disabled", "true");
+            setTimeout(() => (location.href = S.loginUrl), 1200);
+          } catch (err) {
+            msg.textContent = errMsg(err);
+            msg.className = "kx-acct-msg is-error";
+          } finally {
+            msg.hidden = false;
+            btn.disabled = false;
+          }
+        });
+      }
+    }
+
+    /* ------------------------------------------------------------- compte/tabs */
+    const main = document.querySelector<HTMLElement>(".kx-acct__main");
+    if (main) {
+      const view = main.dataset.view;
+      const loading = document.querySelector<HTMLElement>("[data-acct-loading]")!;
+      const guest = document.querySelector<HTMLElement>("[data-acct-guest]")!;
+      const app = document.querySelector<HTMLElement>("[data-acct-app]")!;
+      const nav = document.querySelector<HTMLElement>("[data-acct-nav]")!;
+      const logoutBtn = document.querySelector<HTMLButtonElement>("[data-logout]");
+
+      logoutBtn?.addEventListener("click", async () => {
+        await acct.logout().catch(() => {});
+        location.href = S.loginUrl;
+      });
+
+      function bindForm(
+        formSel: string,
+        msgSel: string,
+        btnSel: string,
+        run: (fd: FormData) => Promise<unknown>,
+        opts: { onOk?: (fd: FormData) => void; successMsg?: string } = {},
+      ) {
+        const form = document.querySelector<HTMLFormElement>(formSel);
+        if (!form) return;
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          if (!form.reportValidity()) return;
+          const fd = new FormData(form);
+          const btn = form.querySelector<HTMLButtonElement>(btnSel)!;
+          const msg = form.querySelector<HTMLElement>(msgSel)!;
+          const label = btn.textContent;
+          btn.disabled = true;
+          btn.textContent = S.saving || label;
+          try {
+            await run(fd);
+            msg.textContent = opts.successMsg ?? S.saved ?? "";
+            msg.className = "kx-acct-msg is-ok";
+            opts.onOk?.(fd);
+          } catch (err) {
+            msg.textContent = errMsg(err);
+            msg.className = "kx-acct-msg is-error";
+          } finally {
+            msg.hidden = false;
+            btn.disabled = false;
+            btn.textContent = label;
+          }
+        });
+      }
+
+      // connexion / inscription (uniquement rendues sur la vue "dashboard")
+      bindForm(
+        "[data-login-form]",
+        "[data-login-msg]",
+        "[data-login-submit]",
+        (fd) => acct.login({ login: String(fd.get("login")), password: String(fd.get("password")) }),
+        { onOk: () => location.reload() },
+      );
+      bindForm(
+        "[data-register-form]",
+        "[data-register-msg]",
+        "[data-register-submit]",
+        (fd) =>
+          acct.register({
+            email: String(fd.get("email")),
+            password: String(fd.get("password")),
+            first_name: String(fd.get("first_name")),
+            last_name: String(fd.get("last_name")),
+            hp: String(fd.get("hp") || ""),
+          }),
+        { onOk: () => location.reload() },
+      );
+      const forgotToggle = document.querySelector<HTMLButtonElement>("[data-forgot-toggle]");
+      const forgotForm = document.querySelector<HTMLElement>("[data-forgot-form]");
+      forgotToggle?.addEventListener("click", () => {
+        if (forgotForm) forgotForm.hidden = !forgotForm.hidden;
+      });
+      bindForm(
+        "[data-forgot-form]",
+        "[data-forgot-msg]",
+        "[data-forgot-submit]",
+        (fd) => acct.forgotPassword(String(fd.get("login"))),
+        { successMsg: S.forgotSent },
+      );
+
+      bindForm("[data-addresses-form]", "[data-addresses-msg]", "[data-addresses-submit]", (fd) =>
+        acct.updateAddresses({
+          billing: {
+            first_name: String(fd.get("billing_first_name") || ""),
+            last_name: String(fd.get("billing_last_name") || ""),
+            company: String(fd.get("billing_company") || ""),
+            address_1: String(fd.get("billing_address_1") || ""),
+            address_2: String(fd.get("billing_address_2") || ""),
+            city: String(fd.get("billing_city") || ""),
+            postcode: String(fd.get("billing_postcode") || ""),
+            country: String(fd.get("billing_country") || ""),
+            phone: String(fd.get("billing_phone") || ""),
+            email: String(fd.get("billing_email") || ""),
+          },
+          shipping: {
+            first_name: String(fd.get("shipping_first_name") || ""),
+            last_name: String(fd.get("shipping_last_name") || ""),
+            company: String(fd.get("shipping_company") || ""),
+            address_1: String(fd.get("shipping_address_1") || ""),
+            address_2: String(fd.get("shipping_address_2") || ""),
+            city: String(fd.get("shipping_city") || ""),
+            postcode: String(fd.get("shipping_postcode") || ""),
+            country: String(fd.get("shipping_country") || ""),
+            phone: String(fd.get("shipping_phone") || ""),
+          },
+        }),
+      );
+
+      bindForm("[data-details-form]", "[data-details-msg]", "[data-details-submit]", (fd) => {
+        const payload: Record<string, string> = {
+          first_name: String(fd.get("first_name") || ""),
+          last_name: String(fd.get("last_name") || ""),
+          email: String(fd.get("email") || ""),
+        };
+        const newPw = String(fd.get("new_password") || "");
+        if (newPw) {
+          payload.new_password = newPw;
+          payload.current_password = String(fd.get("current_password") || "");
+        }
+        return acct.updateMe(payload);
+      });
+
+      async function renderOrders() {
+        const el = document.querySelector<HTMLElement>("[data-orders-list]");
+        if (!el) return;
+        const orders = await acct.listOrders();
+        if (!orders.length) {
+          el.innerHTML = `<p class="kx-acct-notice">${esc(S.noOrders)}</p><a class="kx-btn" href="${esc(S.homeUrl)}">${esc(S.browseProducts)}</a>`;
+          return;
+        }
+        el.innerHTML = `<table class="kx-acct-table">
+          <thead><tr><th>${esc(S.orderNumber)}</th><th>${esc(S.orderDate)}</th><th>${esc(S.orderStatus)}</th><th>${esc(S.orderTotal)}</th><th></th></tr></thead>
+          <tbody>${orders
+            .map(
+              (o) => `<tr>
+            <td>#${esc(o.number)}</td>
+            <td>${o.date ? esc(new Date(o.date).toLocaleDateString()) : ""}</td>
+            <td>${esc(o.status_label)}</td>
+            <td>${esc(o.total)} ${esc(o.currency)}</td>
+            <td><a class="kx-btn kx-btn--ghost" href="${esc(S.orderUrl)}?id=${o.id}">${esc(S.view)}</a></td>
+          </tr>`,
+            )
+            .join("")}</tbody>
+        </table>`;
+      }
+
+      async function renderOrderDetail() {
+        const el = document.querySelector<HTMLElement>("[data-order-detail]");
+        const titleEl = document.querySelector<HTMLElement>("[data-order-title]");
+        if (!el) return;
+        const id = new URLSearchParams(location.search).get("id");
+        if (!id) {
+          el.innerHTML = `<p class="kx-acct-notice">${esc(S.errGeneric)}</p>`;
+          return;
+        }
+        try {
+          const o = await acct.getOrder(id);
+          if (titleEl) titleEl.textContent = `${S.orderNumber} #${o.number}`;
+          const addr = (a: typeof o.billing) =>
+            [a.first_name + " " + a.last_name, a.company, a.address_1, a.address_2, `${a.postcode} ${a.city}`, a.country, a.phone]
+              .filter(Boolean)
+              .map(esc)
+              .join("<br>");
+          el.innerHTML = `
+            <table class="kx-acct-table">
+              <thead><tr><th>${esc(S.product)}</th><th>${esc(S.quantity)}</th><th>${esc(S.orderTotal)}</th></tr></thead>
+              <tbody>${o.items
+                .map(
+                  (it) => `<tr><td>${esc(it.name)}</td><td>${it.quantity}</td><td>${esc(it.total)} ${esc(o.currency)}</td></tr>`,
+                )
+                .join("")}</tbody>
+              <tfoot><tr><td colspan="2">${esc(S.orderTotal)}</td><td>${esc(o.total)} ${esc(o.currency)}</td></tr></tfoot>
+            </table>
+            <div class="kx-acct-order-meta">
+              <div><h3>${esc(S.shipping)}</h3><p>${esc(o.shipping_method)}</p>
+                ${o.parcel_point ? `<p>${esc(o.parcel_point.name)}<br>${esc(o.parcel_point.address)}<br>${esc(o.parcel_point.zipcode)} ${esc(o.parcel_point.city)}</p>` : ""}
+              </div>
+              <div><h3>${esc(S.paymentMethod)}</h3><p>${esc(o.payment_method_title)}</p></div>
+              <div><h3>${esc(S.billingAddress)}</h3><p>${addr(o.billing)}</p></div>
+              <div><h3>${esc(S.shippingAddress)}</h3><p>${addr(o.shipping_address)}</p></div>
+            </div>`;
+        } catch (err) {
+          el.innerHTML = `<p class="kx-acct-notice">${esc(errMsg(err))}</p>`;
+        }
+      }
+
+      async function fillAddressesForm(a: Awaited<ReturnType<typeof acct.getAddresses>>) {
+        const form = document.querySelector<HTMLFormElement>("[data-addresses-form]");
+        if (!form) return;
+        for (const [k, v] of Object.entries(a.billing)) {
+          const input = form.elements.namedItem(`billing_${k}`) as HTMLInputElement | null;
+          if (input) input.value = v as string;
+        }
+        for (const [k, v] of Object.entries(a.shipping)) {
+          const input = form.elements.namedItem(`shipping_${k}`) as HTMLInputElement | null;
+          if (input) input.value = v as string;
+        }
+      }
+
+      function fillDetailsForm(me: Awaited<ReturnType<typeof acct.getMe>>) {
+        const form = document.querySelector<HTMLFormElement>("[data-details-form]");
+        if (!form) return;
+        (form.elements.namedItem("first_name") as HTMLInputElement).value = me.first_name || "";
+        (form.elements.namedItem("last_name") as HTMLInputElement).value = me.last_name || "";
+        (form.elements.namedItem("email") as HTMLInputElement).value = me.email || "";
+      }
+
+      (async () => {
+        const me = await acct.isLoggedIn();
+        loading.hidden = true;
+
+        if (!me) {
+          guest.hidden = false;
+          nav.hidden = true; // pas de menu tant qu'on n'est pas connecté
+          return;
+        }
+
+        nav.hidden = false;
+        app.hidden = false;
+
+        if (view === "dashboard") {
+          const w = document.querySelector<HTMLElement>("[data-dash-welcome]");
+          if (w) w.textContent = `${S.welcome} ${me.first_name || me.email}`;
+        } else if (view === "orders") {
+          renderOrders();
+        } else if (view === "order") {
+          renderOrderDetail();
+        } else if (view === "addresses") {
+          acct.getAddresses().then(fillAddressesForm).catch(() => {});
+        } else if (view === "details") {
+          fillDetailsForm(me);
+        }
+      })();
+    }
+  </script>
+</Base>
+
+<style>
+  .kx-acct-solo {
+    max-width: 26rem;
+    padding-block: 3rem 5rem;
+  }
+  .kx-acct {
+    display: grid;
+    grid-template-columns: 14rem 1fr;
+    gap: 3rem;
+    padding-block: 2rem 5rem;
+    align-items: start;
+  }
+  .kx-acct__nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .kx-acct__nav li {
+    border-bottom: 1px solid var(--kx-line);
+  }
+  .kx-acct__nav a,
+  .kx-acct__logout {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 0.75em 0;
+    color: var(--kx-ink);
+    text-decoration: none;
+    font-size: 0.9rem;
+    background: none;
+    border: 0;
+    font: inherit;
+    cursor: pointer;
+  }
+  .kx-acct__nav li.is-active > a,
+  .kx-acct__nav a:hover,
+  .kx-acct__logout:hover {
+    color: var(--kx-red);
+  }
+  .kx-acct-loading {
+    color: var(--kx-muted);
+    font-size: var(--kx-text-sm);
+  }
+  .kx-acct-auth {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+  }
+  .kx-acct-form {
+    display: grid;
+    gap: 1rem;
+    max-width: 26rem;
+  }
+  .kx-acct-form__row {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr 1fr;
+  }
+  .kx-acct-form fieldset {
+    display: grid;
+    gap: 1rem;
+    border: 0;
+    padding: 0;
+    margin: 0 0 1.5rem;
+  }
+  .kx-acct-form legend {
+    font-family: var(--kx-font-display);
+    color: var(--kx-petrol);
+    padding: 0 0 0.75rem;
+    font-size: var(--kx-text-lg);
+  }
+  .kx-acct-form label {
+    display: grid;
+    gap: 0.35rem;
+    font-size: var(--kx-text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--kx-muted);
+  }
+  .kx-acct-form input {
+    font: inherit;
+    font-size: var(--kx-text-sm);
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--kx-ink);
+    padding: 0.7em 0.8em;
+    border: 1px solid var(--kx-line-strong);
+    border-radius: var(--kx-radius);
+    background: var(--kx-paper);
+  }
+  .kx-acct-form input:focus-visible {
+    outline: 2px solid var(--kx-petrol);
+    outline-offset: 1px;
+    border-color: var(--kx-petrol);
+  }
+  .kx-acct-form .kx-btn {
+    justify-self: start;
+  }
+  .kx-acct-hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+  .kx-acct-link {
+    justify-self: start;
+    background: none;
+    border: 0;
+    padding: 0;
+    color: var(--kx-muted);
+    font-size: var(--kx-text-xs);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  .kx-acct-notice {
+    font-size: var(--kx-text-xs);
+    color: var(--kx-muted);
+    line-height: 1.6;
+  }
+  .kx-acct-msg {
+    margin: 0;
+    font-size: var(--kx-text-sm);
+    padding: 0.75rem 1rem;
+    border-top: 3px solid var(--kx-petrol);
+    background: var(--kx-raise);
+  }
+  .kx-acct-msg.is-error {
+    border-top-color: var(--kx-red);
+  }
+  .kx-acct-msg.is-ok {
+    border-top-color: var(--kx-instock);
+  }
+  .kx-acct-invalid {
+    font-size: var(--kx-text-sm);
+    color: var(--kx-muted);
+  }
+  .kx-acct-back {
+    display: inline-block;
+    margin-bottom: 1rem;
+    font-size: var(--kx-text-xs);
+    color: var(--kx-muted);
+    text-decoration: none;
+  }
+  .kx-acct-back:hover {
+    color: var(--kx-red);
+  }
+  .kx-acct-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid var(--kx-line);
+    font-size: var(--kx-text-sm);
+    margin-bottom: 2rem;
+  }
+  .kx-acct-table th,
+  .kx-acct-table td {
+    text-align: left;
+    padding: 0.65em 0.8em;
+    border-top: 1px solid var(--kx-line);
+  }
+  .kx-acct-table th {
+    background: var(--kx-raise);
+    color: var(--kx-muted);
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: var(--kx-text-xs);
+    border-top: 0;
+  }
+  .kx-acct-table tfoot td {
+    font-weight: 700;
+  }
+  .kx-acct-order-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: 1.5rem;
+    font-size: var(--kx-text-sm);
+  }
+  .kx-acct-order-meta h3 {
+    font-size: var(--kx-text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--kx-muted);
+    margin: 0 0 0.4rem;
+  }
+  .kx-acct-order-meta p {
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 48rem) {
+    .kx-acct {
+      grid-template-columns: 1fr;
+    }
+    .kx-acct-auth {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
