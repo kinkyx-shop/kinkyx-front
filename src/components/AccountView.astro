@@ -317,6 +317,13 @@ const strings = {
     const esc = (s: string) =>
       String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 
+    // WooCommerce renvoie parfois un total de ligne non arrondi (répartition
+    // d'une remise/taxe sur une quantité) — on affiche toujours 2 décimales.
+    const money = (v: string | number) => {
+      const n = Number(v);
+      return Number.isFinite(n) ? n.toFixed(2) : esc(String(v));
+    };
+
     /* --------------------------------------------------------- réinitialisation */
     const resetForm = document.querySelector<HTMLFormElement>("[data-reset-form]");
     if (resetForm) {
@@ -499,7 +506,7 @@ const strings = {
             <td>#${esc(o.number)}</td>
             <td>${o.date ? esc(new Date(o.date).toLocaleDateString()) : ""}</td>
             <td>${esc(o.status_label)}</td>
-            <td>${esc(o.total)} ${esc(o.currency)}</td>
+            <td>${money(o.total)} ${esc(o.currency)}</td>
             <td><a class="kx-btn kx-btn--ghost" href="${esc(S.orderUrl)}?id=${o.id}">${esc(S.view)}</a></td>
           </tr>`,
             )
@@ -529,10 +536,10 @@ const strings = {
               <thead><tr><th>${esc(S.product)}</th><th>${esc(S.quantity)}</th><th>${esc(S.orderTotal)}</th></tr></thead>
               <tbody>${o.items
                 .map(
-                  (it) => `<tr><td>${esc(it.name)}</td><td>${it.quantity}</td><td>${esc(it.total)} ${esc(o.currency)}</td></tr>`,
+                  (it) => `<tr><td>${esc(it.name)}</td><td>${it.quantity}</td><td>${money(it.total)} ${esc(o.currency)}</td></tr>`,
                 )
                 .join("")}</tbody>
-              <tfoot><tr><td colspan="2">${esc(S.orderTotal)}</td><td>${esc(o.total)} ${esc(o.currency)}</td></tr></tfoot>
+              <tfoot><tr><td colspan="2">${esc(S.orderTotal)}</td><td>${money(o.total)} ${esc(o.currency)}</td></tr></tfoot>
             </table>
             <div class="kx-acct-order-meta">
               <div><h3>${esc(S.shipping)}</h3><p>${esc(o.shipping_method)}</p>
