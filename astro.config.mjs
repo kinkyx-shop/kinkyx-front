@@ -26,7 +26,7 @@ export default defineConfig({
       // "mon-compte" etc. sans ancre de fin : exclut aussi les sous-pages
       // (mon-compte/commandes/, mon-compte/adresses/…) — toutes noindex.
       filter: (page) =>
-        !/\/(panier|cart|warenkorb|mon-compte|my-account|mein-konto|recherche|search|suche|favoris|favorites|merkliste)(\/|$)/.test(page),
+        !/\/(panier|cart|warenkorb|commande|checkout|kasse|mon-compte|my-account|mein-konto|recherche|search|suche|favoris|favorites|merkliste)(\/|$)/.test(page),
     }),
   ],
   image: {

@@ -1,17 +1,24 @@
 User-agent: *
 Allow: /
+# FR (racine, pas de préfixe de langue)
 Disallow: /panier/
-Disallow: /cart/
-Disallow: /warenkorb/
+Disallow: /commande/
 Disallow: /mon-compte/
-Disallow: /my-account/
-Disallow: /mein-konto/
 Disallow: /recherche/
-Disallow: /search/
-Disallow: /suche/
 Disallow: /favoris/
-Disallow: /favorites/
-Disallow: /merkliste/
+# EN (préfixe /en/)
+Disallow: /en/cart/
+Disallow: /en/checkout/
+Disallow: /en/my-account/
+Disallow: /en/search/
+Disallow: /en/favorites/
+# DE (préfixe /de/)
+Disallow: /de/warenkorb/
+Disallow: /de/kasse/
+Disallow: /de/mein-konto/
+Disallow: /de/suche/
+Disallow: /de/merkliste/
+# proxys API
 Disallow: /store-api/
 Disallow: /site-api/
 

@@ -1,0 +1,106 @@
+---
+import Base from "@/layouts/Base.astro";
+import { useTranslations, localizedPath, routePath } from "@/i18n/utils";
+import { locales, type Locale } from "@/i18n/ui";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const alternates = Object.fromEntries(
+  locales.map((l) => [l, routePath("checkoutConfirmation", l)]),
+) as Record<Locale, string>;
+
+const strings = {
+  title: t("confirmation.title"),
+  intro: t("confirmation.intro"),
+  notFound: t("confirmation.notFound"),
+  orderNumber: t("account.orderNumber"),
+  orderStatus: t("account.orderStatus"),
+  orderTotal: t("account.orderTotal"),
+  viewOrders: t("confirmation.viewOrders"),
+  browseProducts: t("account.browseProducts"),
+  accountNote: t("confirmation.accountNote"),
+  ordersUrl: routePath("accountOrders", locale),
+  homeUrl: localizedPath("/", locale),
+};
+---
+
+<Base title={t("confirmation.title")} description={t("confirmation.title")} alternates={alternates} noindex>
+  <div class="kx-container kx-confirm">
+    <p class="kx-confirm-loading" data-confirm-loading>{t("account.loading")}</p>
+    <div data-confirm-content hidden />
+  </div>
+
+  <script type="application/json" data-confirm-strings set:html={JSON.stringify(strings)} />
+  <script>
+    const S = JSON.parse(document.querySelector("[data-confirm-strings]")!.textContent || "{}") as Record<string, string>;
+    const loading = document.querySelector<HTMLElement>("[data-confirm-loading]")!;
+    const content = document.querySelector<HTMLElement>("[data-confirm-content]")!;
+    const esc = (s: string) =>
+      String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
+
+    (async () => {
+      const params = new URLSearchParams(location.search);
+      const id = params.get("order");
+      const key = params.get("key");
+      loading.hidden = true;
+      content.hidden = false;
+
+      if (!id || !key) {
+        content.innerHTML = `<p class="kx-acct-notice">${esc(S.notFound)}</p>`;
+        return;
+      }
+
+      try {
+        const res = await fetch(`/site-api/kinkyx/v1/order-status?id=${encodeURIComponent(id)}&key=${encodeURIComponent(key)}`);
+        if (!res.ok) throw new Error();
+        const o = await res.json();
+        content.innerHTML = `
+          <h1>${esc(S.title)}</h1>
+          <p>${esc(S.intro)}</p>
+          <table class="kx-acct-table">
+            <tbody>
+              <tr><th>${esc(S.orderNumber)}</th><td>#${esc(o.number)}</td></tr>
+              <tr><th>${esc(S.orderStatus)}</th><td>${esc(o.status_label)}</td></tr>
+              <tr><th>${esc(S.orderTotal)}</th><td>${esc(o.total)} ${esc(o.currency)}</td></tr>
+            </tbody>
+          </table>
+          <p class="kx-acct-notice">${esc(S.accountNote)}</p>
+          <div class="kx-confirm-actions">
+            <a class="kx-btn" href="${esc(S.ordersUrl)}">${esc(S.viewOrders)}</a>
+            <a class="kx-btn kx-btn--ghost" href="${esc(S.homeUrl)}">${esc(S.browseProducts)}</a>
+          </div>`;
+      } catch {
+        content.innerHTML = `<p class="kx-acct-notice">${esc(S.notFound)}</p>`;
+      }
+    })();
+  </script>
+</Base>
+
+<style>
+  .kx-confirm {
+    padding-block: 2.5rem 5rem;
+    max-width: 34rem;
+  }
+  .kx-confirm-loading {
+    color: var(--kx-muted);
+  }
+  .kx-confirm h1 {
+    margin-bottom: 0.75rem;
+  }
+  .kx-confirm .kx-acct-table {
+    margin: 1.5rem 0;
+  }
+  .kx-confirm .kx-acct-table th {
+    width: 40%;
+  }
+  .kx-confirm-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+  }
+</style>

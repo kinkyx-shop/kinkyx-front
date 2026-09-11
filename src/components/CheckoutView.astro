@@ -1,0 +1,515 @@
+---
+/**
+ * Checkout headless (Phase 1 / P1-C) — adresse, mode de livraison, paiement
+ * Stripe, tout en Astro. WooCommerce ne sert que de moteur via l'API Store ;
+ * remplace la redirection vers le tunnel WordPress (kinkyx-handoff.php,
+ * retiré en P1-E une fois ce parcours vérifié en production).
+ */
+import Base from "@/layouts/Base.astro";
+import { useTranslations, localizedPath, routePath } from "@/i18n/utils";
+import { locales, type Locale } from "@/i18n/ui";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const alternates = Object.fromEntries(
+  locales.map((l) => [l, routePath("checkout", l)]),
+) as Record<Locale, string>;
+
+const strings = {
+  emptyCart: t("checkout.emptyCart"),
+  backToCart: t("checkout.backToCart"),
+  shipToDifferent: t("checkout.shipToDifferent"),
+  shippingMethod: t("checkout.shippingMethod"),
+  placeOrder: t("checkout.placeOrder"),
+  placingOrder: t("checkout.placingOrder"),
+  processing3ds: t("checkout.processing3ds"),
+  errPayment: t("checkout.errPayment"),
+  err3ds: t("checkout.err3ds"),
+  errTerms: t("checkout.errTerms"),
+  errGeneric: t("account.errGeneric"),
+  cartHref: routePath("cart", locale),
+  confirmationUrl: routePath("checkoutConfirmation", locale),
+  stripeKey: import.meta.env.PUBLIC_STRIPE_PUBLISHABLE_KEY || "",
+};
+---
+
+<Base title={t("checkout.title")} description={t("checkout.title")} alternates={alternates} noindex>
+  <div class="kx-container kx-checkout">
+    <h1>{t("checkout.title")}</h1>
+
+    <p class="kx-checkout-loading" data-checkout-loading>{t("account.loading")}</p>
+
+    <div class="kx-checkout-empty" data-checkout-empty hidden>
+      <p>{t("checkout.emptyCart")}</p>
+      <a class="kx-btn kx-btn--ghost" href={localizedPath("/", locale)}>{t("account.browseProducts")}</a>
+    </div>
+
+    <form class="kx-checkout-form" data-checkout-form hidden novalidate>
+      <div class="kx-checkout-grid">
+        <div class="kx-checkout-fields">
+          <fieldset>
+            <legend>{t("account.billingAddress")}</legend>
+            <div class="kx-acct-form__row">
+              <label><span>{t("account.firstName")} *</span><input name="billing_first_name" required autocomplete="given-name" /></label>
+              <label><span>{t("account.lastName")} *</span><input name="billing_last_name" required autocomplete="family-name" /></label>
+            </div>
+            <label><span>{t("account.email")} *</span><input type="email" name="billing_email" required autocomplete="email" /></label>
+            <label><span>{t("account.company")}</span><input name="billing_company" autocomplete="organization" /></label>
+            <label><span>{t("account.address1")} *</span><input name="billing_address_1" required autocomplete="address-line1" /></label>
+            <label><span>{t("account.address2")}</span><input name="billing_address_2" autocomplete="address-line2" /></label>
+            <div class="kx-acct-form__row">
+              <label><span>{t("account.postcode")} *</span><input name="billing_postcode" required autocomplete="postal-code" data-address-trigger /></label>
+              <label><span>{t("account.city")} *</span><input name="billing_city" required autocomplete="address-level2" data-address-trigger /></label>
+            </div>
+            <label>
+              <span>{t("account.country")} *</span>
+              <select name="billing_country" required autocomplete="country" data-address-trigger>
+                <option value="FR">France</option>
+                <option value="BE">Belgique</option>
+                <option value="CH">Suisse</option>
+                <option value="LU">Luxembourg</option>
+                <option value="DE">Deutschland</option>
+              </select>
+            </label>
+            <label><span>{t("account.phone")} *</span><input type="tel" name="billing_phone" required autocomplete="tel" /></label>
+          </fieldset>
+
+          <label class="kx-checkout-check">
+            <input type="checkbox" data-ship-different />
+            <span>{t("checkout.shipToDifferent")}</span>
+          </label>
+
+          <fieldset data-shipping-fields hidden>
+            <legend>{t("account.shippingAddress")}</legend>
+            <div class="kx-acct-form__row">
+              <label><span>{t("account.firstName")}</span><input name="shipping_first_name" autocomplete="given-name" /></label>
+              <label><span>{t("account.lastName")}</span><input name="shipping_last_name" autocomplete="family-name" /></label>
+            </div>
+            <label><span>{t("account.company")}</span><input name="shipping_company" autocomplete="organization" /></label>
+            <label><span>{t("account.address1")}</span><input name="shipping_address_1" autocomplete="address-line1" /></label>
+            <label><span>{t("account.address2")}</span><input name="shipping_address_2" autocomplete="address-line2" /></label>
+            <div class="kx-acct-form__row">
+              <label><span>{t("account.postcode")}</span><input name="shipping_postcode" autocomplete="postal-code" data-address-trigger /></label>
+              <label><span>{t("account.city")}</span><input name="shipping_city" autocomplete="address-level2" data-address-trigger /></label>
+            </div>
+            <label>
+              <span>{t("account.country")}</span>
+              <select name="shipping_country" autocomplete="country" data-address-trigger>
+                <option value="FR">France</option>
+                <option value="BE">Belgique</option>
+                <option value="CH">Suisse</option>
+                <option value="LU">Luxembourg</option>
+                <option value="DE">Deutschland</option>
+              </select>
+            </label>
+          </fieldset>
+
+          <fieldset class="kx-checkout-shipping" data-shipping-methods hidden>
+            <legend>{t("checkout.shippingMethod")}</legend>
+            <div data-shipping-rates />
+          </fieldset>
+
+          <label class="kx-checkout-notes-label">
+            <span>{t("checkout.orderNotes")}</span>
+            <textarea name="customer_note" rows="3"></textarea>
+          </label>
+        </div>
+
+        <div class="kx-checkout-summary">
+          <h2>{t("account.orders")}</h2>
+          <div data-checkout-summary />
+
+          <h2>{t("checkout.payment")}</h2>
+          <label class="kx-checkout-card-label">
+            <span>{t("checkout.cardDetails")} *</span>
+            <div class="kx-checkout-card" data-card-element></div>
+          </label>
+
+          <label class="kx-checkout-check">
+            <input type="checkbox" name="terms" required data-terms />
+            <span>{t("checkout.terms")}</span>
+          </label>
+
+          <button type="submit" class="kx-btn kx-checkout-submit" data-checkout-submit disabled>
+            {t("checkout.placeOrder")}
+          </button>
+          <p class="kx-acct-msg" data-checkout-msg role="status" hidden />
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <script type="application/json" data-checkout-strings set:html={JSON.stringify(strings)} />
+
+  <script>
+    import { refresh, updateCustomer, selectShippingRate, money, type Address, type ShippingRate } from "@/scripts/cart";
+    import { mountCard, placeOrder } from "@/scripts/checkout";
+
+    const S = JSON.parse(document.querySelector("[data-checkout-strings]")!.textContent || "{}") as Record<string, string>;
+    const loading = document.querySelector<HTMLElement>("[data-checkout-loading]")!;
+    const emptyBox = document.querySelector<HTMLElement>("[data-checkout-empty]")!;
+    const form = document.querySelector<HTMLFormElement>("[data-checkout-form]")!;
+    const submitBtn = document.querySelector<HTMLButtonElement>("[data-checkout-submit]")!;
+    const msg = document.querySelector<HTMLElement>("[data-checkout-msg]")!;
+    const shipDifferent = document.querySelector<HTMLInputElement>("[data-ship-different]")!;
+    const shippingFields = document.querySelector<HTMLElement>("[data-shipping-fields]")!;
+    const shippingMethods = document.querySelector<HTMLElement>("[data-shipping-methods]")!;
+    const shippingRatesEl = document.querySelector<HTMLElement>("[data-shipping-rates]")!;
+    const summaryEl = document.querySelector<HTMLElement>("[data-checkout-summary]")!;
+    const cardMountEl = document.querySelector<HTMLElement>("[data-card-element]")!;
+
+    const esc = (s: string) =>
+      String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
+
+    function fieldVal(name: string): string {
+      return (form.elements.namedItem(name) as HTMLInputElement | null)?.value?.trim() || "";
+    }
+
+    function billingAddress(): Address {
+      return {
+        first_name: fieldVal("billing_first_name"),
+        last_name: fieldVal("billing_last_name"),
+        company: fieldVal("billing_company"),
+        address_1: fieldVal("billing_address_1"),
+        address_2: fieldVal("billing_address_2"),
+        city: fieldVal("billing_city"),
+        postcode: fieldVal("billing_postcode"),
+        country: fieldVal("billing_country") || "FR",
+        phone: fieldVal("billing_phone"),
+        email: fieldVal("billing_email"),
+      };
+    }
+    function shippingAddress(): Address {
+      if (!shipDifferent.checked) return billingAddress();
+      return {
+        first_name: fieldVal("shipping_first_name") || fieldVal("billing_first_name"),
+        last_name: fieldVal("shipping_last_name") || fieldVal("billing_last_name"),
+        company: fieldVal("shipping_company"),
+        address_1: fieldVal("shipping_address_1"),
+        address_2: fieldVal("shipping_address_2"),
+        city: fieldVal("shipping_city"),
+        postcode: fieldVal("shipping_postcode"),
+        country: fieldVal("shipping_country") || "FR",
+      };
+    }
+
+    shipDifferent.addEventListener("change", () => {
+      shippingFields.hidden = !shipDifferent.checked;
+    });
+
+    function renderRates(rates: ShippingRate[], unit: number, sym: string) {
+      shippingMethods.hidden = rates.length === 0;
+      shippingRatesEl.innerHTML = rates
+        .map(
+          (r) => `<label class="kx-checkout-rate">
+        <input type="radio" name="shipping_rate" value="${esc(r.rate_id)}" ${r.selected ? "checked" : ""}>
+        <span>${esc(r.name)}</span>
+        <strong>${money(r.price, unit, sym)}</strong>
+      </label>`,
+        )
+        .join("");
+      shippingRatesEl.querySelectorAll<HTMLInputElement>('input[name="shipping_rate"]').forEach((input) => {
+        input.addEventListener("change", async () => {
+          try {
+            const cart = await selectShippingRate(0, input.value);
+            renderSummary(cart);
+          } catch {
+            /* le total se mettra à jour au prochain essai */
+          }
+        });
+      });
+      updateSubmitState();
+    }
+
+    let addressTimer: number | undefined;
+    async function refreshShippingRates() {
+      const b = billingAddress();
+      const s = shippingAddress();
+      if (!b.postcode || !b.city || !b.country) return;
+      try {
+        const cart = await updateCustomer(b, s);
+        const pkg = cart.shipping_rates?.[0];
+        const unit = cart.totals?.currency_minor_unit ?? 2;
+        const sym = cart.totals?.currency_symbol ?? "€";
+        if (pkg) renderRates(pkg.shipping_rates, unit, sym);
+        renderSummary(cart);
+      } catch {
+        /* adresse pas encore complète/valide, on retentera */
+      }
+    }
+    document.querySelectorAll<HTMLElement>("[data-address-trigger]").forEach((el) => {
+      el.addEventListener("change", () => {
+        window.clearTimeout(addressTimer);
+        addressTimer = window.setTimeout(refreshShippingRates, 400);
+      });
+    });
+
+    function renderSummary(cart: Awaited<ReturnType<typeof refresh>>) {
+      const items = cart.items ?? [];
+      const unit = cart.totals?.currency_minor_unit ?? 2;
+      const sym = cart.totals?.currency_symbol ?? "€";
+      summaryEl.innerHTML = `
+        <ul class="kx-checkout-lines">
+          ${items
+            .map(
+              (it) =>
+                `<li><span>${esc(it.name)} × ${it.quantity}</span><span>${money(it.totals?.line_total, unit, sym)}</span></li>`,
+            )
+            .join("")}
+        </ul>
+        ${
+          cart.totals?.total_shipping !== undefined
+            ? `<div class="kx-checkout-total"><span>${esc(S.shippingMethod)}</span><span>${money(cart.totals.total_shipping, unit, sym)}</span></div>`
+            : ""
+        }
+        <div class="kx-checkout-total kx-checkout-total--sum">
+          <span>Total</span>
+          <strong>${money(cart.totals?.total_price, unit, sym)}</strong>
+        </div>`;
+      updateSubmitState();
+    }
+
+    function updateSubmitState() {
+      const hasRate = !!shippingRatesEl.querySelector('input[name="shipping_rate"]');
+      submitBtn.disabled = !hasRate;
+    }
+
+    let cardMount: Awaited<ReturnType<typeof mountCard>> | null = null;
+
+    (async () => {
+      let cart;
+      try {
+        cart = await refresh();
+      } catch {
+        cart = null;
+      }
+      loading.hidden = true;
+      if (!cart || !cart.items || cart.items.length === 0) {
+        emptyBox.hidden = false;
+        return;
+      }
+      form.hidden = false;
+      renderSummary(cart);
+
+      if (S.stripeKey) {
+        cardMount = await mountCard(cardMountEl, S.stripeKey);
+      } else {
+        cardMountEl.textContent = S.errGeneric;
+      }
+    })();
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!form.reportValidity()) return;
+      const terms = document.querySelector<HTMLInputElement>("[data-terms]")!;
+      if (!terms.checked) {
+        msg.textContent = S.errTerms;
+        msg.className = "kx-acct-msg is-error";
+        msg.hidden = false;
+        return;
+      }
+      const rateInput = shippingRatesEl.querySelector<HTMLInputElement>('input[name="shipping_rate"]:checked');
+      if (!rateInput || !cardMount) {
+        msg.textContent = S.errGeneric;
+        msg.className = "kx-acct-msg is-error";
+        msg.hidden = false;
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = S.placingOrder;
+      msg.hidden = true;
+
+      const result = await placeOrder(
+        cardMount,
+        billingAddress(),
+        shippingAddress(),
+        fieldVal("customer_note"),
+        () => {
+          submitBtn.textContent = S.processing3ds;
+        },
+      );
+
+      if (result.ok) {
+        location.href = `${S.confirmationUrl}?order=${result.orderId}&key=${encodeURIComponent(result.orderKey)}`;
+        return;
+      }
+
+      msg.textContent = result.error || S.errPayment;
+      msg.className = "kx-acct-msg is-error";
+      msg.hidden = false;
+      submitBtn.disabled = false;
+      submitBtn.textContent = S.placeOrder;
+    });
+  </script>
+</Base>
+
+<style>
+  .kx-checkout {
+    padding-block: 1.75rem 5rem;
+  }
+  .kx-checkout h1 {
+    margin-bottom: 1.5rem;
+  }
+  .kx-checkout-loading {
+    color: var(--kx-muted);
+  }
+  .kx-checkout-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
+    color: var(--kx-muted);
+  }
+  .kx-checkout-grid {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+  .kx-checkout-fields fieldset {
+    display: grid;
+    gap: 1rem;
+    border: 0;
+    padding: 0;
+    margin: 0 0 1.5rem;
+  }
+  .kx-checkout-fields legend {
+    font-family: var(--kx-font-display);
+    color: var(--kx-petrol);
+    padding: 0 0 0.75rem;
+    font-size: var(--kx-text-lg);
+  }
+  .kx-checkout-fields label:not(.kx-checkout-check):not(.kx-checkout-rate) {
+    display: grid;
+    gap: 0.35rem;
+    font-size: var(--kx-text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--kx-muted);
+  }
+  .kx-checkout-fields input,
+  .kx-checkout-fields select,
+  .kx-checkout-fields textarea,
+  .kx-checkout-notes-label textarea {
+    font: inherit;
+    font-size: var(--kx-text-sm);
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--kx-ink);
+    padding: 0.7em 0.8em;
+    border: 1px solid var(--kx-line-strong);
+    border-radius: var(--kx-radius);
+    background: var(--kx-paper);
+  }
+  .kx-checkout-notes-label {
+    display: grid;
+    gap: 0.35rem;
+    font-size: var(--kx-text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--kx-muted);
+    margin-top: 1rem;
+  }
+  .kx-acct-form__row {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr 1fr;
+  }
+  .kx-checkout-check {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: var(--kx-text-sm);
+    color: var(--kx-ink);
+    margin-bottom: 1.25rem;
+  }
+  .kx-checkout-rate {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6em 0;
+    font-size: var(--kx-text-sm);
+    border-bottom: 1px solid var(--kx-line);
+  }
+  .kx-checkout-rate span {
+    flex: 1;
+  }
+  .kx-checkout-summary {
+    background: var(--kx-raise);
+    border: 1px solid var(--kx-line);
+    border-radius: var(--kx-radius);
+    padding: 1.5rem;
+  }
+  .kx-checkout-summary h2 {
+    font-size: var(--kx-text-lg);
+    margin: 0 0 1rem;
+  }
+  .kx-checkout-summary h2:not(:first-child) {
+    margin-top: 2rem;
+  }
+  .kx-checkout-lines {
+    list-style: none;
+    margin: 0 0 1rem;
+    padding: 0;
+    font-size: var(--kx-text-sm);
+  }
+  .kx-checkout-lines li {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.4em 0;
+    border-bottom: 1px solid var(--kx-line);
+  }
+  .kx-checkout-total {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--kx-text-sm);
+    padding: 0.3em 0;
+  }
+  .kx-checkout-total--sum {
+    font-size: var(--kx-text-lg);
+    margin-top: 0.4rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid var(--kx-line-strong);
+  }
+  .kx-checkout-total--sum strong {
+    color: var(--kx-petrol);
+  }
+  .kx-checkout-card-label {
+    display: block;
+    margin: 1.25rem 0;
+    font-size: var(--kx-text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--kx-muted);
+  }
+  .kx-checkout-card {
+    margin-top: 0.4rem;
+    padding: 0.85em 0.8em;
+    border: 1px solid var(--kx-line-strong);
+    border-radius: var(--kx-radius);
+    background: var(--kx-paper);
+  }
+  .kx-checkout-submit {
+    width: 100%;
+  }
+  .kx-checkout-submit[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  @media (max-width: 56rem) {
+    .kx-checkout-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 30rem) {
+    .kx-acct-form__row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

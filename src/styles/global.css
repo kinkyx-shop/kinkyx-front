@@ -256,3 +256,50 @@ img {
   color: var(--kx-muted);
   font-size: var(--kx-text-xs);
 }
+
+/* --- compte / checkout headless (Phase 1) : partagées entre AccountView,
+       CheckoutView et OrderConfirmationView — global pour éviter les 3
+       copies (le scoping Astro est par composant). --- */
+.kx-acct-msg {
+  margin: 0;
+  font-size: var(--kx-text-sm);
+  padding: 0.75rem 1rem;
+  border-top: 3px solid var(--kx-petrol);
+  background: var(--kx-raise);
+}
+.kx-acct-msg.is-error {
+  border-top-color: var(--kx-red);
+}
+.kx-acct-msg.is-ok {
+  border-top-color: var(--kx-instock);
+}
+.kx-acct-notice {
+  font-size: var(--kx-text-xs);
+  color: var(--kx-muted);
+  line-height: 1.6;
+}
+.kx-acct-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--kx-line);
+  font-size: var(--kx-text-sm);
+}
+.kx-acct-table th,
+.kx-acct-table td {
+  text-align: left;
+  padding: 0.65em 0.8em;
+  border-top: 1px solid var(--kx-line);
+}
+.kx-acct-table th {
+  background: var(--kx-raise);
+  color: var(--kx-muted);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: var(--kx-text-xs);
+  border-top: 0;
+}
+.kx-acct-table tfoot td {
+  font-weight: 700;
+}

@@ -35,14 +35,14 @@ const L = {
   <div class="kx-container kx-cart">
     <h1>{title}</h1>
 
-    <div data-cart-root data-locale={locale} data-shop-href={localizedPath("/", locale)}>
+    <div data-cart-root data-locale={locale} data-shop-href={localizedPath("/", locale)} data-checkout-href={routePath("checkout", locale)}>
       <p class="kx-cart__loading">{L.loading}</p>
     </div>
   </div>
 
   <script type="application/json" data-cart-strings set:html={JSON.stringify(L)} />
   <script>
-    import { refresh, setQuantity, removeItem, handoffUrl, money, type CartResponse } from "../scripts/cart";
+    import { refresh, setQuantity, removeItem, money, type CartResponse } from "../scripts/cart";
 
     const root = document.querySelector<HTMLElement>("[data-cart-root]");
     const strings = JSON.parse(
@@ -50,6 +50,7 @@ const L = {
     );
     const locale = root?.dataset.locale || "fr";
     const shopHref = root?.dataset.shopHref || "/";
+    const checkoutHref = root?.dataset.checkoutHref || "/commande/";
 
     const esc = (s: string) =>
       String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
@@ -131,7 +132,7 @@ const L = {
       });
 
       root.querySelector("[data-checkout]")?.addEventListener("click", () => {
-        window.location.href = handoffUrl(items, locale);
+        window.location.href = checkoutHref;
       });
     }
 

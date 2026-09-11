@@ -28,17 +28,55 @@ export type CartItem = {
   totals?: { line_total?: string; currency_minor_unit?: number };
 };
 
+export type ShippingRate = {
+  rate_id: string;
+  name: string;
+  description?: string;
+  price: string;
+  selected: boolean;
+  meta_data?: { key: string; value: string }[];
+};
+export type ShippingPackage = { package_id: number | string; shipping_rates: ShippingRate[] };
+
+export type Address = {
+  first_name: string;
+  last_name: string;
+  company?: string;
+  address_1: string;
+  address_2?: string;
+  city: string;
+  state?: string;
+  postcode: string;
+  country: string;
+  phone?: string;
+  email?: string;
+};
+
 export type CartResponse = {
   items_count?: number;
   items?: CartItem[];
+  shipping_rates?: ShippingPackage[];
   totals?: {
     total_items?: string;
     total_price?: string;
+    total_shipping?: string;
     currency_minor_unit?: number;
     currency_symbol?: string;
     currency_code?: string;
   };
   errors?: { code: string; message: string }[];
+};
+
+export type CheckoutResponse = {
+  order_id: number;
+  order_key: string;
+  status: string;
+  payment_method?: string;
+  payment_result?: {
+    payment_status: string;
+    redirect_url: string;
+    payment_details?: { key: string; value: string }[];
+  };
 };
 
 function ls(key: string): string | null {
@@ -72,15 +110,17 @@ function capture(res: Response) {
   if (nonce) setLs(K_NONCE, nonce);
 }
 
-async function req(path: string, init: RequestInit = {}): Promise<CartResponse> {
+async function req<T = CartResponse>(path: string, init: RequestInit = {}): Promise<T> {
   const res = await fetch(`${STORE}${path}`, { ...init, headers: headers(init.headers as Record<string, string>) });
   capture(res);
-  const data = (await res.json().catch(() => ({}))) as CartResponse;
+  const data = (await res.json().catch(() => ({}))) as any;
   if (!res.ok) {
-    const msg = data?.errors?.[0]?.message || `Erreur ${res.status}`;
+    // deux formes d'erreur possibles côté API Store : {message} (WP_Error)
+    // ou {errors:[{message}]} (notices de panier remontées avec un statut KO)
+    const msg = data?.message || data?.errors?.[0]?.message || `Erreur ${res.status}`;
     throw new Error(msg);
   }
-  return data;
+  return data as T;
 }
 
 /** État courant (rafraîchi à chaque appel). */
@@ -130,9 +170,61 @@ export async function removeItem(key: string): Promise<CartResponse> {
   return data;
 }
 
+/** Renseigne l'adresse de facturation/livraison — fait apparaître les frais de port. */
+export async function updateCustomer(billing: Address, shipping: Address): Promise<CartResponse> {
+  const data = await req<CartResponse>("/cart/update-customer", {
+    method: "POST",
+    body: JSON.stringify({ billing_address: billing, shipping_address: shipping }),
+  });
+  announce(data);
+  return data;
+}
+
+export async function selectShippingRate(packageId: number | string, rateId: string): Promise<CartResponse> {
+  const data = await req<CartResponse>("/cart/select-shipping-rate", {
+    method: "POST",
+    body: JSON.stringify({ package_id: packageId, rate_id: rateId }),
+  });
+  announce(data);
+  return data;
+}
+
+/**
+ * Passe la commande. `paymentData` : paires clé/valeur attendues par la
+ * passerelle choisie (pour Stripe : `wc-stripe-payment-method` -> id `pm_…`
+ * créé côté navigateur par Stripe.js).
+ */
+export async function checkout(p: {
+  billing: Address;
+  shipping: Address;
+  paymentMethod: string;
+  paymentData?: { key: string; value: string }[];
+  customerNote?: string;
+}): Promise<CheckoutResponse> {
+  const data = await req<CheckoutResponse>("/checkout", {
+    method: "POST",
+    body: JSON.stringify({
+      billing_address: p.billing,
+      shipping_address: p.shipping,
+      payment_method: p.paymentMethod,
+      payment_data: p.paymentData ?? [],
+      customer_note: p.customerNote ?? "",
+    }),
+  });
+  // la commande est passée : le panier headless est vidé pour cette session
+  cart.count = 0;
+  document.querySelectorAll<HTMLElement>("[data-cart-count]").forEach((el) => {
+    el.textContent = "0";
+    el.hidden = true;
+  });
+  return data;
+}
+
 /**
  * URL de bascule vers le tunnel WooCommerce, avec le panier encodé.
  * Le back charge le panier en session puis redirige vers /commande.
+ * @deprecated remplacé par le checkout headless (P1-C) — gardé le temps de
+ * retirer kinkyx-handoff.php côté back (P1-E).
  */
 export function handoffUrl(items: CartItem[], locale: string): string {
   const base = (
