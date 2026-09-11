@@ -105,7 +105,7 @@ async function proxyStore(req, res) {
 
   const headers = { Accept: "application/json" };
   if (BASIC) headers.Authorization = "Basic " + Buffer.from(BASIC).toString("base64");
-  for (const h of ["content-type", "cart-token", "nonce", "x-wc-store-api-nonce"]) {
+  for (const h of ["content-type", "cart-token", "nonce", "x-wc-store-api-nonce", "cookie"]) {
     if (req.headers[h]) headers[h] = req.headers[h];
   }
 
@@ -124,13 +124,23 @@ async function proxyStore(req, res) {
     return res.end(JSON.stringify({ error: "upstream", message: String(err) }));
   }
 
-  const out = { "content-type": upstream.headers.get("content-type") || "application/json" };
+  res.statusCode = upstream.status;
+  res.setHeader("content-type", upstream.headers.get("content-type") || "application/json");
   for (const h of ["cart-token", "nonce", "x-wc-store-api-nonce"]) {
     const v = upstream.headers.get(h);
-    if (v) out[h.replace(/(^|-)([a-z])/g, (_, p, c) => p + c.toUpperCase())] = v;
+    if (v) res.setHeader(h.replace(/(^|-)([a-z])/g, (_, p, c) => p + c.toUpperCase()), v);
   }
+  // Set-Cookie : plusieurs valeurs possibles, jamais fusionnables par une virgule
+  // (getSetCookie() dédie une API à ça ; sinon on tente un repli best-effort).
+  const setCookies =
+    typeof upstream.headers.getSetCookie === "function"
+      ? upstream.headers.getSetCookie()
+      : upstream.headers.get("set-cookie")
+        ? [upstream.headers.get("set-cookie")]
+        : [];
+  if (setCookies.length) res.setHeader("set-cookie", setCookies);
+
   const text = await upstream.text();
-  res.writeHead(upstream.status, out);
   res.end(text);
 }
 
