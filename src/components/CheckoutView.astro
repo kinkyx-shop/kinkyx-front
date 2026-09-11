@@ -255,10 +255,12 @@ const strings = {
       summaryEl.innerHTML = `
         <ul class="kx-checkout-lines">
           ${items
-            .map(
-              (it) =>
-                `<li><span>${esc(it.name)} × ${it.quantity}</span><span>${money(it.totals?.line_total, unit, sym)}</span></li>`,
-            )
+            .map((it) => {
+              // total TTC de la ligne : line_total (HT) + line_total_tax, pour
+              // rester cohérent avec le Total général (TTC) affiché plus bas.
+              const lineInclTax = Number(it.totals?.line_total || 0) + Number(it.totals?.line_total_tax || 0);
+              return `<li><span>${esc(it.name)} × ${it.quantity}</span><span>${money(lineInclTax, unit, sym)}</span></li>`;
+            })
             .join("")}
         </ul>
         ${

@@ -36,6 +36,8 @@ const strings = {
 
   <script type="application/json" data-confirm-strings set:html={JSON.stringify(strings)} />
   <script>
+    import { moneyFromDecimal } from "@/scripts/cart";
+
     const S = JSON.parse(document.querySelector("[data-confirm-strings]")!.textContent || "{}") as Record<string, string>;
     const loading = document.querySelector<HTMLElement>("[data-confirm-loading]")!;
     const content = document.querySelector<HTMLElement>("[data-confirm-content]")!;
@@ -65,7 +67,7 @@ const strings = {
             <tbody>
               <tr><th>${esc(S.orderNumber)}</th><td>#${esc(o.number)}</td></tr>
               <tr><th>${esc(S.orderStatus)}</th><td>${esc(o.status_label)}</td></tr>
-              <tr><th>${esc(S.orderTotal)}</th><td>${esc(o.total)} ${esc(o.currency)}</td></tr>
+              <tr><th>${esc(S.orderTotal)}</th><td>${moneyFromDecimal(o.total, o.currency)}</td></tr>
             </tbody>
           </table>
           <p class="kx-acct-notice">${esc(S.accountNote)}</p>

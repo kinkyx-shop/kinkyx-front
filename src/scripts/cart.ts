@@ -25,7 +25,7 @@ export type CartItem = {
     currency_minor_unit?: number;
     currency_symbol?: string;
   };
-  totals?: { line_total?: string; currency_minor_unit?: number };
+  totals?: { line_total?: string; line_total_tax?: string; currency_minor_unit?: number };
 };
 
 export type ShippingRate = {
@@ -243,6 +243,19 @@ export function handoffUrl(items: CartItem[], locale: string): string {
 /** Format d'un montant depuis les "minor units" de la Store API (ex. "12000", 2 → "120,00 €"). */
 export function money(minor: string | number | undefined, unit = 2, symbol = "€"): string {
   const n = Number(minor ?? 0) / Math.pow(10, unit);
+  return `${new Intl.NumberFormat("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n)} ${symbol}`;
+}
+
+const CURRENCY_SYMBOLS: Record<string, string> = { EUR: "€", USD: "$", GBP: "£", CHF: "CHF" };
+
+/**
+ * Même rendu que `money()`, mais depuis un montant décimal + un code devise
+ * (ce que renvoient les commandes WooCommerce classiques — /account/orders,
+ * /order-status — à la différence du panier qui parle en "minor units").
+ */
+export function moneyFromDecimal(amount: string | number | undefined, currencyCode = "EUR"): string {
+  const n = Number(amount ?? 0);
+  const symbol = CURRENCY_SYMBOLS[currencyCode] ?? currencyCode;
   return `${new Intl.NumberFormat("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n)} ${symbol}`;
 }
 
