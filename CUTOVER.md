@@ -18,9 +18,12 @@ un jour où personne ne peut surveiller/réagir dans les heures qui suivent.
       actifs.
 - [x] Fichiers + base de prod copiés vers `back.` (voir Phase 2 ci-dessous —
       **déjà fait**, sans risque, ne touchait pas à prod).
+- [x] Mu-plugins headless déployés sur `back.` (voir Phase 2bis — **déjà
+      fait**, testé : namespace REST `kinkyx/v1` répond, `php -l` propre,
+      WP démarre sans erreur).
 - [x] Table de redirections 301 générée (`data/redirects.json`,
       `scripts/build-redirects.mjs`) — **contre le catalogue dev, à
-      régénérer contre prod en Phase 6**.
+      régénérer contre prod (désormais possible via `back.`) en Phase 6**.
 - [x] Clés Stripe live tournées (rotation + nettoyage dev fait).
 - [ ] Tout le reste ci-dessous : bascule réelle, pas encore faite.
 
@@ -61,6 +64,51 @@ prod (pas d'export/import, pas de risque de décalage). Sans impact sur
 `www.` — purement additif. **Si la bascule a lieu plusieurs jours après
 cette copie, la relancer juste avant la Phase 3** pour repartir des données
 les plus fraîches (uploads produits ajoutés entretemps, etc.).
+
+## Phase 2bis — Mu-plugins headless (déjà fait le 2026-09-14)
+
+⚠️ **`back.` a été copié depuis les fichiers de PROD, qui n'a jamais eu les
+mu-plugins Kinkyx** (développés uniquement sur dev). Sans eux, `back.` ne
+peut pas servir de backend au front Astro (pas d'API compte/checkout, pas
+de champs `lang`/`translations` exposés côté REST, etc.).
+
+**9 fichiers à copier** (compte/checkout, i18n REST, images, fabcom, avis
+Google, formulaires) :
+
+```bash
+ssh infomaniak "mkdir -p ~/sites/back.kinkyx-shop.com/wp-content/mu-plugins"
+for f in kinkyx-account-api.php kinkyx-account-skin.php kinkyx-forms.php \
+         kinkyx-google-reviews.php kinkyx-locale.php kinkyx-rest-fabcom.php \
+         kinkyx-rest-images.php kinkyx-rest-lang.php kinkyx-rest-pages.php; do
+  scp "infomaniak:~/sites/dev.kinkyx-shop.com/wp-content/mu-plugins/$f" \
+      "infomaniak:~/sites/back.kinkyx-shop.com/wp-content/mu-plugins/$f"
+done
+ssh infomaniak "cd ~/sites/back.kinkyx-shop.com/wp-content/mu-plugins && for f in *.php; do php -l \$f; done"
+ssh infomaniak "cd ~/sites/back.kinkyx-shop.com && wp eval 'echo \"ok\";'"  # pas de fatal
+```
+
+**⚠️ NE JAMAIS copier ces 5 fichiers présents sur dev** (vérifié un par un
+via leur en-tête avant ce déploiement) :
+- `zzz-dev-safety.php` — bloque **tous** les e-mails sortants et le cache.
+  Copié sur back./prod, il couperait confirmations de commande, reset de
+  mot de passe, etc.
+- `kinkyx-translate.php` / `kinkyx-translate-2.php` — commandes WP-CLI
+  DeepL, explicitement « (DEV only) » dans leur propre en-tête.
+- `kinkyx-templates.php` — explicitement « (DEV only) ».
+- `kinkyx-i18n.php` — compagnon de l'ancien projet Polylang (superseded,
+  voir mémoire `kinkyx-multilingual-project`), sans rapport avec le front
+  headless.
+
+Vérifié 2026-09-14 : `curl https://back.kinkyx-shop.com/wp-json/` liste bien
+le namespace `kinkyx/v1` ; Store API répond (`Tanga Latex` confirmé présent
+dans le vrai catalogue prod, contrairement à dev — cf. Phase 6).
+
+Pour tester le fetch du catalogue (`wc/v3`, authentifié) contre `back.`
+avant la vraie bascule, générer une clé REST **lecture seule** dédiée :
+wp-admin de `back.` → WooCommerce → Réglages → Avancé → API REST → Ajouter
+une clé (ne pas réutiliser les clés existantes trouvées sur prod —
+`TrackShip`, `WooCommerce By Meta`, `TikTok` — qui sont en `read_write` et
+appartiennent à d'autres intégrations).
 
 ## Phase 3 — Bascule DNS `www.` → front Astro ⚠️ IRRÉVERSIBLE EN L'ÉTAT
 
@@ -115,11 +163,13 @@ déconseille de les changer, ils ne doivent pas être des URLs "vivantes").
 paramètres WooCommerce, etc.) — sans ça, un remplacement naïf de chaîne
 corromprait ces valeurs.
 
-## Phase 5 — mu-plugins sur back.
+## Phase 5 — dernier réglage mu-plugin sur back.
 
-Un seul changement : `kx_front_url()` dans `kinkyx-account-skin.php` (et
-partagé via `function_exists()` dans les autres mu-plugins) doit renvoyer
-`https://www.kinkyx-shop.com` au lieu de `https://front.kinkyx-shop.com`.
+Les 9 mu-plugins sont déjà déployés (Phase 2bis). Il reste un seul
+changement : `kx_front_url()` dans `kinkyx-account-skin.php` (et partagé
+via `function_exists()` dans les autres mu-plugins) doit renvoyer
+`https://www.kinkyx-shop.com` au lieu de `https://front.kinkyx-shop.com`
+une fois que `www.` sert réellement le nouveau front (Phase 3 faite).
 
 ```bash
 # éditer la ligne par défaut de kx_front_url() puis redéployer :
