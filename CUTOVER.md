@@ -21,9 +21,12 @@ un jour où personne ne peut surveiller/réagir dans les heures qui suivent.
 - [x] Mu-plugins headless déployés sur `back.` (voir Phase 2bis — **déjà
       fait**, testé : namespace REST `kinkyx/v1` répond, `php -l` propre,
       WP démarre sans erreur).
-- [x] Table de redirections 301 générée (`data/redirects.json`,
-      `scripts/build-redirects.mjs`) — **contre le catalogue dev, à
-      régénérer contre prod (désormais possible via `back.`) en Phase 6**.
+- [x] Table de redirections 301 générée **contre le vrai catalogue prod**
+      (via `back.`, clé REST lecture seule dédiée) : 250/250 produits +
+      40/40 catégories appariés, zéro cas non résolu — « Tanga Latex »
+      confirmé et correctement redirigé. Rien à refaire en Phase 6 sauf
+      si le catalogue change significativement d'ici la bascule (produits
+      ajoutés/retirés).
 - [x] Clés Stripe live tournées (rotation + nettoyage dev fait).
 - [ ] Tout le reste ci-dessous : bascule réelle, pas encore faite.
 
@@ -192,20 +195,26 @@ resurgi avec la copie.
       WordPress.
 - [ ] **Passerelle `cheque`** (paiement de test préprod) :
       `wp wc payment_gateway update cheque --enabled=false --path=...`
-- [ ] **Table de redirections** — la régénérer contre les vraies données
-      prod maintenant que `back.` en dispose :
+- [x] **Table de redirections** — **déjà régénérée le 2026-09-14** contre
+      le vrai catalogue prod via `back.` : 250/250 produits + 40/40
+      catégories, zéro cas non résolu, « Tanga Latex » confirmé et
+      correctement redirigé. Si le catalogue a changé de façon notable
+      entretemps (nouveaux produits, catégories réorganisées), relancer :
       ```bash
       cd kinkyx-front && WOO_API_URL="https://back.kinkyx-shop.com/wp-json" \
         WOO_CONSUMER_KEY="<clé prod>" WOO_CONSUMER_SECRET="<secret prod>" \
         node scripts/build-redirects.mjs
       ```
-      (générer des clés REST WooCommerce en lecture sur `back.` si pas déjà
-      fait : WooCommerce → Réglages → Avancé → API REST). Vérifier le
-      rapport d'appariement (attendu : très proche de 250/250 + 40/40, cf.
-      session du 2026-09-14) — en particulier confirmer le sort du produit
-      « Tanga Latex » (`/latex/femme/tanga-latex/`), signalé comme encore en
-      vente mais absent du catalogue dev au moment du premier passage.
-      Commit + push + déployer sur le Builder.
+      (clé REST WooCommerce dédiée en lecture seule, créée sur `back.` :
+      WooCommerce → Réglages → Avancé → API REST — ne pas réutiliser les
+      clés `TrackShip`/`WooCommerce By Meta`/`TikTok` déjà en place).
+      Note technique : si le fetch échoue avec `ENOTFOUND` alors que le
+      site répond bien en curl, c'est un souci de résolution DNS dual-stack
+      local à la machine qui exécute le script (rencontré le 2026-09-14
+      sur back. juste après sa création — contourné en forçant la
+      résolution IPv6 dans Node ; probablement lié à la fraîcheur du DNS,
+      à revérifier si ça se reproduit). Commit + push + déployer sur le
+      Builder après toute régénération.
 - [ ] **Ancien WP sous `www.`** : une fois `www.` sert le front Astro,
       s'assurer qu'aucune configuration Infomaniak ne fait encore tourner
       l'ancienne app WP en parallèle sur ce domaine (risque de confusion /
