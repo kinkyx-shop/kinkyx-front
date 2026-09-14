@@ -31,6 +31,9 @@ const strings = {
   err3ds: t("checkout.err3ds"),
   errTerms: t("checkout.errTerms"),
   errGeneric: t("account.errGeneric"),
+  passwordLabel: t("account.password"),
+  passwordHint: t("checkout.passwordHint"),
+  errWeakPassword: t("checkout.errWeakPassword"),
   cartHref: routePath("cart", locale),
   confirmationUrl: routePath("checkoutConfirmation", locale),
   stripeKey: import.meta.env.PUBLIC_STRIPE_PUBLISHABLE_KEY || "",
@@ -58,6 +61,11 @@ const strings = {
               <label><span>{t("account.lastName")} *</span><input name="billing_last_name" required autocomplete="family-name" /></label>
             </div>
             <label><span>{t("account.email")} *</span><input type="email" name="billing_email" required autocomplete="email" /></label>
+            <label data-password-field>
+              <span>{t("account.password")} *</span>
+              <input type="password" name="customer_password" autocomplete="new-password" minlength="8" data-password-input />
+              <small class="kx-checkout-hint">{t("checkout.passwordHint")}</small>
+            </label>
             <label><span>{t("account.company")}</span><input name="billing_company" autocomplete="organization" /></label>
             <label><span>{t("account.address1")} *</span><input name="billing_address_1" required autocomplete="address-line1" /></label>
             <label><span>{t("account.address2")}</span><input name="billing_address_2" autocomplete="address-line2" /></label>
@@ -148,6 +156,7 @@ const strings = {
   <script>
     import { refresh, updateCustomer, selectShippingRate, money, type Address, type ShippingRate } from "@/scripts/cart";
     import { mountCard, placeOrder } from "@/scripts/checkout";
+    import { isLoggedIn } from "@/scripts/account";
 
     const S = JSON.parse(document.querySelector("[data-checkout-strings]")!.textContent || "{}") as Record<string, string>;
     const loading = document.querySelector<HTMLElement>("[data-checkout-loading]")!;
@@ -161,6 +170,9 @@ const strings = {
     const shippingRatesEl = document.querySelector<HTMLElement>("[data-shipping-rates]")!;
     const summaryEl = document.querySelector<HTMLElement>("[data-checkout-summary]")!;
     const cardMountEl = document.querySelector<HTMLElement>("[data-card-element]")!;
+    const passwordField = document.querySelector<HTMLElement>("[data-password-field]")!;
+    const passwordInput = document.querySelector<HTMLInputElement>("[data-password-input]")!;
+    let guest = true;
 
     const esc = (s: string) =>
       String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
@@ -283,12 +295,11 @@ const strings = {
     let cardMount: Awaited<ReturnType<typeof mountCard>> | null = null;
 
     (async () => {
-      let cart;
-      try {
-        cart = await refresh();
-      } catch {
-        cart = null;
-      }
+      const [cartResult, me] = await Promise.allSettled([refresh(), isLoggedIn()]);
+      const cart = cartResult.status === "fulfilled" ? cartResult.value : null;
+      guest = me.status !== "fulfilled" || !me.value;
+      passwordField.hidden = !guest;
+      passwordInput.required = guest;
       loading.hidden = true;
       if (!cart || !cart.items || cart.items.length === 0) {
         emptyBox.hidden = false;
@@ -314,6 +325,12 @@ const strings = {
         msg.hidden = false;
         return;
       }
+      if (guest && passwordInput.value.length < 8) {
+        msg.textContent = S.errWeakPassword;
+        msg.className = "kx-acct-msg is-error";
+        msg.hidden = false;
+        return;
+      }
       const rateInput = shippingRatesEl.querySelector<HTMLInputElement>('input[name="shipping_rate"]:checked');
       if (!rateInput || !cardMount) {
         msg.textContent = S.errGeneric;
@@ -334,6 +351,7 @@ const strings = {
         () => {
           submitBtn.textContent = S.processing3ds;
         },
+        guest ? passwordInput.value : undefined,
       );
 
       if (result.ok) {
@@ -407,6 +425,12 @@ const strings = {
     border: 1px solid var(--kx-line-strong);
     border-radius: var(--kx-radius);
     background: var(--kx-paper);
+  }
+  .kx-checkout-hint {
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: var(--kx-text-xs);
+    color: var(--kx-muted);
   }
   .kx-checkout-notes-label {
     display: grid;

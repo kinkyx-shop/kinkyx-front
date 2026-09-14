@@ -83,6 +83,7 @@ export async function placeOrder(
   shipping: Address,
   customerNote: string,
   on3ds: () => void,
+  customerPassword?: string,
 ): Promise<PlaceOrderResult> {
   const { stripe, card } = mount;
 
@@ -114,6 +115,7 @@ export async function placeOrder(
       paymentMethod: "stripe",
       paymentData: [{ key: "wc-stripe-payment-method", value: pmResult.paymentMethod.id }],
       customerNote,
+      customerPassword,
     });
   } catch (err) {
     return { ok: false, error: (err as Error).message };

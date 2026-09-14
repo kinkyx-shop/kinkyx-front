@@ -200,6 +200,7 @@ export async function checkout(p: {
   paymentMethod: string;
   paymentData?: { key: string; value: string }[];
   customerNote?: string;
+  customerPassword?: string;
 }): Promise<CheckoutResponse> {
   const data = await req<CheckoutResponse>("/checkout", {
     method: "POST",
@@ -209,6 +210,7 @@ export async function checkout(p: {
       payment_method: p.paymentMethod,
       payment_data: p.paymentData ?? [],
       customer_note: p.customerNote ?? "",
+      ...(p.customerPassword ? { customer_password: p.customerPassword } : {}),
     }),
   });
   // la commande est passée : le panier headless est vidé pour cette session
