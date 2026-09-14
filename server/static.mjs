@@ -17,7 +17,54 @@ import { spawn } from "node:child_process";
 const ROOT = fileURLToPath(new URL("../dist/", import.meta.url));
 const APP_DIR = fileURLToPath(new URL("../", import.meta.url));
 const REBUILD_SCRIPT = fileURLToPath(new URL("../scripts/rebuild.mjs", import.meta.url));
+const REDIRECTS_FILE = fileURLToPath(new URL("../data/redirects.json", import.meta.url));
 const PORT = Number(process.env.PORT) || 3000;
+
+/* -------- redirections 301 ancien site (L6) --------
+ * data/redirects.json : { products[], categories[], pages[], brands[] }
+ * chaque ligne { from, to, to_en?, to_de? } — `from` = chemin FR de
+ * l'ancien site (sans préfixe de langue). Un chemin entrant préfixé
+ * /en/ ou /de/ (anciennes URLs GTranslate) est aussi reconnu : on retire
+ * le préfixe, on cherche `from`, et on redirige vers to_en/to_de si présent,
+ * sinon vers `to` (repli FR). Régénérer via `node scripts/build-redirects.mjs`
+ * (idéalement contre les vraies données prod juste avant la bascule réelle).
+ */
+let REDIRECTS = new Map();
+async function loadRedirects() {
+  try {
+    const raw = JSON.parse(await readFile(REDIRECTS_FILE, "utf8"));
+    const map = new Map();
+    for (const group of [raw.products, raw.categories, raw.pages, raw.brands]) {
+      for (const row of group || []) map.set(row.from, row);
+    }
+    REDIRECTS = map;
+    console.log(`[redirects] ${map.size} règles chargées`);
+  } catch {
+    console.log("[redirects] data/redirects.json absent — aucune redirection L6 active");
+  }
+}
+
+function findRedirect(pathname) {
+  // beaucoup de catégories gardent le même chemin FR dans le nouveau front
+  // (from === to) : la ligne ne sert alors qu'au repli /en//de/ ci-dessous,
+  // jamais à rediriger le chemin FR lui-même (sinon boucle sur lui-même).
+  const direct = REDIRECTS.get(pathname);
+  if (direct && direct.to !== pathname) return direct.to;
+  for (const [prefix, field] of [["/en/", "to_en"], ["/de/", "to_de"]]) {
+    if (pathname.startsWith(prefix)) {
+      const row = REDIRECTS.get("/" + pathname.slice(prefix.length));
+      if (row) {
+        const target = row[field] || row.to;
+        if (target !== pathname) return target;
+      }
+    }
+  }
+  return null;
+}
+
+// URLs système WordPress qui ne renaîtront jamais sur ce domaine après la
+// bascule (WP part sur back.) : 410 plutôt que 404, signal fort pour Google.
+const GONE_PATTERNS = [/\/feed\/?$/, /^\/wp-json\//, /^\/wp-admin\//, /^\/wp-login\.php/, /^\/xmlrpc\.php/, /\/attachment\//];
 
 const CHECKOUT = (process.env.PUBLIC_CHECKOUT_URL || "https://dev.kinkyx-shop.com").replace(/\/+$/, "");
 const STORE_BASE = `${CHECKOUT}/wp-json/wc/store/v1`;
@@ -173,6 +220,17 @@ const server = createServer(async (req, res) => {
     if (req.url.startsWith("/store-api/") || req.url.startsWith("/site-api/"))
       return proxyStore(req, res);
 
+    const pathname = (req.url || "/").split("?")[0];
+    if (GONE_PATTERNS.some((re) => re.test(pathname))) {
+      res.writeHead(410, { "content-type": "text/plain; charset=utf-8" });
+      return res.end("410 Gone\n");
+    }
+    const redirectTo = findRedirect(pathname);
+    if (redirectTo) {
+      res.writeHead(301, { location: redirectTo });
+      return res.end();
+    }
+
     let file = await resolveFile(req.url || "/");
     let status = 200;
     if (!file) {
@@ -199,4 +257,5 @@ const server = createServer(async (req, res) => {
   }
 });
 
+await loadRedirects();
 server.listen(PORT, () => console.log(`[front] dist/ + proxy /store-api → ${STORE_BASE}  (port ${PORT})`));
