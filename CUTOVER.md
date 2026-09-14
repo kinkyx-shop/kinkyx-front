@@ -29,9 +29,29 @@ récapitulatif final tout en bas.
       l'utilisateur a bien mis à jour l'URL dans le Dashboard Stripe** (pas
       re-confirmé dans cette session après la demande).
 - [x] **Phase 7 — vérification** : redirections testées OK, pages produit
-      OK, robots.txt sans noindex, sitemap 200, compte 200. **Parcours
-      d'achat réel (carte + 3DS) et e-mails transactionnels PAS testés en
-      conditions réelles post-bascule** — à faire dès que possible.
+      OK, robots.txt sans noindex, sitemap 200, compte 200.
+- [x] **Webhook Stripe confirmé fonctionnel** : URL mise à jour par
+      l'utilisateur, testé via "Envoyer un événement de test" dans le
+      Stripe Dashboard → `checkout.session.expired` livré avec 200 OK.
+- [x] **🔴 BUG CRITIQUE trouvé et corrigé APRÈS la bascule** : tous les
+      produits à variations (247/250 du catalogue) étaient **invendables**
+      — `wp_json` products lang="" au lieu de "fr" sur back. (Polylang
+      jamais configuré sur les vrais produits prod, contrairement à dev).
+      Le filtre strict `p.lang === "fr"` dans `fetch-catalog.mjs` ne
+      trouvait donc aucun produit variable → 0 variations récupérées →
+      "Attributs manquants pour le produit variable" sur tout achat de
+      produit à variantes. Fix commit `288f57f` (fallback `!p.lang` → fr,
+      même logique déjà utilisée ailleurs). Détecté ~40 min après la
+      bascule via un test d'achat réel demandé par l'utilisateur — voir
+      section dédiée en bas de ce document. **C'est un test d'achat réel
+      qui a débusqué ce bug — aucune vérification automatisée ne l'aurait
+      trouvé, puisque toutes les pages se généraient sans erreur.**
+- [x] **Parcours d'achat réel (carte + 3DS)** : produit simple testé en
+      conditions réelles par l'utilisateur (voir plus bas) ; produit à
+      variations vérifié techniquement (ajout panier OK) après le fix
+      ci-dessus, mais **paiement réel sur un produit variable pas encore
+      testé** — recommandé avant de considérer la bascule 100% close.
+- [ ] E-mails transactionnels : pas revérifiés après la migration d'URL.
 - [ ] Recherche Google Search Console : nouveau sitemap pas encore soumis.
 - [ ] Surveillance crawl/rankings 4-8 semaines : à démarrer.
 - [ ] Ancien site WordPress `www.kinkyx-shop.com` (fichiers+DB) laissé tel
@@ -311,6 +331,54 @@ resurgi avec la copie — **pas revérifié dans cette session, à faire**.
 - [ ] Robots.txt / noindex sur `back.kinkyx-shop.com` lui-même : pas
       vérifié si un noindex global y est nécessaire (domaine secondaire,
       ne devrait pas être découvert/indexé en pratique, mais à confirmer).
+
+## Post-bascule : bug critique "produits à variations invendables"
+
+Découvert le 2026-09-14, ~40 min après la bascule, en faisant un vrai test
+d'achat à la demande de l'utilisateur (produit à variations "Body Kap").
+
+**Symptôme** : sur tout produit à variations (247/250 du catalogue — quasi
+tout le magasin), après avoir choisi couleur/taille, le bouton "Ajouter au
+panier" renvoyait `{"code":"woocommerce_rest_missing_attributes",
+"message":"Attributs manquants pour le produit variable."}`. Seuls les 3
+produits simples du catalogue (accessoires latex comme "Shine latex") ont
+continué à fonctionner — d'où l'importance d'avoir testé un vrai produit à
+variations et pas seulement le premier produit simple venu.
+
+**Cause** : `scripts/fetch-catalog.mjs` filtrait
+`products.filter((p) => p.lang === "fr" && p.type === "variable")` avant
+de récupérer les variations de chaque produit. Sur `back.` (le vrai prod),
+Polylang est installé mais n'a **jamais été assigné aux vrais produits**
+(contrairement à `dev`, où tout le travail multilingue antérieur — projet
+séparé, jamais cutover — avait renseigné `lang` sur chaque post). Résultat
+constaté : `GET /wp-json/wc/v3/products/31753` renvoyait `"lang":""` et non
+`"lang":"fr"`. L'égalité stricte ne matchait donc **aucun** produit :
+`→ Variations de 0 produits variables FR…`. La normalisation elle-même
+(`normalize.mjs`, `groupByTranslation`) avait déjà un repli
+`it.lang || "fr"` qui masquait le symptôme pour tout le reste du pipeline
+(noms, prix, descriptions tous corrects) — seule la boucle de fetch des
+variations n'avait pas ce repli, ce qui a rendu le bug invisible partout
+sauf à l'usage réel du sélecteur de variante.
+
+**Fix** (commit `288f57f`) : même repli appliqué au filtre —
+`(p.lang === "fr" || !p.lang) && p.type === "variable"`.
+
+**Leçon pour la suite** : ce genre de divergence de configuration entre
+dev (préparé/testé pendant des semaines) et prod (jamais vraiment testé en
+conditions de build réel avant ce jour) est exactement le risque d'une
+bascule — **un test d'achat réel sur un produit représentatif du catalogue
+(pas le produit le plus simple) est irremplaçable**, aucune vérification
+automatisée de page ne l'aurait détecté puisque les 930 pages se
+généraient et s'affichaient sans erreur. À garder en tête si d'autres
+champs dépendant de Polylang (`translations`, contenu EN/DE) cachent des
+divergences similaires dev/prod non encore détectées.
+
+**Effet de bord connexe, non corrigé, distinct de ce bug** : comme prod
+n'a aucune vraie traduction Polylang, les pages `/en/` et `/de/` affichent
+actuellement le contenu **français** en repli (comportement voulu par
+`normalize.mjs`, pas un bug), pas de vraies traductions EN/DE tant que
+Polylang n'est pas configuré sur les vrais produits — ou tant qu'une autre
+source de traduction n'est pas branchée.
 
 ## Rollback
 
