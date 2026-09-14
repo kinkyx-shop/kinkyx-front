@@ -123,7 +123,11 @@ async function main() {
     await save(RAW, "products", products);
 
     // Variations : uniquement pour les produits variables FR (source de vérité).
-    const frVariable = products.filter((p) => p.lang === "fr" && p.type === "variable");
+    // `lang` peut être vide (Polylang installé mais jamais assigné sur les
+    // produits — cas de prod, contrairement à dev) : un lang vide/absent
+    // est traité comme FR, même repli que `groupByTranslation` dans
+    // normalize.mjs (`it.lang || "fr"`).
+    const frVariable = products.filter((p) => (p.lang === "fr" || !p.lang) && p.type === "variable");
     console.log(`→ Variations de ${frVariable.length} produits variables FR…`);
     const variations = {};
     let done = 0;
