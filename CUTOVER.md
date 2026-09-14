@@ -300,6 +300,17 @@ resurgi avec la copie — **pas revérifié dans cette session, à faire**.
       résolution IPv6 dans Node ; probablement lié à la fraîcheur du DNS,
       à revérifier si ça se reproduit). Commit + push + déployer sur le
       Builder après toute régénération.
+      **Même symptôme revu côté Builder le 2026-09-14** (pas juste ma
+      machine) : un premier `npm run build` a échoué à joindre `back.`
+      (`ping()` → repli Store API → clés jugées manquantes → catalogue
+      stub, bandeau "catalogue non chargé" visible en prod, seulement
+      36 pages construites au lieu de 930) alors que `.env` était
+      pourtant correct et qu'un appel `curl` identique depuis un autre
+      poste répondait 200 sans souci. **Un simple second `npm run build`
+      a suffi** (DNS/réseau transitoire, pas un vrai problème de config).
+      Si un build de `back.` tourne étrangement court juste après une
+      création/modification DNS récente sur ce domaine, vérifier le
+      nombre de pages annoncé et relancer avant de chercher plus loin.
 - [x] **Ancien WP sous `www.`** : traité de facto par la manip de la Phase 3
       — "Retirer le site" a délié `www.` de l'ancien produit WordPress sans
       supprimer ses fichiers/base (choix explicite : case de suppression
