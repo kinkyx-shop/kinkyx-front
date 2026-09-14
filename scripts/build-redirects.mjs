@@ -222,7 +222,7 @@ async function main() {
 
   const out = {
     generatedAt: new Date().toISOString(),
-    source: "dev.kinkyx-shop.com (clone) — À REGÉNÉRER contre prod avant la vraie bascule",
+    source: process.env.WOO_API_URL || "(WOO_API_URL absente)",
     products: prodRows,
     categories: catRows,
     pages: pageRows,

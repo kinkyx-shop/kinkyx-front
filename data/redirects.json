@@ -1,36 +1,42 @@
 {
-  "generatedAt": "2026-09-14T09:34:55.841Z",
-  "source": "dev.kinkyx-shop.com (clone) — À REGÉNÉRER contre prod avant la vraie bascule",
+  "generatedAt": "2026-09-14T10:49:37.188Z",
+  "source": "https://back.kinkyx-shop.com/wp-json",
   "products": [
+    {
+      "from": "/latex/femme/tanga-latex/",
+      "to": "/produit/tanga-latex/",
+      "to_en": "/en/product/tanga-latex/",
+      "to_de": "/de/produkt/tanga-latex/"
+    },
     {
       "from": "/latex/femme/lingerie/culotte-haute-latex/",
       "to": "/produit/culotte-haute-latex/",
-      "to_en": "/en/product/high-waisted-latex-knickers/",
-      "to_de": "/de/produkt/latex-hoeschen-mit-hohem-bund/"
+      "to_en": "/en/product/culotte-haute-latex/",
+      "to_de": "/de/produkt/culotte-haute-latex/"
     },
     {
       "from": "/latex/homme/top/debardeur-latex-sportwear/",
       "to": "/produit/debardeur-latex-sportwear/",
-      "to_en": "/en/product/sportwear-latex-tank-top/",
-      "to_de": "/de/produkt/latex-tanktop-von-sportwear/"
+      "to_en": "/en/product/debardeur-latex-sportwear/",
+      "to_de": "/de/produkt/debardeur-latex-sportwear/"
     },
     {
       "from": "/latex/homme/chemise/chemise-latex-kinkyx/",
       "to": "/produit/chemise-latex-kinkyx/",
-      "to_en": "/en/product/kinkyx-latex-shirt/",
-      "to_de": "/de/produkt/kinkyx-latexhemd/"
+      "to_en": "/en/product/chemise-latex-kinkyx/",
+      "to_de": "/de/produkt/chemise-latex-kinkyx/"
     },
     {
       "from": "/latex/homme/chemise/chemise-latex-surpiqure/",
       "to": "/produit/chemise-latex-surpiqure/",
-      "to_en": "/en/product/stitched-latex-shirt/",
-      "to_de": "/de/produkt/latex-hemd-mit-ziernaehten/"
+      "to_en": "/en/product/chemise-latex-surpiqure/",
+      "to_de": "/de/produkt/chemise-latex-surpiqure/"
     },
     {
       "from": "/chaussures/modele/botte/cuissardes-noeud-cuir-vegan/",
       "to": "/produit/cuissardes-noeud-cuir-vegan/",
-      "to_en": "/en/product/vegan-leather-bow-thigh-high-boots/",
-      "to_de": "/de/produkt/vegane-overknee-stiefel-mit-schleife-aus-leder/"
+      "to_en": "/en/product/cuissardes-noeud-cuir-vegan/",
+      "to_de": "/de/produkt/cuissardes-noeud-cuir-vegan/"
     },
     {
       "from": "/latex/perfect-shine-dry-storage-protection/",
@@ -41,38 +47,38 @@
     {
       "from": "/latex/special-wash-latex-nettoyant/",
       "to": "/produit/special-wash-latex-nettoyant/",
-      "to_en": "/en/product/special-wash-latex-cleaner/",
-      "to_de": "/de/produkt/special-wash-latex-reinigungsmittel/"
+      "to_en": "/en/product/special-wash-latex-nettoyant/",
+      "to_de": "/de/produkt/special-wash-latex-nettoyant/"
     },
     {
       "from": "/latex/talcum-powder-procure-une-facilite-de-glisse/",
       "to": "/produit/talcum-powder-procure-une-facilite-de-glisse/",
-      "to_en": "/en/product/talcum-powder-provides-a-smooth-glide/",
-      "to_de": "/de/produkt/talcum-powder-sorgt-fuer-gute-gleitfaehigkeit/"
+      "to_en": "/en/product/talcum-powder-procure-une-facilite-de-glisse/",
+      "to_de": "/de/produkt/talcum-powder-procure-une-facilite-de-glisse/"
     },
     {
       "from": "/latex/easy-glide-premium-pump-spray-latex-aide-a-lenfilage/",
       "to": "/produit/easy-glide-premium-pump-spray-latex-aide-a-lenfilage/",
-      "to_en": "/en/product/easy-glide-premium-pump-spray-latex-makes-it-easier-to-put-on/",
-      "to_de": "/de/produkt/easy-glide-premium-pump-spray-latex-erleichtert-das-anziehen/"
+      "to_en": "/en/product/easy-glide-premium-pump-spray-latex-aide-a-lenfilage/",
+      "to_de": "/de/produkt/easy-glide-premium-pump-spray-latex-aide-a-lenfilage/"
     },
     {
       "from": "/latex/easy-glide-latex-aide-a-lenfilage/",
       "to": "/produit/easy-glide-latex-aide-a-lenfilage/",
-      "to_en": "/en/product/easy-glide-latex-for-easier-donning/",
-      "to_de": "/de/produkt/easy-glide-latex-erleichtert-das-anziehen/"
+      "to_en": "/en/product/easy-glide-latex-aide-a-lenfilage/",
+      "to_de": "/de/produkt/easy-glide-latex-aide-a-lenfilage/"
     },
     {
       "from": "/latex/latex-polish-perfect-shine-pump-spray/",
       "to": "/produit/latex-polish-perfect-shine-pump-spray/",
       "to_en": "/en/product/latex-polish-perfect-shine-pump-spray/",
-      "to_de": "/de/produkt/latex-poliermittel-perfect-shine-pump-spray/"
+      "to_de": "/de/produkt/latex-polish-perfect-shine-pump-spray/"
     },
     {
       "from": "/latex/begloss-wipe-latex-brillance/",
       "to": "/produit/begloss-wipe-latex-brillance/",
-      "to_en": "/en/product/begloss-wipe-glossy-latex/",
-      "to_de": "/de/produkt/begloss-wipe-latex-glanz/"
+      "to_en": "/en/product/begloss-wipe-latex-brillance/",
+      "to_de": "/de/produkt/begloss-wipe-latex-brillance/"
     },
     {
       "from": "/latex/easy-glide-begloss/",
@@ -83,8 +89,8 @@
     {
       "from": "/latex/soutien-gorge-sun-boucle/",
       "to": "/produit/soutien-gorge-sun-boucle/",
-      "to_en": "/en/product/sun-boucle-bra/",
-      "to_de": "/de/produkt/bh-sun-boucle/"
+      "to_en": "/en/product/soutien-gorge-sun-boucle/",
+      "to_de": "/de/produkt/soutien-gorge-sun-boucle/"
     },
     {
       "from": "/latex/top-asy/",
@@ -95,56 +101,56 @@
     {
       "from": "/latex/legging-croc/",
       "to": "/produit/legging-croc/",
-      "to_en": "/en/product/croc-leggings/",
-      "to_de": "/de/produkt/croc-leggings/"
+      "to_en": "/en/product/legging-croc/",
+      "to_de": "/de/produkt/legging-croc/"
     },
     {
       "from": "/latex/combi-tailleur-latex/",
       "to": "/produit/combi-tailleur-latex/",
-      "to_en": "/en/product/latex-jumpsuit/",
-      "to_de": "/de/produkt/latex-anzug/"
+      "to_en": "/en/product/combi-tailleur-latex/",
+      "to_de": "/de/produkt/combi-tailleur-latex/"
     },
     {
       "from": "/chaussures/bottines-brides-cloutee/",
       "to": "/produit/bottines-bride-cloutee/",
-      "to_en": "/en/product/studded-strap-ankle-boots/",
-      "to_de": "/de/produkt/stiefeletten-mit-nietenriemen/"
+      "to_en": "/en/product/bottines-bride-cloutee/",
+      "to_de": "/de/produkt/bottines-bride-cloutee/"
     },
     {
       "from": "/chaussures/bottines-brides-chaines/",
       "to": "/produit/bottines-brides-chaines/",
-      "to_en": "/en/product/ankle-boots-with-straps-and-chains/",
-      "to_de": "/de/produkt/stiefeletten-mit-riemen-und-ketten/"
+      "to_en": "/en/product/bottines-brides-chaines/",
+      "to_de": "/de/produkt/bottines-brides-chaines/"
     },
     {
       "from": "/chaussures/mules-strass-noires/",
       "to": "/produit/mules-strass-noires/",
-      "to_en": "/en/product/black-rhinestone-mules/",
-      "to_de": "/de/produkt/schwarze-strass-pantoletten/"
+      "to_en": "/en/product/mules-strass-noires/",
+      "to_de": "/de/produkt/mules-strass-noires/"
     },
     {
       "from": "/chaussures/mules-strass-transparent/",
       "to": "/produit/mules-strass-transparent/",
-      "to_en": "/en/product/clear-rhinestone-mules/",
-      "to_de": "/de/produkt/transparente-pantoletten-mit-strasssteinen/"
+      "to_en": "/en/product/mules-strass-transparent/",
+      "to_de": "/de/produkt/mules-strass-transparent/"
     },
     {
       "from": "/chaussures/sandales-strass-noir/",
       "to": "/produit/sandales-strass-noir/",
-      "to_en": "/en/product/black-rhinestone-sandals/",
-      "to_de": "/de/produkt/schwarze-sandalen-mit-strasssteinen/"
+      "to_en": "/en/product/sandales-strass-noir/",
+      "to_de": "/de/produkt/sandales-strass-noir/"
     },
     {
       "from": "/chaussures/bottine-lanieres-strass/",
       "to": "/produit/bottine-lanieres-strass/",
-      "to_en": "/en/product/strass-embellished-strappy-ankle-boots/",
-      "to_de": "/de/produkt/stiefelette-mit-riemchen-und-strasssteinen/"
+      "to_en": "/en/product/bottine-lanieres-strass/",
+      "to_de": "/de/produkt/bottine-lanieres-strass/"
     },
     {
       "from": "/chaussures/sandales-strass-transparentes/",
       "to": "/produit/sandales-strass-transparentes/",
-      "to_en": "/en/product/transparent-rhinestone-sandals/",
-      "to_de": "/de/produkt/transparente-strass-sandalen/"
+      "to_en": "/en/product/sandales-strass-transparentes/",
+      "to_de": "/de/produkt/sandales-strass-transparentes/"
     },
     {
       "from": "/latex/croctop-vm-latex/",
@@ -155,1362 +161,1354 @@
     {
       "from": "/chaussures/mules-rouges/",
       "to": "/produit/mules-rouges/",
-      "to_en": "/en/product/red-mules/",
-      "to_de": "/de/produkt/rote-pantoletten/"
+      "to_en": "/en/product/mules-rouges/",
+      "to_de": "/de/produkt/mules-rouges/"
     },
     {
       "from": "/chaussures/mules-roses-2/",
       "to": "/produit/mules-roses/",
-      "to_en": "/en/product/pink-mules/",
-      "to_de": "/de/produkt/rosa-pantoletten/"
+      "to_en": "/en/product/mules-roses/",
+      "to_de": "/de/produkt/mules-roses/"
     },
     {
       "from": "/chaussures/mules-blanches/",
       "to": "/produit/mules-blanches/",
-      "to_en": "/en/product/white-mules/",
-      "to_de": "/de/produkt/weisse-pantoletten/"
+      "to_en": "/en/product/mules-blanches/",
+      "to_de": "/de/produkt/mules-blanches/"
     },
     {
       "from": "/chaussures/mules-caramel/",
       "to": "/produit/mules-caramel/",
-      "to_en": "/en/product/caramel-mules/",
-      "to_de": "/de/produkt/pantoletten-in-karamell/"
+      "to_en": "/en/product/mules-caramel/",
+      "to_de": "/de/produkt/mules-caramel/"
     },
     {
       "from": "/chaussures/mules-noir-mat/",
       "to": "/produit/mules-noir-mat/",
-      "to_en": "/en/product/matt-black-mules/",
-      "to_de": "/de/produkt/mules-in-mattschwarz/"
+      "to_en": "/en/product/mules-noir-mat/",
+      "to_de": "/de/produkt/mules-noir-mat/"
     },
     {
       "from": "/chaussures/mules-noir-vernis/",
       "to": "/produit/mules-noir-vernis/",
-      "to_en": "/en/product/black-patent-leather-mules/",
-      "to_de": "/de/produkt/schwarze-lack-pantoletten/"
+      "to_en": "/en/product/mules-noir-vernis/",
+      "to_de": "/de/produkt/mules-noir-vernis/"
     },
     {
       "from": "/chaussures/bottine-ouverte-noir-vernis/",
       "to": "/produit/bottine-ouverte-noir-vernis/",
-      "to_en": "/en/product/black-patent-leather-open-toe-ankle-boots/",
-      "to_de": "/de/produkt/offene-stiefeletten-aus-schwarzem-lackleder/"
+      "to_en": "/en/product/bottine-ouverte-noir-vernis/",
+      "to_de": "/de/produkt/bottine-ouverte-noir-vernis/"
     },
     {
       "from": "/chaussures/bottine-ouverte-2/",
       "to": "/produit/bottine-ouverte-noir-mat/",
-      "to_en": "/en/product/matt-black-open-toed-ankle-boots/",
-      "to_de": "/de/produkt/offene-stiefeletten-in-mattem-schwarz/"
+      "to_en": "/en/product/bottine-ouverte-noir-mat/",
+      "to_de": "/de/produkt/bottine-ouverte-noir-mat/"
     },
     {
       "from": "/chaussures/mules-plumes-roses/",
       "to": "/produit/mules-plumes-roses/",
-      "to_en": "/en/product/pink-feathered-mules/",
-      "to_de": "/de/produkt/rosa-pantoletten-mit-federn/"
+      "to_en": "/en/product/mules-plumes-roses/",
+      "to_de": "/de/produkt/mules-plumes-roses/"
     },
     {
       "from": "/chaussures/mules-plumes-noires/",
       "to": "/produit/mules-plumes-noires/",
-      "to_en": "/en/product/black-feather-mules/",
-      "to_de": "/de/produkt/pantoletten-mit-schwarzen-federn/"
+      "to_en": "/en/product/mules-plumes-noires/",
+      "to_de": "/de/produkt/mules-plumes-noires/"
     },
     {
       "from": "/latex/homme/top/debardeur-lana/",
       "to": "/produit/debardeur-lana/",
-      "to_en": "/en/product/lana-tank-top/",
-      "to_de": "/de/produkt/lana-tanktop/"
+      "to_en": "/en/product/debardeur-lana/",
+      "to_de": "/de/produkt/debardeur-lana/"
     },
     {
       "from": "/chaussures/modele/botte/cuissardes-noeud-cuir-vegan-blanche/",
       "to": "/produit/cuissardes-noeud-cuir-vegan-blanche/",
-      "to_en": "/en/product/white-vegan-leather-bow-thigh-high-boots/",
-      "to_de": "/de/produkt/weisse-vegane-leder-overknee-stiefel-mit-schleife/"
+      "to_en": "/en/product/cuissardes-noeud-cuir-vegan-blanche/",
+      "to_de": "/de/produkt/cuissardes-noeud-cuir-vegan-blanche/"
     },
     {
       "from": "/latex/legging-latex-joy/",
       "to": "/produit/legging-latex-joy/",
-      "to_en": "/en/product/joy-latex-leggings/",
-      "to_de": "/de/produkt/latex-leggings-joy/"
+      "to_en": "/en/product/legging-latex-joy/",
+      "to_de": "/de/produkt/legging-latex-joy/"
     },
     {
       "from": "/latex/veste-tailleur/",
       "to": "/produit/veste-tailleur-latex/",
-      "to_en": "/en/product/latex-tailored-jacket/",
-      "to_de": "/de/produkt/latex-blazer/"
+      "to_en": "/en/product/veste-tailleur-latex/",
+      "to_de": "/de/produkt/veste-tailleur-latex/"
     },
     {
       "from": "/latex/pantalon-tailleur-latex/",
       "to": "/produit/pantalon-tailleur-latex/",
-      "to_en": "/en/product/latex-tailored-trousers/",
-      "to_de": "/de/produkt/latex-hose-im-anzugstil/"
+      "to_en": "/en/product/pantalon-tailleur-latex/",
+      "to_de": "/de/produkt/pantalon-tailleur-latex/"
     },
     {
       "from": "/latex/homme/top/bolero-latex/",
       "to": "/produit/bolero-latex/",
-      "to_en": "/en/product/latex-bolero/",
-      "to_de": "/de/produkt/bolero-aus-latex/"
+      "to_en": "/en/product/bolero-latex/",
+      "to_de": "/de/produkt/bolero-latex/"
     },
     {
       "from": "/latex/homme/top/debardeur-latex/",
       "to": "/produit/debardeur-latex/",
-      "to_en": "/en/product/latex-tank-top/",
-      "to_de": "/de/produkt/latex-tanktop/"
+      "to_en": "/en/product/debardeur-latex/",
+      "to_de": "/de/produkt/debardeur-latex/"
     },
     {
       "from": "/latex/body-petale-latex/",
       "to": "/produit/body-petale-latex/",
-      "to_en": "/en/product/latex-petal-bodysuit/",
-      "to_de": "/de/produkt/latex-body-petale/"
+      "to_en": "/en/product/body-petale-latex/",
+      "to_de": "/de/produkt/body-petale-latex/"
     },
     {
       "from": "/latex/femme/legging/legging-latex-kinkyx/",
       "to": "/produit/legging-latex-kinkyx/",
-      "to_en": "/en/product/kinkyx-latex-leggings/",
-      "to_de": "/de/produkt/latex-leggings-von-kinkyx/"
+      "to_en": "/en/product/legging-latex-kinkyx/",
+      "to_de": "/de/produkt/legging-latex-kinkyx/"
     },
     {
       "from": "/latex/homme/chemise/chemise-latex-dracula-2/",
       "to": "/produit/chemise-latex-dracula/",
-      "to_en": "/en/product/dracula-latex-shirt/",
-      "to_de": "/de/produkt/dracula-latexhemd/"
+      "to_en": "/en/product/chemise-latex-dracula/",
+      "to_de": "/de/produkt/chemise-latex-dracula/"
     },
     {
       "from": "/chaussures/bottines-arlequin-noir-blanc/",
       "to": "/produit/bottines-arlequin-noir-blanc/",
-      "to_en": "/en/product/black-and-white-harlequin-ankle-boots/",
-      "to_de": "/de/produkt/arlequin-stiefeletten-schwarz-weiss/"
+      "to_en": "/en/product/bottines-arlequin-noir-blanc/",
+      "to_de": "/de/produkt/bottines-arlequin-noir-blanc/"
     },
     {
       "from": "/chaussures/botte-spider-noir/",
       "to": "/produit/botte-spider-noir/",
-      "to_en": "/en/product/black-spider-boots/",
-      "to_de": "/de/produkt/stiefel-spider-schwarz/"
+      "to_en": "/en/product/botte-spider-noir/",
+      "to_de": "/de/produkt/botte-spider-noir/"
     },
     {
       "from": "/chaussures/botte-spider-lavande/",
       "to": "/produit/botte-spider-lavande/",
-      "to_en": "/en/product/spider-lavender-boots/",
-      "to_de": "/de/produkt/stiefel-spider-in-lavendel/"
+      "to_en": "/en/product/botte-spider-lavande/",
+      "to_de": "/de/produkt/botte-spider-lavande/"
     },
     {
       "from": "/chaussures/botte-rangers-chainettes/",
       "to": "/produit/botte-rangers-chainettes/",
-      "to_en": "/en/product/rangers-chainettes-boots/",
-      "to_de": "/de/produkt/rangers-stiefel-mit-ketten/"
+      "to_en": "/en/product/botte-rangers-chainettes/",
+      "to_de": "/de/produkt/botte-rangers-chainettes/"
     },
     {
       "from": "/latex/femme/top-femme/top-latex-kinktop/",
       "to": "/produit/top-latex-kinktop/",
-      "to_en": "/en/product/kinktop-latex-top/",
-      "to_de": "/de/produkt/latex-top-von-kinktop/"
+      "to_en": "/en/product/top-latex-kinktop/",
+      "to_de": "/de/produkt/top-latex-kinktop/"
     },
     {
       "from": "/latex/femme/jupe/jupe-latex-asy/",
       "to": "/produit/jupe-latex-asy/",
-      "to_en": "/en/product/asy-latex-skirt/",
-      "to_de": "/de/produkt/latexrock-asy/"
+      "to_en": "/en/product/jupe-latex-asy/",
+      "to_de": "/de/produkt/jupe-latex-asy/"
     },
     {
       "from": "/latex/femme/robe/robe-latex-gala/",
       "to": "/produit/robe-latex-gala/",
-      "to_en": "/en/product/gala-latex-dress/",
-      "to_de": "/de/produkt/latex-gala-kleid/"
+      "to_en": "/en/product/robe-latex-gala/",
+      "to_de": "/de/produkt/robe-latex-gala/"
     },
     {
       "from": "/chaussures/modele/cuissarde/cuissarde-talon-noir-vernis/",
       "to": "/produit/cuissarde-talon-noir-vernis/",
-      "to_en": "/en/product/black-patent-leather-thigh-high-boots-with-heels/",
-      "to_de": "/de/produkt/schwarze-lack-overknee-stiefel-mit-absatz/"
+      "to_en": "/en/product/cuissarde-talon-noir-vernis/",
+      "to_de": "/de/produkt/cuissarde-talon-noir-vernis/"
     },
     {
       "from": "/latex/femme/robe/robe-latex-claudine/",
       "to": "/produit/robe-latex-claudine/",
-      "to_en": "/en/product/claudine-latex-dress/",
-      "to_de": "/de/produkt/latexkleid-claudine/"
+      "to_en": "/en/product/robe-latex-claudine/",
+      "to_de": "/de/produkt/robe-latex-claudine/"
     },
     {
       "from": "/chaussures/rangers-coeur/",
       "to": "/produit/rangers-coeur/",
-      "to_en": "/en/product/rangers-heart/",
+      "to_en": "/en/product/rangers-coeur/",
       "to_de": "/de/produkt/rangers-coeur/"
     },
     {
       "from": "/chaussures/cuissarde-gothique-rouge/",
       "to": "/produit/cuissarde-gothique-rouge/",
-      "to_en": "/en/product/red-gothic-thigh-high-boots/",
-      "to_de": "/de/produkt/rote-gothic-overknee-stiefel/"
+      "to_en": "/en/product/cuissarde-gothique-rouge/",
+      "to_de": "/de/produkt/cuissarde-gothique-rouge/"
     },
     {
       "from": "/chaussures/cuissarde-gothique-noir-brillant/",
       "to": "/produit/cuissarde-gothique-noir-brillant/",
-      "to_en": "/en/product/gothic-thigh-high-boots-in-glossy-black/",
-      "to_de": "/de/produkt/glaenzende-schwarze-gothic-overknee-stiefel/"
+      "to_en": "/en/product/cuissarde-gothique-noir-brillant/",
+      "to_de": "/de/produkt/cuissarde-gothique-noir-brillant/"
     },
     {
       "from": "/chaussures/cuissarde-gothique-noir/",
       "to": "/produit/cuissarde-gothique-noir/",
-      "to_en": "/en/product/black-gothic-thigh-high-boots/",
-      "to_de": "/de/produkt/schwarze-gothic-overknee-stiefel/"
+      "to_en": "/en/product/cuissarde-gothique-noir/",
+      "to_de": "/de/produkt/cuissarde-gothique-noir/"
     },
     {
       "from": "/chaussures/botte-gothique-rose/",
       "to": "/produit/botte-gothique-rose/",
-      "to_en": "/en/product/pink-gothic-boots/",
-      "to_de": "/de/produkt/rosa-stiefel-im-gothic-stil/"
+      "to_en": "/en/product/botte-gothique-rose/",
+      "to_de": "/de/produkt/botte-gothique-rose/"
     },
     {
       "from": "/chaussures/botte-gothique-noir-brillant/",
       "to": "/produit/botte-gothique-noir-brillant/",
-      "to_en": "/en/product/shiny-black-gothic-boots/",
-      "to_de": "/de/produkt/glaenzender-schwarzer-gothic-stiefel/"
+      "to_en": "/en/product/botte-gothique-noir-brillant/",
+      "to_de": "/de/produkt/botte-gothique-noir-brillant/"
     },
     {
       "from": "/chaussures/botte-gothique-noir-mat/",
       "to": "/produit/botte-gothique-noir-mat/",
-      "to_en": "/en/product/matt-black-gothic-boots/",
-      "to_de": "/de/produkt/mattschwarzer-gothic-stiefel/"
+      "to_en": "/en/product/botte-gothique-noir-mat/",
+      "to_de": "/de/produkt/botte-gothique-noir-mat/"
     },
     {
       "from": "/chaussures/bottines-arlequin-noir-rouge-2/",
       "to": "/produit/bottines-chunky-noir/",
-      "to_en": "/en/product/black-chunky-ankle-boots/",
-      "to_de": "/de/produkt/schwarze-chunky-stiefeletten/"
+      "to_en": "/en/product/bottines-chunky-noir/",
+      "to_de": "/de/produkt/bottines-chunky-noir/"
     },
     {
       "from": "/chaussures/bottines-lanieres-noir-copie/",
       "to": "/produit/bottines-lanieres-rouge/",
-      "to_en": "/en/product/red-strappy-ankle-boots/",
-      "to_de": "/de/produkt/rote-stiefeletten-mit-riemchen/"
+      "to_en": "/en/product/bottines-lanieres-rouge/",
+      "to_de": "/de/produkt/bottines-lanieres-rouge/"
     },
     {
       "from": "/chaussures/bottines-arlequin-noir-rouge/",
       "to": "/produit/bottines-arlequin-noir-rouge/",
-      "to_en": "/en/product/black-and-red-harlequin-ankle-boots/",
-      "to_de": "/de/produkt/arlequin-stiefeletten-schwarz-rot/"
+      "to_en": "/en/product/bottines-arlequin-noir-rouge/",
+      "to_de": "/de/produkt/bottines-arlequin-noir-rouge/"
     },
     {
       "from": "/chaussures/bottines-cuir-noir/",
       "to": "/produit/bottines-cuir-noir/",
-      "to_en": "/en/product/black-leather-ankle-boots/",
-      "to_de": "/de/produkt/schwarze-lederstiefeletten/"
+      "to_en": "/en/product/bottines-cuir-noir/",
+      "to_de": "/de/produkt/bottines-cuir-noir/"
     },
     {
       "from": "/chaussures/bottine-ouverte/",
       "to": "/produit/bottine-ouverte/",
-      "to_en": "/en/product/open-toe-ankle-boots/",
-      "to_de": "/de/produkt/offener-stiefel/"
+      "to_en": "/en/product/bottine-ouverte/",
+      "to_de": "/de/produkt/bottine-ouverte/"
     },
     {
       "from": "/chaussures/bottines-lanieres/",
       "to": "/produit/bottines-lanieres-noir/",
-      "to_en": "/en/product/black-strappy-ankle-boots/",
-      "to_de": "/de/produkt/stiefeletten-mit-riemchen-schwarz/"
+      "to_en": "/en/product/bottines-lanieres-noir/",
+      "to_de": "/de/produkt/bottines-lanieres-noir/"
     },
     {
       "from": "/chaussures/bottines-camouflage-militaire/",
       "to": "/produit/bottines-camouflage-militaire/",
-      "to_en": "/en/product/military-camouflage-ankle-boots/",
-      "to_de": "/de/produkt/stiefeletten-im-militaer-camouflage-look/"
+      "to_en": "/en/product/bottines-camouflage-militaire/",
+      "to_de": "/de/produkt/bottines-camouflage-militaire/"
     },
     {
       "from": "/latex/femme/top-femme/top-latex-croc-manche-longue/",
       "to": "/produit/top-latex-croc-manche-longue/",
-      "to_en": "/en/product/long-sleeved-latex-croc-top/",
-      "to_de": "/de/produkt/latex-top-mit-krokodil-print-und-langen-aermeln/"
+      "to_en": "/en/product/top-latex-croc-manche-longue/",
+      "to_de": "/de/produkt/top-latex-croc-manche-longue/"
     },
     {
       "from": "/latex/femme/top-femme/top-latex-joy/",
       "to": "/produit/top-latex-joy/",
-      "to_en": "/en/product/joy-latex-top/",
-      "to_de": "/de/produkt/latex-top-joy/"
+      "to_en": "/en/product/top-latex-joy/",
+      "to_de": "/de/produkt/top-latex-joy/"
     },
     {
       "from": "/latex/femme/top-femme/top-latex-meg/",
       "to": "/produit/top-latex-meg/",
-      "to_en": "/en/product/meg-latex-top/",
-      "to_de": "/de/produkt/latex-top-meg/"
+      "to_en": "/en/product/top-latex-meg/",
+      "to_de": "/de/produkt/top-latex-meg/"
     },
     {
       "from": "/latex/femme/top-femme/top-latex-gawa/",
       "to": "/produit/top-latex-gawa/",
-      "to_en": "/en/product/gawa-latex-top/",
-      "to_de": "/de/produkt/gawa-latex-top/"
+      "to_en": "/en/product/top-latex-gawa/",
+      "to_de": "/de/produkt/top-latex-gawa/"
     },
     {
       "from": "/latex/femme/top-femme/trench-bolero-trim/",
       "to": "/produit/trench-bolero-trim/",
-      "to_en": "/en/product/bolero-trim-trench-coat/",
-      "to_de": "/de/produkt/bolero-trenchcoat-mit-besatz/"
+      "to_en": "/en/product/trench-bolero-trim/",
+      "to_de": "/de/produkt/trench-bolero-trim/"
     },
     {
       "from": "/latex/femme/robe/robe-latex-lana/",
       "to": "/produit/robe-latex-lana/",
-      "to_en": "/en/product/lana-latex-dress/",
-      "to_de": "/de/produkt/latexkleid-lana/"
+      "to_en": "/en/product/robe-latex-lana/",
+      "to_de": "/de/produkt/robe-latex-lana/"
     },
     {
       "from": "/latex/femme/robe/robe-latex-gaga/",
       "to": "/produit/robe-latex-gaga/",
-      "to_en": "/en/product/gaga-latex-dress/",
-      "to_de": "/de/produkt/gaga-latexkleid/"
+      "to_en": "/en/product/robe-latex-gaga/",
+      "to_de": "/de/produkt/robe-latex-gaga/"
     },
     {
       "from": "/latex/femme/robe/robe-latex-kill-bill/",
       "to": "/produit/robe-latex-kill-bill/",
-      "to_en": "/en/product/kill-bill-latex-dress/",
-      "to_de": "/de/produkt/latexkleid-kill-bill/"
+      "to_en": "/en/product/robe-latex-kill-bill/",
+      "to_de": "/de/produkt/robe-latex-kill-bill/"
     },
     {
       "from": "/latex/femme/robe/robe-latex-vamp/",
       "to": "/produit/robe-latex-vamp/",
-      "to_en": "/en/product/vamp-latex-dress/",
-      "to_de": "/de/produkt/latexkleid-vamp/"
+      "to_en": "/en/product/robe-latex-vamp/",
+      "to_de": "/de/produkt/robe-latex-vamp/"
     },
     {
       "from": "/chaussures/modele/cuissarde/cuissarde-talon-noir-mat/",
       "to": "/produit/cuissarde-talon-noir-mat/",
-      "to_en": "/en/product/matt-black-high-heeled-thigh-high-boots/",
-      "to_de": "/de/produkt/matte-schwarze-overknee-stiefel-mit-absatz/"
+      "to_en": "/en/product/cuissarde-talon-noir-mat/",
+      "to_de": "/de/produkt/cuissarde-talon-noir-mat/"
     },
     {
       "from": "/chaussures/modele/botte/bottes-genouilleres-vegan/",
       "to": "/produit/bottes-genouilleres-vegan/",
-      "to_en": "/en/product/vegan-knee-high-boots/",
-      "to_de": "/de/produkt/vegane-kniestiefel/"
+      "to_en": "/en/product/bottes-genouilleres-vegan/",
+      "to_de": "/de/produkt/bottes-genouilleres-vegan/"
     },
     {
       "from": "/chaussures/modele/botte/cuissardes-noeud-cuir-vegan-noir-mat/",
       "to": "/produit/cuissardes-noeud-cuir-vegan-noir-mat/",
-      "to_en": "/en/product/matt-black-vegan-leather-bow-thigh-high-boots/",
-      "to_de": "/de/produkt/vegane-overknee-stiefel-mit-schleife-aus-mattschwarzem-leder/"
+      "to_en": "/en/product/cuissardes-noeud-cuir-vegan-noir-mat/",
+      "to_de": "/de/produkt/cuissardes-noeud-cuir-vegan-noir-mat/"
     },
     {
       "from": "/chaussures/style/cosplay/cuissardes-hologramme/",
       "to": "/produit/cuissardes-hologramme/",
-      "to_en": "/en/product/hologram-thigh-high-boots/",
-      "to_de": "/de/produkt/hologramm-overknee-stiefel/"
+      "to_en": "/en/product/cuissardes-hologramme/",
+      "to_de": "/de/produkt/cuissardes-hologramme/"
     },
     {
       "from": "/chaussures/style/cosplay/cuissardes-hologramme-rose/",
       "to": "/produit/cuissardes-hologramme-rose/",
-      "to_en": "/en/product/pink-hologram-thigh-high-boots/",
-      "to_de": "/de/produkt/rosa-overknee-stiefel-mit-hologramm-muster/"
+      "to_en": "/en/product/cuissardes-hologramme-rose/",
+      "to_de": "/de/produkt/cuissardes-hologramme-rose/"
     },
     {
       "from": "/chaussures/style/cosplay/cuissardes-hologramme-rouge/",
       "to": "/produit/cuissardes-hologramme-rouge/",
-      "to_en": "/en/product/red-hologram-thigh-high-boots/",
-      "to_de": "/de/produkt/rote-overknee-stiefel-mit-hologramm-effekt/"
+      "to_en": "/en/product/cuissardes-hologramme-rouge/",
+      "to_de": "/de/produkt/cuissardes-hologramme-rouge/"
     },
     {
       "from": "/chaussures/style/cosplay/cuissardes-hologramme-blanche/",
       "to": "/produit/cuissardes-hologramme-blanche/",
-      "to_en": "/en/product/white-hologram-thigh-high-boots/",
-      "to_de": "/de/produkt/weisse-overknee-stiefel-mit-hologramm-effekt/"
+      "to_en": "/en/product/cuissardes-hologramme-blanche/",
+      "to_de": "/de/produkt/cuissardes-hologramme-blanche/"
     },
     {
       "from": "/chaussures/style/casual/cuissardes-lanieres/",
       "to": "/produit/cuissardes-lanieres/",
-      "to_en": "/en/product/strappy-thigh-high-boots-2/",
-      "to_de": "/de/produkt/stiefel-mit-riemchen-2/"
+      "to_en": "/en/product/cuissardes-lanieres/",
+      "to_de": "/de/produkt/cuissardes-lanieres/"
     },
     {
       "from": "/chaussures/style/casual/cuissardes-lanieres-2/",
       "to": "/produit/cuissardes-lanieres-2/",
-      "to_en": "/en/product/strappy-thigh-high-boots-3/",
-      "to_de": "/de/produkt/stiefel-mit-riemchen-3/"
+      "to_en": "/en/product/cuissardes-lanieres-2/",
+      "to_de": "/de/produkt/cuissardes-lanieres-2/"
     },
     {
       "from": "/chaussures/marque/pleaser/sandales-arc-en-ciel-2/",
       "to": "/produit/sandales-arc-en-ciel/",
-      "to_en": "/en/product/rainbow-sandals/",
-      "to_de": "/de/produkt/regenbogen-sandalen/"
+      "to_en": "/en/product/sandales-arc-en-ciel/",
+      "to_de": "/de/produkt/sandales-arc-en-ciel/"
     },
     {
       "from": "/chaussures/modele/cuissarde/cuissarde-lanieres/",
       "to": "/produit/cuissarde-lanieres/",
-      "to_en": "/en/product/strappy-thigh-high-boots/",
-      "to_de": "/de/produkt/stiefel-mit-riemchen/"
+      "to_en": "/en/product/cuissarde-lanieres/",
+      "to_de": "/de/produkt/cuissarde-lanieres/"
     },
     {
       "from": "/chaussures/marque/pleaser/botte-talon-tete-de-mort/",
       "to": "/produit/botte-talon-tete-de-mort/",
-      "to_en": "/en/product/skull-heel-boots/",
-      "to_de": "/de/produkt/stiefel-mit-absatz-und-totenkopf-motiv/"
+      "to_en": "/en/product/botte-talon-tete-de-mort/",
+      "to_de": "/de/produkt/botte-talon-tete-de-mort/"
     },
     {
       "from": "/chaussures/modele/botte/botte-noire-mat-boucles/",
       "to": "/produit/botte-noire-mat-boucles/",
-      "to_en": "/en/product/matt-black-boots-with-buckles/",
-      "to_de": "/de/produkt/schwarzer-matter-stiefel-mit-schnallen/"
+      "to_en": "/en/product/botte-noire-mat-boucles/",
+      "to_de": "/de/produkt/botte-noire-mat-boucles/"
     },
     {
       "from": "/chaussures/modele/botte/botte-compense-noire-brillant/",
       "to": "/produit/botte-compense-noire-brillant/",
-      "to_en": "/en/product/shiny-black-platform-boots/",
-      "to_de": "/de/produkt/schwarzer-stiefel-mit-keilabsatz-glaenzend/"
+      "to_en": "/en/product/botte-compense-noire-brillant/",
+      "to_de": "/de/produkt/botte-compense-noire-brillant/"
     },
     {
       "from": "/chaussures/modele/botte/botte-compense-noire-mat/",
       "to": "/produit/botte-compense-noire-mat/",
-      "to_en": "/en/product/matt-black-wedge-boots/",
-      "to_de": "/de/produkt/schwarzer-stiefel-mit-keilabsatz-matt/"
+      "to_en": "/en/product/botte-compense-noire-mat/",
+      "to_de": "/de/produkt/botte-compense-noire-mat/"
     },
     {
       "from": "/chaussures/modele/botte/botte-compense-blanche/",
       "to": "/produit/botte-compense-blanche/",
-      "to_en": "/en/product/white-platform-boots/",
-      "to_de": "/de/produkt/weisse-stiefel-mit-keilabsatz/"
+      "to_en": "/en/product/botte-compense-blanche/",
+      "to_de": "/de/produkt/botte-compense-blanche/"
     },
     {
       "from": "/latex/express/femme-express/blazer-kinkyx-s-jaune/",
       "to": "/produit/blazer-kinkyx-s-jaune/",
-      "to_en": "/en/product/kinkyx-s-yellow-blazer/",
-      "to_de": "/de/produkt/kinkyx-s-blazer-gelb/"
+      "to_en": "/en/product/blazer-kinkyx-s-jaune/",
+      "to_de": "/de/produkt/blazer-kinkyx-s-jaune/"
     },
     {
       "from": "/latex/femme/body/body-kap-2/",
       "to": "/produit/body-kap/",
-      "to_en": "/en/product/kap-bodysuit/",
+      "to_en": "/en/product/body-kap/",
       "to_de": "/de/produkt/body-kap/"
     },
     {
       "from": "/latex/femme/veste-femme/blazer-kinkyx/",
       "to": "/produit/blazer-kinkyx/",
-      "to_en": "/en/product/kinkyx-blazer/",
-      "to_de": "/de/produkt/kinkyx-blazer/"
+      "to_en": "/en/product/blazer-kinkyx/",
+      "to_de": "/de/produkt/blazer-kinkyx/"
     },
     {
       "from": "/chaussures/style/casual/lolita-compensees-noire-demoniacult/",
       "to": "/produit/ballerines-compensees-noire/",
-      "to_en": "/en/product/black-platform-ballet-flats/",
-      "to_de": "/de/produkt/schwarze-ballerinas-mit-keilabsatz/"
+      "to_en": "/en/product/ballerines-compensees-noire/",
+      "to_de": "/de/produkt/ballerines-compensees-noire/"
     },
     {
       "from": "/latex/homme/veste/jacket-kinkyx/",
       "to": "/produit/jacket-kinkyx/",
-      "to_en": "/en/product/kinkyx-jacket/",
-      "to_de": "/de/produkt/jacke-kinkyx/",
-      "note": "catégorie différente entre dev et prod — vérifier avant bascule"
+      "to_en": "/en/product/jacket-kinkyx/",
+      "to_de": "/de/produkt/jacket-kinkyx/"
     },
     {
       "from": "/latex/homme/pantalon/jeans-latex-surpiqure/",
       "to": "/produit/jeans-latex-surpiqure/",
-      "to_en": "/en/product/stitched-latex-jeans/",
-      "to_de": "/de/produkt/jeans-aus-latex-mit-ziernaehten/"
+      "to_en": "/en/product/jeans-latex-surpiqure/",
+      "to_de": "/de/produkt/jeans-latex-surpiqure/"
     },
     {
       "from": "/chaussures/modele/bottine/bottine-sans-talon-noir-vernis/",
       "to": "/produit/bottine-sans-talon-noir-vernis/",
-      "to_en": "/en/product/black-patent-leather-flat-ankle-boots/",
-      "to_de": "/de/produkt/schwarze-lackstiefeletten-ohne-absatz/"
+      "to_en": "/en/product/bottine-sans-talon-noir-vernis/",
+      "to_de": "/de/produkt/bottine-sans-talon-noir-vernis/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-blanches/",
       "to": "/produit/bottines-blanches/",
-      "to_en": "/en/product/white-ankle-boots/",
-      "to_de": "/de/produkt/weisse-stiefeletten/"
+      "to_en": "/en/product/bottines-blanches/",
+      "to_de": "/de/produkt/bottines-blanches/"
     },
     {
       "from": "/chaussures/modele/bottine/bottine-plateforme/",
       "to": "/produit/bottine-plateforme/",
-      "to_en": "/en/product/platform-ankle-boots/",
-      "to_de": "/de/produkt/stiefeletten-mit-plateau-sohle/"
+      "to_en": "/en/product/bottine-plateforme/",
+      "to_de": "/de/produkt/bottine-plateforme/"
     },
     {
       "from": "/chaussures/modele/bottine/bottine-compensee-cuir-vegan/",
       "to": "/produit/bottine-compensee-cuir-vegan/",
-      "to_en": "/en/product/vegan-leather-wedge-ankle-boots/",
-      "to_de": "/de/produkt/veganer-stiefel-mit-keilabsatz-aus-leder/"
+      "to_en": "/en/product/bottine-compensee-cuir-vegan/",
+      "to_de": "/de/produkt/bottine-compensee-cuir-vegan/"
     },
     {
       "from": "/chaussures/modele/bottine/bottine-gothique-cuir-vegan/",
       "to": "/produit/bottine-gothic-cuir-vegan/",
-      "to_en": "/en/product/gothic-vegan-leather-ankle-boots/",
-      "to_de": "/de/produkt/vegan-leder-stiefeletten-im-gothic-stil/"
+      "to_en": "/en/product/bottine-gothic-cuir-vegan/",
+      "to_de": "/de/produkt/bottine-gothic-cuir-vegan/"
     },
     {
       "from": "/chaussures/modele/botte/bottes-gothiques/",
       "to": "/produit/bottes-gothiques/",
-      "to_en": "/en/product/gothic-boots/",
-      "to_de": "/de/produkt/gothic-stiefel/"
+      "to_en": "/en/product/bottes-gothiques/",
+      "to_de": "/de/produkt/bottes-gothiques/"
     },
     {
       "from": "/chaussures/modele/botte/bottes-a-lacet/",
       "to": "/produit/bottes-a-lacet/",
-      "to_en": "/en/product/lace-up-boots/",
-      "to_de": "/de/produkt/schnuerstiefel/"
+      "to_en": "/en/product/bottes-a-lacet/",
+      "to_de": "/de/produkt/bottes-a-lacet/"
     },
     {
       "from": "/chaussures/modele/botte/bottes-a-lacet-pleaser/",
       "to": "/produit/bottes-a-lacet-2/",
-      "to_en": "/en/product/lace-up-boots-2/",
-      "to_de": "/de/produkt/schnuerstiefel-2/"
+      "to_en": "/en/product/bottes-a-lacet-2/",
+      "to_de": "/de/produkt/bottes-a-lacet-2/"
     },
     {
       "from": "/chaussures/modele/cuissarde/bottes-cuissarde-talon/",
       "to": "/produit/bottes-cuissarde-talon/",
-      "to_en": "/en/product/high-heeled-thigh-high-boots/",
-      "to_de": "/de/produkt/overknee-stiefel-mit-absatz/"
+      "to_en": "/en/product/bottes-cuissarde-talon/",
+      "to_de": "/de/produkt/bottes-cuissarde-talon/"
     },
     {
       "from": "/latex/femme/jupe/jupe-latex-poca/",
       "to": "/produit/jupe-latex-poca/",
-      "to_en": "/en/product/poca-latex-skirt/",
-      "to_de": "/de/produkt/poca-latexrock/"
+      "to_en": "/en/product/jupe-latex-poca/",
+      "to_de": "/de/produkt/jupe-latex-poca/"
     },
     {
       "from": "/latex/femme/jupe/jupe-latex-triplekap/",
       "to": "/produit/jupe-latex-triplekap/",
-      "to_en": "/en/product/triplekap-latex-skirt/",
-      "to_de": "/de/produkt/triplekap-latexrock/"
+      "to_en": "/en/product/jupe-latex-triplekap/",
+      "to_de": "/de/produkt/jupe-latex-triplekap/"
     },
     {
       "from": "/latex/accessoires/harnais/harnais-latex-bow/",
       "to": "/produit/harnais-latex-bow/",
-      "to_en": "/en/product/latex-bow-harness/",
-      "to_de": "/de/produkt/latex-harness-bow/"
+      "to_en": "/en/product/harnais-latex-bow/",
+      "to_de": "/de/produkt/harnais-latex-bow/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-plateforme-vernis-noir/",
       "to": "/produit/bottines-plateforme-vernis-noir/",
-      "to_en": "/en/product/black-patent-leather-platform-ankle-boots/",
-      "to_de": "/de/produkt/schwarze-lack-stiefeletten-mit-plateau-sohle/"
+      "to_en": "/en/product/bottines-plateforme-vernis-noir/",
+      "to_de": "/de/produkt/bottines-plateforme-vernis-noir/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-plateforme-rouge/",
       "to": "/produit/bottines-plateforme-rouge/",
-      "to_en": "/en/product/red-platform-ankle-boots/",
-      "to_de": "/de/produkt/rote-plateau-stiefeletten/"
+      "to_en": "/en/product/bottines-plateforme-rouge/",
+      "to_de": "/de/produkt/bottines-plateforme-rouge/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-plateforme-pink-white/",
       "to": "/produit/bottines-plateforme-pink-white/",
-      "to_en": "/en/product/pink-and-white-platform-ankle-boots/",
-      "to_de": "/de/produkt/stiefeletten-mit-plateau-rosa-weiss/"
+      "to_en": "/en/product/bottines-plateforme-pink-white/",
+      "to_de": "/de/produkt/bottines-plateforme-pink-white/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-plateforme-orange/",
       "to": "/produit/bottines-plateforme-orange/",
-      "to_en": "/en/product/orange-platform-ankle-boots/",
-      "to_de": "/de/produkt/orangefarbene-stiefeletten-mit-plateau-sohle/"
+      "to_en": "/en/product/bottines-plateforme-orange/",
+      "to_de": "/de/produkt/bottines-plateforme-orange/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-plateforme-pink/",
       "to": "/produit/bottines-plateforme-pink/",
-      "to_en": "/en/product/pink-platform-ankle-boots/",
-      "to_de": "/de/produkt/pinkfarbene-stiefeletten-mit-plateau-absatz/"
+      "to_en": "/en/product/bottines-plateforme-pink/",
+      "to_de": "/de/produkt/bottines-plateforme-pink/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-plateforme-noir-mat/",
       "to": "/produit/bottines-plateforme-noir-mat/",
-      "to_en": "/en/product/matt-black-platform-ankle-boots/",
-      "to_de": "/de/produkt/schwarze-stiefeletten-mit-plateau-matt/"
+      "to_en": "/en/product/bottines-plateforme-noir-mat/",
+      "to_de": "/de/produkt/bottines-plateforme-noir-mat/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-plateforme-noir-matte/",
       "to": "/produit/bottines-plateforme-noir-matte/",
-      "to_en": "/en/product/matte-black-platform-ankle-boots/",
-      "to_de": "/de/produkt/schwarze-stiefeletten-mit-plateau-matt-2/"
+      "to_en": "/en/product/bottines-plateforme-noir-matte/",
+      "to_de": "/de/produkt/bottines-plateforme-noir-matte/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-plateforme-creme/",
       "to": "/produit/bottines-plateforme-creme/",
-      "to_en": "/en/product/cream-platform-ankle-boots/",
-      "to_de": "/de/produkt/cremefarbene-stiefeletten-mit-plateau-sohle/"
+      "to_en": "/en/product/bottines-plateforme-creme/",
+      "to_de": "/de/produkt/bottines-plateforme-creme/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-plateforme-chocolat-vernis/",
       "to": "/produit/bottines-plateforme-chocolat-vernis/",
-      "to_en": "/en/product/chocolate-coloured-patent-leather-platform-ankle-boots/",
-      "to_de": "/de/produkt/schokoladenbraune-lack-stiefeletten-mit-plateauabsatz/"
+      "to_en": "/en/product/bottines-plateforme-chocolat-vernis/",
+      "to_de": "/de/produkt/bottines-plateforme-chocolat-vernis/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-plateforme-cerise/",
       "to": "/produit/bottines-plateforme-cerise/",
-      "to_en": "/en/product/cherry-coloured-platform-ankle-boots/",
-      "to_de": "/de/produkt/stiefeletten-mit-plateau-absatz-in-kirschrot/"
+      "to_en": "/en/product/bottines-plateforme-cerise/",
+      "to_de": "/de/produkt/bottines-plateforme-cerise/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-plateforme-blanche/",
       "to": "/produit/bottines-plateforme-blanche/",
-      "to_en": "/en/product/white-platform-ankle-boots/",
-      "to_de": "/de/produkt/weisse-stiefeletten-mit-plateau-sohle/"
+      "to_en": "/en/product/bottines-plateforme-blanche/",
+      "to_de": "/de/produkt/bottines-plateforme-blanche/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-pailettes-6/",
       "to": "/produit/bottines-pailettes-7/",
-      "to_en": "/en/product/sequinned-ankle-boots-7/",
-      "to_de": "/de/produkt/stiefeletten-mit-pailletten-7/"
+      "to_en": "/en/product/bottines-pailettes-7/",
+      "to_de": "/de/produkt/bottines-pailettes-7/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-pailettes-7/",
       "to": "/produit/bottines-pailettes-8/",
-      "to_en": "/en/product/sequinned-ankle-boots-8/",
-      "to_de": "/de/produkt/stiefeletten-mit-pailletten-8/"
+      "to_en": "/en/product/bottines-pailettes-8/",
+      "to_de": "/de/produkt/bottines-pailettes-8/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-pailettes-8/",
       "to": "/produit/bottines-pailettes/",
-      "to_en": "/en/product/sequinned-ankle-boots/",
-      "to_de": "/de/produkt/stiefeletten-mit-pailletten/"
+      "to_en": "/en/product/bottines-pailettes/",
+      "to_de": "/de/produkt/bottines-pailettes/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-pailettes-4/",
       "to": "/produit/bottines-pailettes-5/",
-      "to_en": "/en/product/sequinned-ankle-boots-5/",
-      "to_de": "/de/produkt/stiefeletten-mit-pailletten-5/"
+      "to_en": "/en/product/bottines-pailettes-5/",
+      "to_de": "/de/produkt/bottines-pailettes-5/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-pailettes-5/",
       "to": "/produit/bottines-pailettes-6/",
-      "to_en": "/en/product/sequinned-ankle-boots-6/",
-      "to_de": "/de/produkt/stiefeletten-mit-pailletten-6/"
+      "to_en": "/en/product/bottines-pailettes-6/",
+      "to_de": "/de/produkt/bottines-pailettes-6/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-pailettes-2/",
       "to": "/produit/bottines-pailettes-3/",
-      "to_en": "/en/product/sequinned-ankle-boots-3/",
-      "to_de": "/de/produkt/stiefeletten-mit-pailletten-3/"
+      "to_en": "/en/product/bottines-pailettes-3/",
+      "to_de": "/de/produkt/bottines-pailettes-3/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-pailettes-3/",
       "to": "/produit/bottines-pailettes-4/",
-      "to_en": "/en/product/sequinned-ankle-boots-4/",
-      "to_de": "/de/produkt/stiefeletten-mit-pailletten-4/"
+      "to_en": "/en/product/bottines-pailettes-4/",
+      "to_de": "/de/produkt/bottines-pailettes-4/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-pailettes/",
       "to": "/produit/bottines-pailettes-2/",
-      "to_en": "/en/product/sequinned-ankle-boots-2/",
-      "to_de": "/de/produkt/stiefeletten-mit-pailletten-2/"
+      "to_en": "/en/product/bottines-pailettes-2/",
+      "to_de": "/de/produkt/bottines-pailettes-2/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-ouvertes-7/",
       "to": "/produit/bottines-ouvertes-6/",
-      "to_en": "/en/product/open-toe-ankle-boots-7/",
-      "to_de": "/de/produkt/offene-stiefeletten-6/"
+      "to_en": "/en/product/bottines-ouvertes-6/",
+      "to_de": "/de/produkt/bottines-ouvertes-6/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-ouvertes-6/",
       "to": "/produit/bottines-ouvertes-5/",
-      "to_en": "/en/product/open-toe-ankle-boots-6/",
-      "to_de": "/de/produkt/offene-stiefeletten-5/"
+      "to_en": "/en/product/bottines-ouvertes-5/",
+      "to_de": "/de/produkt/bottines-ouvertes-5/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-ouvertes/",
       "to": "/produit/bottines-ouvertes/",
-      "to_en": "/en/product/open-toe-ankle-boots-2/",
-      "to_de": "/de/produkt/offene-stiefeletten/"
+      "to_en": "/en/product/bottines-ouvertes/",
+      "to_de": "/de/produkt/bottines-ouvertes/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-ouvertes-2/",
       "to": "/produit/bottines-ouvertes-2/",
-      "to_en": "/en/product/open-toe-ankle-boots-3/",
-      "to_de": "/de/produkt/offene-stiefeletten-2/"
+      "to_en": "/en/product/bottines-ouvertes-2/",
+      "to_de": "/de/produkt/bottines-ouvertes-2/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-ouvertes-4/",
       "to": "/produit/bottines-ouvertes-3/",
-      "to_en": "/en/product/open-toe-ankle-boots-4/",
-      "to_de": "/de/produkt/offene-stiefeletten-3/"
+      "to_en": "/en/product/bottines-ouvertes-3/",
+      "to_de": "/de/produkt/bottines-ouvertes-3/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-ouvertes-5/",
       "to": "/produit/bottines-ouvertes-4/",
-      "to_en": "/en/product/open-toe-ankle-boots-5/",
-      "to_de": "/de/produkt/offene-stiefeletten-4/"
+      "to_en": "/en/product/bottines-ouvertes-4/",
+      "to_de": "/de/produkt/bottines-ouvertes-4/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-noir-chaines/",
       "to": "/produit/bottines-noir-chaines/",
-      "to_en": "/en/product/black-ankle-boots-with-chains/",
-      "to_de": "/de/produkt/schwarze-stiefeletten-mit-ketten/"
+      "to_en": "/en/product/bottines-noir-chaines/",
+      "to_de": "/de/produkt/bottines-noir-chaines/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-hautes-plateforme-rouge/",
       "to": "/produit/bottines-hautes-plateforme-rouge/",
-      "to_en": "/en/product/red-high-top-platform-ankle-boots/",
-      "to_de": "/de/produkt/rote-stiefeletten-mit-hohem-schaft-und-plateau-absatz/"
+      "to_en": "/en/product/bottines-hautes-plateforme-rouge/",
+      "to_de": "/de/produkt/bottines-hautes-plateforme-rouge/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-noires-vernis/",
       "to": "/produit/bottines-noires-vernis/",
-      "to_en": "/en/product/black-patent-leather-ankle-boots/",
-      "to_de": "/de/produkt/schwarze-lackstiefeletten/"
+      "to_en": "/en/product/bottines-noires-vernis/",
+      "to_de": "/de/produkt/bottines-noires-vernis/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-noire-steampunk/",
       "to": "/produit/bottines-noire-steampunk/",
-      "to_en": "/en/product/black-steampunk-ankle-boots/",
-      "to_de": "/de/produkt/schwarze-steampunk-stiefeletten/"
+      "to_en": "/en/product/bottines-noire-steampunk/",
+      "to_de": "/de/produkt/bottines-noire-steampunk/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-noires-avec-corsage/",
       "to": "/produit/bottines-noires-avec-corsage/",
-      "to_en": "/en/product/black-ankle-boots-with-a-bodice/",
-      "to_de": "/de/produkt/schwarze-stiefeletten-mit-riemchen/"
+      "to_en": "/en/product/bottines-noires-avec-corsage/",
+      "to_de": "/de/produkt/bottines-noires-avec-corsage/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-hautes-plateforme-noir-pleaser/",
       "to": "/produit/bottines-hautes-plateforme-noir/",
-      "to_en": "/en/product/black-high-top-platform-ankle-boots/",
-      "to_de": "/de/produkt/hohe-stiefeletten-mit-plateau-schwarz/"
+      "to_en": "/en/product/bottines-hautes-plateforme-noir/",
+      "to_de": "/de/produkt/bottines-hautes-plateforme-noir/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-hautes-plateforme-fushia-pleaser/",
       "to": "/produit/bottines-hautes-plateforme-fushia/",
-      "to_en": "/en/product/fuchsia-high-heeled-platform-ankle-boots/",
-      "to_de": "/de/produkt/hohe-stiefeletten-mit-plateau-in-fuchsia/"
+      "to_en": "/en/product/bottines-hautes-plateforme-fushia/",
+      "to_de": "/de/produkt/bottines-hautes-plateforme-fushia/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-hautes-plateforme-bleu/",
       "to": "/produit/bottines-hautes-plateforme-bleu/",
-      "to_en": "/en/product/blue-high-top-platform-ankle-boots/",
-      "to_de": "/de/produkt/hohe-stiefeletten-mit-plateau-blau/"
+      "to_en": "/en/product/bottines-hautes-plateforme-bleu/",
+      "to_de": "/de/produkt/bottines-hautes-plateforme-bleu/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-hautes-plateforme-creme/",
       "to": "/produit/bottines-hautes-plateforme-creme/",
-      "to_en": "/en/product/cream-coloured-high-heeled-platform-ankle-boots/",
-      "to_de": "/de/produkt/cremefarbene-hohe-stiefeletten-mit-plateau/"
+      "to_en": "/en/product/bottines-hautes-plateforme-creme/",
+      "to_de": "/de/produkt/bottines-hautes-plateforme-creme/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-hautes-plateforme-blanc-pleaser/",
       "to": "/produit/bottines-hautes-plateforme-blanc/",
-      "to_en": "/en/product/white-high-top-platform-ankle-boots/",
-      "to_de": "/de/produkt/weisse-hohe-stiefeletten-mit-plateauabsatz/"
+      "to_en": "/en/product/bottines-hautes-plateforme-blanc/",
+      "to_de": "/de/produkt/bottines-hautes-plateforme-blanc/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-domina-noire-brillant/",
       "to": "/produit/bottines-domina-noire-brillant/",
-      "to_en": "/en/product/domina-black-glossy-ankle-boots/",
-      "to_de": "/de/produkt/glaenzende-schwarze-domina-stiefeletten/"
+      "to_en": "/en/product/bottines-domina-noire-brillant/",
+      "to_de": "/de/produkt/bottines-domina-noire-brillant/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-domina-rose/",
       "to": "/produit/bottines-domina-rose/",
-      "to_en": "/en/product/domina-pink-ankle-boots/",
-      "to_de": "/de/produkt/stiefeletten-domina-rose/"
+      "to_en": "/en/product/bottines-domina-rose/",
+      "to_de": "/de/produkt/bottines-domina-rose/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-compensees-noire/",
       "to": "/produit/bottines-compensees-noire/",
-      "to_en": "/en/product/black-platform-ankle-boots/",
-      "to_de": "/de/produkt/schwarze-stiefeletten-mit-keilabsatz/"
+      "to_en": "/en/product/bottines-compensees-noire/",
+      "to_de": "/de/produkt/bottines-compensees-noire/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-dentelles-corsages/",
       "to": "/produit/bottines-dentelles-corsages/",
-      "to_en": "/en/product/ankle-boots-lace-and-blouses/",
-      "to_de": "/de/produkt/stiefeletten-spitze-oberteile/"
+      "to_en": "/en/product/bottines-dentelles-corsages/",
+      "to_de": "/de/produkt/bottines-dentelles-corsages/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-blanches-boucles/",
       "to": "/produit/bottines-blanches-boucles/",
-      "to_en": "/en/product/white-buckled-ankle-boots/",
-      "to_de": "/de/produkt/weisse-stiefeletten-mit-schnallen/"
+      "to_en": "/en/product/bottines-blanches-boucles/",
+      "to_de": "/de/produkt/bottines-blanches-boucles/"
     },
     {
       "from": "/latex/shine-latex-kinkyx-30ml/",
       "to": "/produit/shine-latex-kinkyx-30ml/",
-      "to_en": "/en/product/kinkyx-latex-shine-30ml/",
-      "to_de": "/de/produkt/shine-latex-kinkyx-30-ml/"
+      "to_en": "/en/product/shine-latex-kinkyx-30ml/",
+      "to_de": "/de/produkt/shine-latex-kinkyx-30ml/"
     },
     {
       "from": "/chaussures/style/casual/escarpins-bride-noir-pleaser/",
       "to": "/produit/escarpins-bride-noir/",
-      "to_en": "/en/product/black-strappy-pumps/",
-      "to_de": "/de/produkt/schwarze-pumps-mit-riemchen/"
+      "to_en": "/en/product/escarpins-bride-noir/",
+      "to_de": "/de/produkt/escarpins-bride-noir/"
     },
     {
       "from": "/chaussures/style/casual/escarpins-bride-rose-pleaser/",
       "to": "/produit/escarpins-bride-rose/",
-      "to_en": "/en/product/pink-strappy-pumps/",
-      "to_de": "/de/produkt/pumps-mit-riemchen-in-rosa/"
+      "to_en": "/en/product/escarpins-bride-rose/",
+      "to_de": "/de/produkt/escarpins-bride-rose/"
     },
     {
       "from": "/chaussures/style/casual/escapins-dentelles-noir-gothic/",
       "to": "/produit/escapins-dentelles-noir-gothic/",
-      "to_en": "/en/product/black-gothic-lace-ankle-boots/",
-      "to_de": "/de/produkt/schwarze-gothic-spitzenschuhe/"
+      "to_en": "/en/product/escapins-dentelles-noir-gothic/",
+      "to_de": "/de/produkt/escapins-dentelles-noir-gothic/"
     },
     {
       "from": "/chaussures/style/casual/escarpins-bride-blanc-pleaser/",
       "to": "/produit/escarpins-bride-blanc/",
-      "to_en": "/en/product/white-strappy-pumps/",
-      "to_de": "/de/produkt/weisse-pumps-mit-riemchen/"
+      "to_en": "/en/product/escarpins-bride-blanc/",
+      "to_de": "/de/produkt/escarpins-bride-blanc/"
     },
     {
       "from": "/chaussures/modele/cuissarde/cuissarde-talon-haut-rouge/",
       "to": "/produit/cuissarde-talon-haut-rouge/",
-      "to_en": "/en/product/red-high-heeled-thigh-high-boots/",
-      "to_de": "/de/produkt/rote-overknee-stiefel-mit-hohem-absatz/"
+      "to_en": "/en/product/cuissarde-talon-haut-rouge/",
+      "to_de": "/de/produkt/cuissarde-talon-haut-rouge/"
     },
     {
       "from": "/chaussures/modele/cuissarde/cuissarde-talon-haut-noir-vernis/",
       "to": "/produit/cuissarde-talon-haut-noir-vernis/",
-      "to_en": "/en/product/black-patent-leather-high-heeled-thigh-high-boots/",
-      "to_de": "/de/produkt/schwarzer-lack-overknee-stiefel-mit-hohem-absatz/"
+      "to_en": "/en/product/cuissarde-talon-haut-noir-vernis/",
+      "to_de": "/de/produkt/cuissarde-talon-haut-noir-vernis/"
     },
     {
       "from": "/chaussures/modele/cuissarde/cuissarde-talon-blanc/",
       "to": "/produit/cuissarde-talon-blanc/",
-      "to_en": "/en/product/white-heeled-thigh-high-boots/",
-      "to_de": "/de/produkt/weisse-overknee-stiefel-mit-absatz/"
+      "to_en": "/en/product/cuissarde-talon-blanc/",
+      "to_de": "/de/produkt/cuissarde-talon-blanc/"
     },
     {
       "from": "/chaussures/style/casual/cuissardes-lycra-lacage/",
       "to": "/produit/cuissardes-lycra-lacage/",
-      "to_en": "/en/product/lycra-lace-up-thigh-high-boots/",
-      "to_de": "/de/produkt/lycra-stiefel-mit-schnuerung/"
+      "to_en": "/en/product/cuissardes-lycra-lacage/",
+      "to_de": "/de/produkt/cuissardes-lycra-lacage/"
     },
     {
       "from": "/chaussures/marque/pleaser/cuissarde-talon-tete-de-mort/",
       "to": "/produit/cuissarde-talon-tete-de-mort/",
-      "to_en": "/en/product/skull-heel-thigh-high-boots/",
-      "to_de": "/de/produkt/overknee-stiefel-mit-totenkopf-absatz/"
+      "to_en": "/en/product/cuissarde-talon-tete-de-mort/",
+      "to_de": "/de/produkt/cuissarde-talon-tete-de-mort/"
     },
     {
       "from": "/chaussures/modele/cuissarde/cuissarde-talon-rouge/",
       "to": "/produit/cuissarde-talon-rouge/",
-      "to_en": "/en/product/talon-rouge-thigh-high-boots/",
-      "to_de": "/de/produkt/roter-stiefel-mit-absatz/"
+      "to_en": "/en/product/cuissarde-talon-rouge/",
+      "to_de": "/de/produkt/cuissarde-talon-rouge/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-spider-noire/",
       "to": "/produit/bottines-spider-noire/",
-      "to_en": "/en/product/black-spider-ankle-boots/",
-      "to_de": "/de/produkt/schwarze-spider-stiefeletten/"
+      "to_en": "/en/product/bottines-spider-noire/",
+      "to_de": "/de/produkt/bottines-spider-noire/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-rangers-noir/",
       "to": "/produit/bottines-rangers-noir/",
-      "to_en": "/en/product/black-rangers-ankle-boots/",
-      "to_de": "/de/produkt/rangers-stiefeletten-in-schwarz/"
+      "to_en": "/en/product/bottines-rangers-noir/",
+      "to_de": "/de/produkt/bottines-rangers-noir/"
     },
     {
       "from": "/chaussures/modele/bottine/bottines-punk-noires/",
       "to": "/produit/bottines-punk-noires/",
-      "to_en": "/en/product/black-punk-ankle-boots/",
-      "to_de": "/de/produkt/schwarze-punk-stiefeletten/"
+      "to_en": "/en/product/bottines-punk-noires/",
+      "to_de": "/de/produkt/bottines-punk-noires/"
     },
     {
       "from": "/latex/express/femme-express/jupe-latex-flying-s-noir/",
       "to": "/produit/jupe-latex-flying-s-noir/",
-      "to_en": "/en/product/flying-s-black-latex-skirt/",
-      "to_de": "/de/produkt/latexrock-flying-s-in-schwarz/"
+      "to_en": "/en/product/jupe-latex-flying-s-noir/",
+      "to_de": "/de/produkt/jupe-latex-flying-s-noir/"
     },
     {
       "from": "/latex/accessoires/harnais/harnais-latex-vladimir/",
       "to": "/produit/harnais-latex-vladimir/",
-      "to_en": "/en/product/vladimir-latex-harness/",
-      "to_de": "/de/produkt/latex-harness-vladimir/"
+      "to_en": "/en/product/harnais-latex-vladimir/",
+      "to_de": "/de/produkt/harnais-latex-vladimir/"
     },
     {
       "from": "/latex/accessoires/harnais/harnais-latex-steampunk/",
       "to": "/produit/harnais-latex-steampunk/",
-      "to_en": "/en/product/steampunk-latex-harness/",
-      "to_de": "/de/produkt/steampunk-latex-harnisch/"
+      "to_en": "/en/product/harnais-latex-steampunk/",
+      "to_de": "/de/produkt/harnais-latex-steampunk/"
     },
     {
       "from": "/latex/express/accessoires-express/harnais-latex-spirit-t1-noir-couleur-argent/",
       "to": "/produit/harnais-latex-spirit-t1-noir-couleur-argent/",
-      "to_en": "/en/product/spirit-t1-latex-harness-black-silver-colour/",
-      "to_de": "/de/produkt/latex-harness-spirit-t1-schwarz-farbe-silber/"
+      "to_en": "/en/product/harnais-latex-spirit-t1-noir-couleur-argent/",
+      "to_de": "/de/produkt/harnais-latex-spirit-t1-noir-couleur-argent/"
     },
     {
       "from": "/latex/accessoires/harnais/harnais-latex-spirit/",
       "to": "/produit/harnais-latex-spirit/",
-      "to_en": "/en/product/spirit-latex-harness/",
-      "to_de": "/de/produkt/latex-harness-spirit/"
+      "to_en": "/en/product/harnais-latex-spirit/",
+      "to_de": "/de/produkt/harnais-latex-spirit/"
     },
     {
       "from": "/latex/accessoires/harnais/harnais-latex-mixt/",
       "to": "/produit/harnais-latex-mixt/",
-      "to_en": "/en/product/mixt-latex-harness/",
-      "to_de": "/de/produkt/latex-harness-mixt/"
+      "to_en": "/en/product/harnais-latex-mixt/",
+      "to_de": "/de/produkt/harnais-latex-mixt/"
     },
     {
       "from": "/latex/accessoires/harnais/harnais-latex-louve/",
       "to": "/produit/harnais-latex-louve/",
-      "to_en": "/en/product/louve-latex-harness/",
-      "to_de": "/de/produkt/latex-harness-louve/"
+      "to_en": "/en/product/harnais-latex-louve/",
+      "to_de": "/de/produkt/harnais-latex-louve/"
     },
     {
       "from": "/latex/accessoires/harnais/harnais-latex-lightness/",
       "to": "/produit/harnais-latex-lightness/",
-      "to_en": "/en/product/lightness-latex-harness/",
-      "to_de": "/de/produkt/latex-harness-lightness/"
+      "to_en": "/en/product/harnais-latex-lightness/",
+      "to_de": "/de/produkt/harnais-latex-lightness/"
     },
     {
       "from": "/latex/accessoires/harnais/harnais-latex-liberty/",
       "to": "/produit/harnais-latex-liberty/",
-      "to_en": "/en/product/liberty-latex-harness/",
-      "to_de": "/de/produkt/latex-harness-liberty/"
+      "to_en": "/en/product/harnais-latex-liberty/",
+      "to_de": "/de/produkt/harnais-latex-liberty/"
     },
     {
       "from": "/latex/accessoires/harnais/harnais-latex-ko/",
       "to": "/produit/harnais-latex-ko/",
-      "to_en": "/en/product/ko-latex-harness/",
-      "to_de": "/de/produkt/latex-harness-ko/"
+      "to_en": "/en/product/harnais-latex-ko/",
+      "to_de": "/de/produkt/harnais-latex-ko/"
     },
     {
       "from": "/latex/accessoires/harnais/harnais-latex-guest/",
       "to": "/produit/harnais-latex-guest/",
-      "to_en": "/en/product/guest-latex-harness/",
-      "to_de": "/de/produkt/latex-harness-guest/"
+      "to_en": "/en/product/harnais-latex-guest/",
+      "to_de": "/de/produkt/harnais-latex-guest/"
     },
     {
       "from": "/latex/accessoires/harnais/harnais-latex-gawa/",
       "to": "/produit/harnais-latex-gawa/",
-      "to_en": "/en/product/gawa-latex-harness/",
-      "to_de": "/de/produkt/gawa-latex-harness/"
+      "to_en": "/en/product/harnais-latex-gawa/",
+      "to_de": "/de/produkt/harnais-latex-gawa/"
     },
     {
       "from": "/latex/accessoires/harnais/harnais-latex-gawa-simply/",
       "to": "/produit/harnais-latex-gawa-simply/",
-      "to_en": "/en/product/gawa-simply-latex-harness/",
-      "to_de": "/de/produkt/latex-harness-gawa-simply/"
+      "to_en": "/en/product/harnais-latex-gawa-simply/",
+      "to_de": "/de/produkt/harnais-latex-gawa-simply/"
     },
     {
       "from": "/latex/express/accessoires-express/harnais-latex-poca-t1-bleu-clair/",
       "to": "/produit/harnais-latex-poca-t1-bleu-clair/",
-      "to_en": "/en/product/poca-t1-light-blue-latex-harness/",
-      "to_de": "/de/produkt/latex-harness-poca-t1-hellblau/"
+      "to_en": "/en/product/harnais-latex-poca-t1-bleu-clair/",
+      "to_de": "/de/produkt/harnais-latex-poca-t1-bleu-clair/"
     },
     {
       "from": "/latex/express/accessoires-express/harnais-latex-poca-t1-noir/",
       "to": "/produit/harnais-latex-poca-t1-noir/",
-      "to_en": "/en/product/poca-t1-black-latex-harness/",
-      "to_de": "/de/produkt/latex-harness-poca-t1-schwarz/"
+      "to_en": "/en/product/harnais-latex-poca-t1-noir/",
+      "to_de": "/de/produkt/harnais-latex-poca-t1-noir/"
     },
     {
       "from": "/latex/express/accessoires-express/harnais-latex-poca-t1-rouge/",
       "to": "/produit/harnais-latex-poca-t1-rouge/",
-      "to_en": "/en/product/poca-t1-red-latex-harness/",
-      "to_de": "/de/produkt/latex-harness-poca-t1-rot/"
+      "to_en": "/en/product/harnais-latex-poca-t1-rouge/",
+      "to_de": "/de/produkt/harnais-latex-poca-t1-rouge/"
     },
     {
       "from": "/latex/accessoires/harnais/harnais-latex-lolypop/",
       "to": "/produit/harnais-latex-lolypop/",
-      "to_en": "/en/product/lolypop-latex-harness/",
-      "to_de": "/de/produkt/lolypop-latex-harness/"
+      "to_en": "/en/product/harnais-latex-lolypop/",
+      "to_de": "/de/produkt/harnais-latex-lolypop/"
     },
     {
       "from": "/latex/accessoires/harnais/harnais-latex-poca/",
       "to": "/produit/harnais-latex-poca/",
-      "to_en": "/en/product/poca-latex-harness/",
-      "to_de": "/de/produkt/poca-latex-harness/"
+      "to_en": "/en/product/harnais-latex-poca/",
+      "to_de": "/de/produkt/harnais-latex-poca/"
     },
     {
       "from": "/latex/femme/jupe/jupe-latex-crayon/",
       "to": "/produit/jupe-latex-crayon/",
-      "to_en": "/en/product/latex-pencil-skirt/",
-      "to_de": "/de/produkt/latex-bleistiftrock/"
+      "to_en": "/en/product/jupe-latex-crayon/",
+      "to_de": "/de/produkt/jupe-latex-crayon/"
     },
     {
       "from": "/latex/femme/jupe/jupe-latex-flying/",
       "to": "/produit/jupe-latex-flying/",
-      "to_en": "/en/product/flying-latex-skirt/",
-      "to_de": "/de/produkt/latexrock-flying/"
+      "to_en": "/en/product/jupe-latex-flying/",
+      "to_de": "/de/produkt/jupe-latex-flying/"
     },
     {
       "from": "/latex/femme/jupe/jupe-latex-flying-longue/",
       "to": "/produit/jupe-latex-flying-longue/",
-      "to_en": "/en/product/long-flying-latex-skirt/",
-      "to_de": "/de/produkt/langer-latexrock-flying/"
+      "to_en": "/en/product/jupe-latex-flying-longue/",
+      "to_de": "/de/produkt/jupe-latex-flying-longue/"
     },
     {
       "from": "/latex/femme/jupe/jupe-latex-louve/",
       "to": "/produit/jupe-latex-louve/",
-      "to_en": "/en/product/louve-latex-skirt/",
-      "to_de": "/de/produkt/latexrock-louve/"
+      "to_en": "/en/product/jupe-latex-louve/",
+      "to_de": "/de/produkt/jupe-latex-louve/"
     },
     {
       "from": "/latex/express/femme-express/top-latex-kinktop-s-violet-metallique/",
       "to": "/produit/top-latex-kinktop-s-violet-metallique/",
-      "to_en": "/en/product/kinktop-s-metallic-purple-latex-top/",
-      "to_de": "/de/produkt/latex-top-kinktop-s-in-violett-metallic/"
+      "to_en": "/en/product/top-latex-kinktop-s-violet-metallique/",
+      "to_de": "/de/produkt/top-latex-kinktop-s-violet-metallique/"
     },
     {
       "from": "/latex/express/femme-express/jupe-latex-crayon-m-rouge/",
       "to": "/produit/jupe-latex-crayon-m-rouge/",
-      "to_en": "/en/product/red-m-size-latex-pencil-skirt/",
-      "to_de": "/de/produkt/roter-latex-bleistiftrock-in-groesse-m/"
+      "to_en": "/en/product/jupe-latex-crayon-m-rouge/",
+      "to_de": "/de/produkt/jupe-latex-crayon-m-rouge/"
     },
     {
       "from": "/latex/express/femme-express/jupe-latex-crayon-s-rouge/",
       "to": "/produit/jupe-latex-crayon-s-rouge/",
-      "to_en": "/en/product/red-latex-pencil-skirt/",
-      "to_de": "/de/produkt/roter-latex-bleistiftrock-in-groesse-s/"
+      "to_en": "/en/product/jupe-latex-crayon-s-rouge/",
+      "to_de": "/de/produkt/jupe-latex-crayon-s-rouge/"
     },
     {
       "from": "/latex/express/femme-express/jupe-latex-flying-l-noir/",
       "to": "/produit/jupe-latex-flying-l-noir/",
-      "to_en": "/en/product/flying-l-black-latex-skirt/",
-      "to_de": "/de/produkt/latexrock-flying-l-in-schwarz/"
+      "to_en": "/en/product/jupe-latex-flying-l-noir/",
+      "to_de": "/de/produkt/jupe-latex-flying-l-noir/"
     },
     {
       "from": "/latex/express/femme-express/jupe-latex-crayon-l-rouge/",
       "to": "/produit/jupe-latex-crayon-l-rouge/",
-      "to_en": "/en/product/red-latex-pencil-skirt-l/",
-      "to_de": "/de/produkt/roter-latex-bleistiftrock-l/"
+      "to_en": "/en/product/jupe-latex-crayon-l-rouge/",
+      "to_de": "/de/produkt/jupe-latex-crayon-l-rouge/"
     },
     {
       "from": "/latex/express/femme-express/jupe-latex-flying-m-noir/",
       "to": "/produit/jupe-latex-flying-m-noir/",
-      "to_en": "/en/product/flying-m-black-latex-skirt/",
-      "to_de": "/de/produkt/latexrock-flying-m-schwarz/"
+      "to_en": "/en/product/jupe-latex-flying-m-noir/",
+      "to_de": "/de/produkt/jupe-latex-flying-m-noir/"
     },
     {
       "from": "/latex/accessoires/harnais/harnais-latex-biky/",
       "to": "/produit/harnais-latex-biky/",
-      "to_en": "/en/product/biky-latex-harness/",
-      "to_de": "/de/produkt/latex-harness-biky/"
+      "to_en": "/en/product/harnais-latex-biky/",
+      "to_de": "/de/produkt/harnais-latex-biky/"
     },
     {
       "from": "/latex/accessoires/harnais/harnais-latex-hope/",
       "to": "/produit/harnais-latex-hope/",
-      "to_en": "/en/product/hope-latex-harness/",
-      "to_de": "/de/produkt/latex-harness-hope/"
+      "to_en": "/en/product/harnais-latex-hope/",
+      "to_de": "/de/produkt/harnais-latex-hope/"
     },
     {
       "from": "/chaussures/modele/escarpin/escarpin-plateforme-ouvert-pleaser/",
       "to": "/produit/escarpins-plateforme-ouvert/",
-      "to_en": "/en/product/open-toe-platform-pumps/",
-      "to_de": "/de/produkt/pumps-mit-offener-plateausohle/"
+      "to_en": "/en/product/escarpins-plateforme-ouvert/",
+      "to_de": "/de/produkt/escarpins-plateforme-ouvert/"
     },
     {
       "from": "/chaussures/modele/escarpin/escarpins-plateforme-noir-brillant/",
       "to": "/produit/escarpins-plateforme-noir-brillant/",
-      "to_en": "/en/product/shiny-black-platform-pumps/",
-      "to_de": "/de/produkt/schwarze-pumps-mit-glaenzender-plateausohle/"
+      "to_en": "/en/product/escarpins-plateforme-noir-brillant/",
+      "to_de": "/de/produkt/escarpins-plateforme-noir-brillant/"
     },
     {
       "from": "/chaussures/modele/escarpin/escarpins-noir-brillant-pleaser/",
       "to": "/produit/escarpins-noir-brillant/",
-      "to_en": "/en/product/shiny-black-pumps/",
-      "to_de": "/de/produkt/glaenzende-schwarze-pumps/"
+      "to_en": "/en/product/escarpins-noir-brillant/",
+      "to_de": "/de/produkt/escarpins-noir-brillant/"
     },
     {
       "from": "/chaussures/marque/demoniacult/escarpin-lanieres-bat-cuir-noir/",
       "to": "/produit/escarpins-lanieres-bat-cuir-noir/",
-      "to_en": "/en/product/black-leather-strappy-pumps/",
-      "to_de": "/de/produkt/pumps-mit-riemchen-bat-leder-schwarz/"
+      "to_en": "/en/product/escarpins-lanieres-bat-cuir-noir/",
+      "to_de": "/de/produkt/escarpins-lanieres-bat-cuir-noir/"
     },
     {
       "from": "/chaussures/marque/demoniacult/escarpin-lanieres-bat-demoniacult/",
       "to": "/produit/escarpins-lanieres-bat/",
-      "to_en": "/en/product/bat-strappy-pumps/",
-      "to_de": "/de/produkt/pumps-mit-riemchen-von-bat/"
+      "to_en": "/en/product/escarpins-lanieres-bat/",
+      "to_de": "/de/produkt/escarpins-lanieres-bat/"
     },
     {
       "from": "/chaussures/marque/demoniacult/escarpin-steampunk-dentelle-noir-demoniacult/",
       "to": "/produit/escarpins-steampunk-dentelle-noir/",
-      "to_en": "/en/product/black-steampunk-lace-pumps/",
-      "to_de": "/de/produkt/schwarze-steampunk-pumps-mit-spitze/"
+      "to_en": "/en/product/escarpins-steampunk-dentelle-noir/",
+      "to_de": "/de/produkt/escarpins-steampunk-dentelle-noir/"
     },
     {
       "from": "/chaussures/style/casual/escarpins-bride-rouge-pleaser/",
       "to": "/produit/escarpins-bride-rouge/",
-      "to_en": "/en/product/red-strappy-heels/",
-      "to_de": "/de/produkt/rote-pumps-mit-riemchen/"
+      "to_en": "/en/product/escarpins-bride-rouge/",
+      "to_de": "/de/produkt/escarpins-bride-rouge/"
     },
     {
       "from": "/chaussures/marque/devious/escarpins-haut-noir-brillant-pleaser/",
       "to": "/produit/escarpins-haut-noir-brillant/",
-      "to_en": "/en/product/high-heeled-black-patent-leather-pumps/",
-      "to_de": "/de/produkt/hohe-schwarze-pumps-mit-glanzoberflaeche/"
+      "to_en": "/en/product/escarpins-haut-noir-brillant/",
+      "to_de": "/de/produkt/escarpins-haut-noir-brillant/"
     },
     {
       "from": "/chaussures/marque/devious/escarpins-haut-rouge-brillant/",
       "to": "/produit/escarpins-haut-rouge-brillant/",
-      "to_en": "/en/product/high-heeled-pumps-in-bright-red/",
-      "to_de": "/de/produkt/hohe-pumps-in-leuchtendem-rot/"
+      "to_en": "/en/product/escarpins-haut-rouge-brillant/",
+      "to_de": "/de/produkt/escarpins-haut-rouge-brillant/"
     },
     {
       "from": "/chaussures/style/casual/mule-simply-plateau-noir-pleaser/",
       "to": "/produit/mule-simply-plateau-noir/",
-      "to_en": "/en/product/simply-plateau-black-mule/",
-      "to_de": "/de/produkt/pantolette-simply-plateau-in-schwarz/"
+      "to_en": "/en/product/mule-simply-plateau-noir/",
+      "to_de": "/de/produkt/mule-simply-plateau-noir/"
     },
     {
       "from": "/chaussures/style/casual/mule-simply-plateau-rouge-pleaser/",
       "to": "/produit/mule-simply-plateau-rouge/",
-      "to_en": "/en/product/simply-plateau-red-mules/",
-      "to_de": "/de/produkt/pantolette-simply-plateau-in-rot/"
+      "to_en": "/en/product/mule-simply-plateau-rouge/",
+      "to_de": "/de/produkt/mule-simply-plateau-rouge/"
     },
     {
       "from": "/chaussures/style/casual/mule-simply-plateau-blanche-pleaser/",
       "to": "/produit/mule-simply-plateau-blanche/",
-      "to_en": "/en/product/simply-white-platform-mule/",
-      "to_de": "/de/produkt/weisse-pantolette-simply-plateau/"
+      "to_en": "/en/product/mule-simply-plateau-blanche/",
+      "to_de": "/de/produkt/mule-simply-plateau-blanche/"
     },
     {
       "from": "/chaussures/style/casual/mule-simply-plateau-chrome/",
       "to": "/produit/mule-simply-plateau-chrome/",
-      "to_en": "/en/product/simply-chrome-platform-mule/",
-      "to_de": "/de/produkt/pantolette-simply-plateau-in-chrom/"
+      "to_en": "/en/product/mule-simply-plateau-chrome/",
+      "to_de": "/de/produkt/mule-simply-plateau-chrome/"
     },
     {
       "from": "/chaussures/style/casual/mule-simply-plateau-strasse/",
       "to": "/produit/mule-simply-plateau-strasse/",
-      "to_en": "/en/product/simply-plateau-strass-mule/",
-      "to_de": "/de/produkt/pantolette-simply-plateau-strasse/"
+      "to_en": "/en/product/mule-simply-plateau-strasse/",
+      "to_de": "/de/produkt/mule-simply-plateau-strasse/"
     },
     {
       "from": "/chaussures/style/casual/mule-simply-plateau-rose-rouge/",
       "to": "/produit/mule-simply-plateau-rose-rouge/",
-      "to_en": "/en/product/simply-plateau-mules-in-pink-and-red/",
-      "to_de": "/de/produkt/pantolette-simply-plateau-in-rosa-und-rot/"
+      "to_en": "/en/product/mule-simply-plateau-rose-rouge/",
+      "to_de": "/de/produkt/mule-simply-plateau-rose-rouge/"
     },
     {
       "from": "/chaussures/style/casual/mule-simply-plateau-rose-pink-pleaser/",
       "to": "/produit/mule-simply-plateau-rose-pink/",
-      "to_en": "/en/product/simply-plateau-pink-mule/",
-      "to_de": "/de/produkt/pantolette-simply-plateau-in-rosa-pink/"
+      "to_en": "/en/product/mule-simply-plateau-rose-pink/",
+      "to_de": "/de/produkt/mule-simply-plateau-rose-pink/"
     },
     {
       "from": "/chaussures/style/casual/mule-simply-plateau-transparente-pleaser/",
       "to": "/produit/mule-simply-plateau-transparente/",
-      "to_en": "/en/product/simply-plateau-clear-mule/",
-      "to_de": "/de/produkt/transparente-simply-plateau-pantolette/"
+      "to_en": "/en/product/mule-simply-plateau-transparente/",
+      "to_de": "/de/produkt/mule-simply-plateau-transparente/"
     },
     {
       "from": "/chaussures/style/casual/mules-noir-avec-strass-pleaser/",
       "to": "/produit/mules-noir-avec-strass/",
-      "to_en": "/en/product/black-mules-with-rhinestones/",
-      "to_de": "/de/produkt/schwarze-pantoletten-mit-strasssteinen/"
+      "to_en": "/en/product/mules-noir-avec-strass/",
+      "to_de": "/de/produkt/mules-noir-avec-strass/"
     },
     {
       "from": "/chaussures/style/casual/mules-transparente-avec-strass-pleaser/",
       "to": "/produit/mules-transparente-avec-strass/",
-      "to_en": "/en/product/transparent-mules-with-rhinestones/",
-      "to_de": "/de/produkt/transparente-pantoletten-mit-strasssteinen-2/"
+      "to_en": "/en/product/mules-transparente-avec-strass/",
+      "to_de": "/de/produkt/mules-transparente-avec-strass/"
     },
     {
       "from": "/chaussures/style/grande-taille/sandales-harnais-boucle-pleaser/",
       "to": "/produit/sandales-harnais-boucle/",
-      "to_en": "/en/product/buckle-harness-sandals/",
-      "to_de": "/de/produkt/sandalen-mit-riemen-und-schnalle/"
+      "to_en": "/en/product/sandales-harnais-boucle/",
+      "to_de": "/de/produkt/sandales-harnais-boucle/"
     },
     {
       "from": "/chaussures/style/grande-taille/sandales-harnais-noir-brillant/",
       "to": "/produit/sandales-harnais-noir-brillant/",
-      "to_en": "/en/product/shiny-black-harness-sandals/",
-      "to_de": "/de/produkt/sandalen-mit-riemchen-in-glaenzendem-schwarz/"
+      "to_en": "/en/product/sandales-harnais-noir-brillant/",
+      "to_de": "/de/produkt/sandales-harnais-noir-brillant/"
     },
     {
       "from": "/chaussures/marque/pleaser/sandales-tete-de-mort-rouge/",
       "to": "/produit/sandales-tete-de-mort-rouge/",
-      "to_en": "/en/product/red-skull-sandals/",
-      "to_de": "/de/produkt/rote-sandalen-mit-totenkopf-motiv/"
+      "to_en": "/en/product/sandales-tete-de-mort-rouge/",
+      "to_de": "/de/produkt/sandales-tete-de-mort-rouge/"
     },
     {
       "from": "/chaussures/marque/pleaser/sandales-tete-de-mort-or/",
       "to": "/produit/sandales-tete-de-mort-or/",
-      "to_en": "/en/product/gold-skull-sandals/",
-      "to_de": "/de/produkt/sandalen-mit-goldenem-totenkopf-motiv/"
+      "to_en": "/en/product/sandales-tete-de-mort-or/",
+      "to_de": "/de/produkt/sandales-tete-de-mort-or/"
     },
     {
       "from": "/chaussures/marque/pleaser/sandales-tete-de-mort-chrome/",
       "to": "/produit/sandales-tete-de-mort-chrome/",
-      "to_en": "/en/product/chrome-skull-sandals/",
-      "to_de": "/de/produkt/sandalen-mit-totenkopf-motiv-in-chrom/"
+      "to_en": "/en/product/sandales-tete-de-mort-chrome/",
+      "to_de": "/de/produkt/sandales-tete-de-mort-chrome/"
     },
     {
       "from": "/chaussures/marque/pleaser/sandales-tete-de-mort-bronze/",
       "to": "/produit/sandales-tete-de-mort-bronze/",
-      "to_en": "/en/product/bronze-skull-sandals/",
-      "to_de": "/de/produkt/sandalen-mit-totenkopf-motiv-in-bronze/"
+      "to_en": "/en/product/sandales-tete-de-mort-bronze/",
+      "to_de": "/de/produkt/sandales-tete-de-mort-bronze/"
     },
     {
       "from": "/chaussures/marque/pleaser/sandales-tete-de-mort-transparente/",
       "to": "/produit/sandales-tete-de-mort-transparente/",
-      "to_en": "/en/product/transparent-skull-sandals/",
-      "to_de": "/de/produkt/transparente-sandalen-mit-totenkopf-motiv/"
+      "to_en": "/en/product/sandales-tete-de-mort-transparente/",
+      "to_de": "/de/produkt/sandales-tete-de-mort-transparente/"
     },
     {
       "from": "/chaussures/style/grande-taille/sandale-plateforme-noir-transparent-pleaser/",
       "to": "/produit/sandale-plateforme-noir-transparent/",
-      "to_en": "/en/product/black-clear-platform-sandals/",
-      "to_de": "/de/produkt/sandale-mit-plateau-schwarz-transparent/"
+      "to_en": "/en/product/sandale-plateforme-noir-transparent/",
+      "to_de": "/de/produkt/sandale-plateforme-noir-transparent/"
     },
     {
       "from": "/chaussures/marque/pleaser/sandales-strass-noir-mat-pleaser/",
       "to": "/produit/sandales-strass-noir-mat/",
-      "to_en": "/en/product/matt-black-rhinestone-sandals/",
-      "to_de": "/de/produkt/sandalen-mit-strasssteinen-mattschwarz/"
+      "to_en": "/en/product/sandales-strass-noir-mat/",
+      "to_de": "/de/produkt/sandales-strass-noir-mat/"
     },
     {
       "from": "/chaussures/marque/pleaser/sandale-bridde-noir-mat-pleaser/",
       "to": "/produit/sandale-bridde-noir-mat/",
-      "to_en": "/en/product/matt-black-strappy-sandal/",
-      "to_de": "/de/produkt/sandale-mit-riemchen-mattschwarz/"
+      "to_en": "/en/product/sandale-bridde-noir-mat/",
+      "to_de": "/de/produkt/sandale-bridde-noir-mat/"
     },
     {
       "from": "/chaussures/style/casual/sandales-lanieres-noir-pleaser/",
       "to": "/produit/sandales-lanieres-noir/",
-      "to_en": "/en/product/black-strappy-sandals/",
-      "to_de": "/de/produkt/schwarze-riemchensandalen/"
+      "to_en": "/en/product/sandales-lanieres-noir/",
+      "to_de": "/de/produkt/sandales-lanieres-noir/"
     },
     {
       "from": "/chaussures/style/casual/sandales-lanieres-bordeaux-pleaser/",
       "to": "/produit/sandales-lanieres-bordeaux/",
-      "to_en": "/en/product/burgundy-strappy-sandals/",
-      "to_de": "/de/produkt/sandalen-mit-riemchen-in-bordeauxrot/"
+      "to_en": "/en/product/sandales-lanieres-bordeaux/",
+      "to_de": "/de/produkt/sandales-lanieres-bordeaux/"
     },
     {
       "from": "/chaussures/style/casual/sandales-plateforme-noir-brillant-pleaser/",
       "to": "/produit/sandales-plateforme-noir-brillant/",
-      "to_en": "/en/product/shiny-black-platform-sandals/",
-      "to_de": "/de/produkt/glaenzende-schwarze-plateau-sandalen/"
+      "to_en": "/en/product/sandales-plateforme-noir-brillant/",
+      "to_de": "/de/produkt/sandales-plateforme-noir-brillant/"
     },
     {
       "from": "/chaussures/style/casual/sandales-plateforme-noir-mat-pleaser/",
       "to": "/produit/sandales-plateforme-noir-mat/",
-      "to_en": "/en/product/matt-black-platform-sandals/",
-      "to_de": "/de/produkt/sandalen-mit-plateau-mattschwarz/"
+      "to_en": "/en/product/sandales-plateforme-noir-mat/",
+      "to_de": "/de/produkt/sandales-plateforme-noir-mat/"
     },
     {
       "from": "/chaussures/style/casual/sandales-plateforme-rouge-pleaser/",
       "to": "/produit/sandales-plateforme-rouge/",
-      "to_en": "/en/product/red-platform-sandals/",
-      "to_de": "/de/produkt/rote-plateau-sandalen/"
+      "to_en": "/en/product/sandales-plateforme-rouge/",
+      "to_de": "/de/produkt/sandales-plateforme-rouge/"
     },
     {
       "from": "/chaussures/style/casual/sandales-plateforme-blanche-pleaser/",
       "to": "/produit/sandales-plateforme-blanche/",
-      "to_en": "/en/product/white-platform-sandals/",
-      "to_de": "/de/produkt/weisse-plateau-sandalen/"
+      "to_en": "/en/product/sandales-plateforme-blanche/",
+      "to_de": "/de/produkt/sandales-plateforme-blanche/"
     },
     {
       "from": "/chaussures/style/casual/sandales-plateforme-creme/",
       "to": "/produit/sandales-plateforme-creme/",
-      "to_en": "/en/product/cream-platform-sandals/",
-      "to_de": "/de/produkt/cremefarbene-plateau-sandalen/"
+      "to_en": "/en/product/sandales-plateforme-creme/",
+      "to_de": "/de/produkt/sandales-plateforme-creme/"
     },
     {
       "from": "/chaussures/style/casual/sandales-plateforme-rose-uv/",
       "to": "/produit/sandales-plateforme-rose-uv/",
-      "to_en": "/en/product/uv-pink-platform-sandals/",
-      "to_de": "/de/produkt/rosa-plateau-sandalen-in-uv/"
+      "to_en": "/en/product/sandales-plateforme-rose-uv/",
+      "to_de": "/de/produkt/sandales-plateforme-rose-uv/"
     },
     {
       "from": "/chaussures/style/casual/sandales-plateforme-bride-noir-brillant-pleaser/",
       "to": "/produit/sandales-plateforme-bride-noir-brillant/",
-      "to_en": "/en/product/shiny-black-strappy-platform-sandals/",
-      "to_de": "/de/produkt/sandalen-mit-plateau-absatz-und-riemchen-schwarz-glaenzend/"
+      "to_en": "/en/product/sandales-plateforme-bride-noir-brillant/",
+      "to_de": "/de/produkt/sandales-plateforme-bride-noir-brillant/"
     },
     {
       "from": "/chaussures/style/casual/sandales-plateforme-bride-noir-mat-pleaser/",
       "to": "/produit/sandales-plateforme-bride-noir-mat/",
-      "to_en": "/en/product/matt-black-platform-strappy-sandals/",
-      "to_de": "/de/produkt/sandalen-mit-plateau-absatz-und-riemchen-mattschwarz/"
+      "to_en": "/en/product/sandales-plateforme-bride-noir-mat/",
+      "to_de": "/de/produkt/sandales-plateforme-bride-noir-mat/"
     },
     {
       "from": "/chaussures/style/casual/sandales-degrade-noir-rouge-pleaser/",
       "to": "/produit/sandales-degrade-noir-rouge/",
-      "to_en": "/en/product/black-and-red-ombre-sandals/",
-      "to_de": "/de/produkt/sandalen-in-schwarz-rot-farbverlauf/"
+      "to_en": "/en/product/sandales-degrade-noir-rouge/",
+      "to_de": "/de/produkt/sandales-degrade-noir-rouge/"
     },
     {
       "from": "/chaussures/marque/pleaser/sandales-rose-uv-transparente-pleaser/",
       "to": "/produit/sandales-rose-uv-transparente/",
-      "to_en": "/en/product/transparent-uv-pink-sandals/",
-      "to_de": "/de/produkt/sandalen-in-transparentem-uv-rosa/"
+      "to_en": "/en/product/sandales-rose-uv-transparente/",
+      "to_de": "/de/produkt/sandales-rose-uv-transparente/"
     },
     {
       "from": "/chaussures/style/casual/sandales-nu-pied-blanc-pleaser/",
       "to": "/produit/sandales-nu-pied-blanc/",
-      "to_en": "/en/product/white-open-toe-sandals/",
-      "to_de": "/de/produkt/weisse-zehensandalen/"
+      "to_en": "/en/product/sandales-nu-pied-blanc/",
+      "to_de": "/de/produkt/sandales-nu-pied-blanc/"
     },
     {
       "from": "/chaussures/style/casual/sandales-chaines-pleaser/",
       "to": "/produit/sandales-chaines/",
-      "to_en": "/en/product/chain-sandals/",
-      "to_de": "/de/produkt/sandalen-mit-ketten/"
+      "to_en": "/en/product/sandales-chaines/",
+      "to_de": "/de/produkt/sandales-chaines/"
     },
     {
       "from": "/chaussures/style/casual/double-bride-pleaser/",
       "to": "/produit/plateforme-double-bride/",
-      "to_en": "/en/product/double-flange-platform/",
-      "to_de": "/de/produkt/plattform-mit-doppelter-lasche/"
+      "to_en": "/en/product/plateforme-double-bride/",
+      "to_de": "/de/produkt/plateforme-double-bride/"
     },
     {
       "from": "/chaussures/style/casual/sandales-paillettes-noir-pleaser-shoes/",
       "to": "/produit/sandales-paillettes-noir/",
-      "to_en": "/en/product/black-sequinned-sandals/",
-      "to_de": "/de/produkt/schwarze-sandalen-mit-pailletten/"
+      "to_en": "/en/product/sandales-paillettes-noir/",
+      "to_de": "/de/produkt/sandales-paillettes-noir/"
     },
     {
       "from": "/chaussures/style/casual/sandales-paillettes-rouge-pleasers-shoes/",
       "to": "/produit/sandales-paillettes-rouge/",
-      "to_en": "/en/product/red-sequinned-sandals/",
-      "to_de": "/de/produkt/rote-sandalen-mit-pailletten/"
+      "to_en": "/en/product/sandales-paillettes-rouge/",
+      "to_de": "/de/produkt/sandales-paillettes-rouge/"
     },
     {
       "from": "/chaussures/style/casual/sandales-kinkyx-noire-mate-pleaser-shoes/",
       "to": "/produit/sandales-noire-mate/",
-      "to_en": "/en/product/matt-black-sandals/",
-      "to_de": "/de/produkt/sandalen-in-mattem-schwarz/"
+      "to_en": "/en/product/sandales-noire-mate/",
+      "to_de": "/de/produkt/sandales-noire-mate/"
     },
     {
       "from": "/chaussures/style/casual/sandales-noire-transparente-pleaser/",
       "to": "/produit/sandales-noire-transparente/",
-      "to_en": "/en/product/black-transparent-sandals/",
-      "to_de": "/de/produkt/schwarze-transparente-sandalen/"
+      "to_en": "/en/product/sandales-noire-transparente/",
+      "to_de": "/de/produkt/sandales-noire-transparente/"
     },
     {
       "from": "/chaussures/style/casual/sandales-rouge-transparente-pleasers/",
       "to": "/produit/sandales-rouge-transparente/",
-      "to_en": "/en/product/transparent-red-sandals/",
-      "to_de": "/de/produkt/rote-durchsichtige-sandalen/"
+      "to_en": "/en/product/sandales-rouge-transparente/",
+      "to_de": "/de/produkt/sandales-rouge-transparente/"
     },
     {
       "from": "/chaussures/style/casual/sandales-plateformes-noir-rouge-pleaser/",
       "to": "/produit/nu-pied-noir-rouge/",
-      "to_en": "/en/product/black-red-sandals/",
-      "to_de": "/de/produkt/schwarze-und-rote-sandalen/"
+      "to_en": "/en/product/nu-pied-noir-rouge/",
+      "to_de": "/de/produkt/nu-pied-noir-rouge/"
     },
     {
       "from": "/chaussures/marque/pleaser/sandales-rose-uv/",
       "to": "/produit/sandales-rose-uv/",
-      "to_en": "/en/product/uv-pink-sandals/",
-      "to_de": "/de/produkt/sandalen-in-der-farbe-rose-uv/"
+      "to_en": "/en/product/sandales-rose-uv/",
+      "to_de": "/de/produkt/sandales-rose-uv/"
     },
     {
       "from": "/chaussures/style/casual/sandale-plateforme-noir-chrome-pleaser/",
       "to": "/produit/nu-pied-noir-chrome/",
-      "to_en": "/en/product/black-chrome-sandals/",
-      "to_de": "/de/produkt/schwarze-chrom-sandalen/"
+      "to_en": "/en/product/nu-pied-noir-chrome/",
+      "to_de": "/de/produkt/nu-pied-noir-chrome/"
     },
     {
       "from": "/latex/shine-latex-kinkyx-50ml/",
       "to": "/produit/shine-latex-kinkyx-50ml/",
-      "to_en": "/en/product/kinkyx-latex-shine-50ml/",
-      "to_de": "/de/produkt/shine-latex-kinkyx-50-ml/"
+      "to_en": "/en/product/shine-latex-kinkyx-50ml/",
+      "to_de": "/de/produkt/shine-latex-kinkyx-50ml/"
     },
     {
       "from": "/non-classe/jupe-latex-kap/",
       "to": "/produit/jupe-latex-kap/",
-      "to_en": "/en/product/kap-latex-skirt/",
-      "to_de": "/de/produkt/kap-latexrock/"
-    },
-    {
-      "from": "/latex/femme/tanga-latex/",
-      "to": "/latex/femme/",
-      "to_en": "/latex/woman/",
-      "to_de": "/latex/frau/",
-      "note": "produit absent du catalogue dev (retiré/renommé ?) — repli sur la catégorie parente, À CONFIRMER avec le client avant bascule"
+      "to_en": "/en/product/jupe-latex-kap/",
+      "to_de": "/de/produkt/jupe-latex-kap/"
     }
   ],
   "categories": [
     {
       "from": "/non-classe/",
       "to": "/non-classe/",
-      "to_en": "/uncategorised/",
-      "to_de": "/nicht-kategorisiert/"
+      "to_en": "/non-classe/",
+      "to_de": "/non-classe/"
     },
     {
       "from": "/latex/",
@@ -1521,230 +1519,230 @@
     {
       "from": "/latex/homme/",
       "to": "/latex/homme/",
-      "to_en": "/latex/man/",
-      "to_de": "/latex/mann/"
+      "to_en": "/latex/homme/",
+      "to_de": "/latex/homme/"
     },
     {
       "from": "/latex/homme/top/",
       "to": "/latex/homme/top/",
-      "to_en": "/latex/man/top/",
-      "to_de": "/latex/mann/top/"
+      "to_en": "/latex/homme/top/",
+      "to_de": "/latex/homme/top/"
     },
     {
       "from": "/latex/homme/veste/",
       "to": "/latex/homme/veste/",
-      "to_en": "/latex/man/jacket/",
-      "to_de": "/latex/mann/jacke/"
+      "to_en": "/latex/homme/veste/",
+      "to_de": "/latex/homme/veste/"
     },
     {
       "from": "/chaussures/",
       "to": "/chaussures/",
-      "to_en": "/shoes/",
-      "to_de": "/schuhe/"
+      "to_en": "/chaussures/",
+      "to_de": "/chaussures/"
     },
     {
       "from": "/chaussures/marque/pleaser/",
       "to": "/chaussures/marque/pleaser/",
-      "to_en": "/shoes/brand/pleaser/",
-      "to_de": "/schuhe/marke/pleaser/"
+      "to_en": "/chaussures/marque/pleaser/",
+      "to_de": "/chaussures/marque/pleaser/"
     },
     {
       "from": "/chaussures/modele/bottine/",
       "to": "/chaussures/modele/bottine/",
-      "to_en": "/shoes/model/ankle-boots/",
-      "to_de": "/schuhe/modell/stiefelette/"
+      "to_en": "/chaussures/modele/bottine/",
+      "to_de": "/chaussures/modele/bottine/"
     },
     {
       "from": "/latex/femme/",
       "to": "/latex/femme/",
-      "to_en": "/latex/woman/",
-      "to_de": "/latex/frau/"
+      "to_en": "/latex/femme/",
+      "to_de": "/latex/femme/"
     },
     {
       "from": "/latex/femme/top-femme/",
       "to": "/latex/femme/top/",
-      "to_en": "/latex/woman/top/",
-      "to_de": "/latex/frau/top/"
+      "to_en": "/latex/femme/top/",
+      "to_de": "/latex/femme/top/"
     },
     {
       "from": "/latex/express/femme-express/",
       "to": "/latex/express/femme/",
-      "to_en": "/latex/express/woman/",
-      "to_de": "/latex/express/frau/"
+      "to_en": "/latex/express/femme/",
+      "to_de": "/latex/express/femme/"
     },
     {
       "from": "/latex/accessoires/harnais/",
       "to": "/latex/accessoires/harnais/",
-      "to_en": "/latex/accessories/harness/",
-      "to_de": "/latex/zubehoer/gurtzeug/"
+      "to_en": "/latex/accessoires/harnais/",
+      "to_de": "/latex/accessoires/harnais/"
     },
     {
       "from": "/latex/express/accessoires-express/",
       "to": "/latex/express/accessoires/",
-      "to_en": "/latex/express/accessories/",
-      "to_de": "/latex/express/zubehoer/"
+      "to_en": "/latex/express/accessoires/",
+      "to_de": "/latex/express/accessoires/"
     },
     {
       "from": "/latex/femme/body/",
       "to": "/latex/femme/body/",
-      "to_en": "/latex/woman/body/",
-      "to_de": "/latex/frau/body/"
+      "to_en": "/latex/femme/body/",
+      "to_de": "/latex/femme/body/"
     },
     {
       "from": "/latex/femme/jupe/",
       "to": "/latex/femme/jupe/",
-      "to_en": "/latex/woman/skirt/",
-      "to_de": "/latex/frau/rock/"
+      "to_en": "/latex/femme/jupe/",
+      "to_de": "/latex/femme/jupe/"
     },
     {
       "from": "/latex/femme/robe/",
       "to": "/latex/femme/robe/",
-      "to_en": "/latex/woman/dress/",
-      "to_de": "/latex/frau/kleid/"
+      "to_en": "/latex/femme/robe/",
+      "to_de": "/latex/femme/robe/"
     },
     {
       "from": "/latex/femme/legging/",
       "to": "/latex/femme/legging/",
-      "to_en": "/latex/woman/leggings/",
-      "to_de": "/latex/frau/leggings/"
+      "to_en": "/latex/femme/legging/",
+      "to_de": "/latex/femme/legging/"
     },
     {
       "from": "/latex/femme/veste-femme/",
       "to": "/latex/femme/veste/",
-      "to_en": "/latex/woman/jacket/",
-      "to_de": "/latex/frau/jacke/"
+      "to_en": "/latex/femme/veste/",
+      "to_de": "/latex/femme/veste/"
     },
     {
       "from": "/latex/homme/chemise/",
       "to": "/latex/homme/chemise/",
-      "to_en": "/latex/man/shirt/",
-      "to_de": "/latex/mann/hemd/"
+      "to_en": "/latex/homme/chemise/",
+      "to_de": "/latex/homme/chemise/"
     },
     {
       "from": "/latex/homme/pantalon/",
       "to": "/latex/homme/pantalon/",
-      "to_en": "/latex/man/trousers/",
-      "to_de": "/latex/mann/hose/"
+      "to_en": "/latex/homme/pantalon/",
+      "to_de": "/latex/homme/pantalon/"
     },
     {
       "from": "/chaussures/modele/cuissarde/",
       "to": "/chaussures/modele/cuissarde/",
-      "to_en": "/shoes/model/thigh-high-boots/",
-      "to_de": "/schuhe/modell/overknee-stiefel/"
+      "to_en": "/chaussures/modele/cuissarde/",
+      "to_de": "/chaussures/modele/cuissarde/"
     },
     {
       "from": "/chaussures/modele/botte/",
       "to": "/chaussures/modele/botte/",
-      "to_en": "/shoes/model/boot/",
-      "to_de": "/schuhe/modell/stiefel/"
+      "to_en": "/chaussures/modele/botte/",
+      "to_de": "/chaussures/modele/botte/"
     },
     {
       "from": "/chaussures/style/cosplay/",
       "to": "/chaussures/style/cosplay/",
-      "to_en": "/shoes/style/cosplay/",
-      "to_de": "/schuhe/stil/cosplay/"
+      "to_en": "/chaussures/style/cosplay/",
+      "to_de": "/chaussures/style/cosplay/"
     },
     {
       "from": "/chaussures/marque/",
       "to": "/chaussures/marque/",
-      "to_en": "/shoes/brand/",
-      "to_de": "/schuhe/marke/"
+      "to_en": "/chaussures/marque/",
+      "to_de": "/chaussures/marque/"
     },
     {
       "from": "/chaussures/style/cuir-vegan/",
       "to": "/chaussures/style/cuir-vegan/",
-      "to_en": "/shoes/style/vegan-leather/",
-      "to_de": "/schuhe/stil/veganes-leder/"
+      "to_en": "/chaussures/style/cuir-vegan/",
+      "to_de": "/chaussures/style/cuir-vegan/"
     },
     {
       "from": "/chaussures/marque/demoniacult/",
       "to": "/chaussures/marque/demoniacult/",
-      "to_en": "/shoes/brand/demoniacult/",
-      "to_de": "/schuhe/marke/demoniacult/"
+      "to_en": "/chaussures/marque/demoniacult/",
+      "to_de": "/chaussures/marque/demoniacult/"
     },
     {
       "from": "/chaussures/style/steampunk/",
       "to": "/chaussures/style/steampunk/",
-      "to_en": "/shoes/style/steampunk/",
-      "to_de": "/schuhe/stil/steampunk/"
+      "to_en": "/chaussures/style/steampunk/",
+      "to_de": "/chaussures/style/steampunk/"
     },
     {
       "from": "/chaussures/style/grande-taille/",
       "to": "/chaussures/style/grande-taille/",
-      "to_en": "/shoes/style/large-size/",
-      "to_de": "/schuhe/stil/grosse-groesse/"
+      "to_en": "/chaussures/style/grande-taille/",
+      "to_de": "/chaussures/style/grande-taille/"
     },
     {
       "from": "/chaussures/style/casual/",
       "to": "/chaussures/style/casual/",
-      "to_en": "/shoes/style/casual/",
-      "to_de": "/schuhe/stil/laessig/"
+      "to_en": "/chaussures/style/casual/",
+      "to_de": "/chaussures/style/casual/"
     },
     {
       "from": "/chaussures/style/sexy-glam/",
       "to": "/chaussures/style/sexy-glam/",
-      "to_en": "/shoes/style/sexy-glam/",
-      "to_de": "/schuhe/stil/sexy-glam/"
+      "to_en": "/chaussures/style/sexy-glam/",
+      "to_de": "/chaussures/style/sexy-glam/"
     },
     {
       "from": "/chaussures/marque/devious/",
       "to": "/chaussures/marque/devious/",
-      "to_en": "/shoes/brand/devious/",
-      "to_de": "/schuhe/marke/devious/"
+      "to_en": "/chaussures/marque/devious/",
+      "to_de": "/chaussures/marque/devious/"
     },
     {
       "from": "/chaussures/modele/escarpin/",
       "to": "/chaussures/modele/escarpin/",
-      "to_en": "/shoes/model/pumps/",
-      "to_de": "/schuhe/modell/pumps/"
+      "to_en": "/chaussures/modele/escarpin/",
+      "to_de": "/chaussures/modele/escarpin/"
     },
     {
       "from": "/chaussures/modele/mule/",
       "to": "/chaussures/modele/mule/",
-      "to_en": "/shoes/model/mule/",
-      "to_de": "/schuhe/modell/pantolette/"
+      "to_en": "/chaussures/modele/mule/",
+      "to_de": "/chaussures/modele/mule/"
     },
     {
       "from": "/chaussures/modele/sandale/",
       "to": "/chaussures/modele/sandale/",
-      "to_en": "/shoes/model/sandals/",
-      "to_de": "/schuhe/modell/sandale/"
+      "to_en": "/chaussures/modele/sandale/",
+      "to_de": "/chaussures/modele/sandale/"
     },
     {
       "from": "/chaussures/style/",
       "to": "/chaussures/style/",
-      "to_en": "/shoes/style/",
-      "to_de": "/schuhe/stil/"
+      "to_en": "/chaussures/style/",
+      "to_de": "/chaussures/style/"
     },
     {
       "from": "/chaussures/modele/",
       "to": "/chaussures/modele/",
-      "to_en": "/shoes/model/",
-      "to_de": "/schuhe/modell/"
+      "to_en": "/chaussures/modele/",
+      "to_de": "/chaussures/modele/"
     },
     {
       "from": "/latex/femme/lingerie/",
       "to": "/latex/femme/lingerie/",
-      "to_en": "/latex/woman/lingerie/",
-      "to_de": "/latex/frau/dessous/"
+      "to_en": "/latex/femme/lingerie/",
+      "to_de": "/latex/femme/lingerie/"
     },
     {
       "from": "/latex/femme/combi/",
       "to": "/latex/femme/combi/",
-      "to_en": "/latex/woman/combi/",
-      "to_de": "/latex/frau/kombi/"
+      "to_en": "/latex/femme/combi/",
+      "to_de": "/latex/femme/combi/"
     },
     {
       "from": "/latex/pret-a-porter/",
       "to": "/latex/pret-a-porter/",
-      "to_en": "/latex/ready-to-wear/",
-      "to_de": "/latex/konfektionskleidung/"
+      "to_en": "/latex/pret-a-porter/",
+      "to_de": "/latex/pret-a-porter/"
     },
     {
       "from": "/soinsdulatex/",
-      "to": "/latex/soins-du-latex/",
-      "to_en": "/latex/latex-care/",
-      "to_de": "/latex/pflege-von-latex/"
+      "to": "/soins-du-latex/",
+      "to_en": "/soins-du-latex/",
+      "to_de": "/soins-du-latex/"
     }
   ],
   "pages": [
