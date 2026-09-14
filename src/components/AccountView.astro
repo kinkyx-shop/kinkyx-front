@@ -739,23 +739,8 @@ const strings = {
   .kx-acct-back:hover {
     color: var(--kx-red);
   }
-  .kx-acct-order-meta {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
-    gap: 1.5rem;
-    font-size: var(--kx-text-sm);
-  }
-  .kx-acct-order-meta h3 {
-    font-size: var(--kx-text-xs);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--kx-muted);
-    margin: 0 0 0.4rem;
-  }
-  .kx-acct-order-meta p {
-    margin: 0;
-    line-height: 1.6;
-  }
+  /* .kx-acct-order-meta : injecté via innerHTML (détail de commande) →
+     global.css, cf. commentaire plus haut sur .kx-acct-table. */
 
   @media (max-width: 48rem) {
     .kx-acct {
