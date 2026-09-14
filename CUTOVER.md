@@ -46,11 +46,27 @@ récapitulatif final tout en bas.
       section dédiée en bas de ce document. **C'est un test d'achat réel
       qui a débusqué ce bug — aucune vérification automatisée ne l'aurait
       trouvé, puisque toutes les pages se généraient sans erreur.**
-- [x] **Parcours d'achat réel (carte + 3DS)** : produit simple testé en
-      conditions réelles par l'utilisateur (voir plus bas) ; produit à
-      variations vérifié techniquement (ajout panier OK) après le fix
-      ci-dessus, mais **paiement réel sur un produit variable pas encore
-      testé** — recommandé avant de considérer la bascule 100% close.
+- [x] **🔴 2e BUG DE CONFIG trouvé et corrigé** : après le champ mot de
+      passe ajouté au checkout, un vrai essai d'achat a échoué avec
+      « Vous devez être identifié pour commander » —
+      `woocommerce_rest_guest_checkout_disabled` (WC core). Cause : même
+      motif que le bug précédent — `woocommerce_enable_signup_and_login_
+      from_checkout` et `woocommerce_enable_myaccount_registration`
+      avaient été passés à `yes` **sur dev uniquement**, lors de la
+      session de retrait d'ARMember du 2026-09-07, jamais reporté sur la
+      vraie base prod. Corrigé par `wp option update` (pas de code) sur
+      `back.` ; `woocommerce_enable_guest_checkout` volontairement laissé
+      à `no` (compte toujours obligatoire). **⚠️ ARMember reste actif sur
+      prod** (contrairement à dev où il a été désactivé le 2026-09-07) —
+      pas de casse observée pour l'instant, mais à garder en tête.
+      **Leçon : tout réglage WordPress changé uniquement sur dev pendant
+      les sessions précédentes est un candidat au même type de bug —
+      vaudrait le coup d'auditer `wp_options` dev vs prod plutôt que
+      d'attendre que chaque écart se révèle via un client réel.**
+- [ ] **Parcours d'achat réel (carte + 3DS)** : produit simple testé en
+      conditions réelles par l'utilisateur, bloqué par le bug ci-dessus,
+      **à refaire maintenant que c'est corrigé** — pas encore confirmé
+      qu'une commande complète passe de bout en bout.
 - [ ] E-mails transactionnels : pas revérifiés après la migration d'URL.
 - [ ] Recherche Google Search Console : nouveau sitemap pas encore soumis.
 - [ ] Surveillance crawl/rankings 4-8 semaines : à démarrer.
