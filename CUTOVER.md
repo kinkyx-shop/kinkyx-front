@@ -365,6 +365,49 @@ resurgi avec la copie — **pas revérifié dans cette session, à faire**.
       vérifié si un noindex global y est nécessaire (domaine secondaire,
       ne devrait pas être découvert/indexé en pratique, mais à confirmer).
 
+## Post-bascule : CSS scopé Astro invisible sur le contenu injecté en JS
+
+Découvert via le vrai achat ci-dessus : le récap de commande affichait
+"Shine latex Kinkyx 30ml × 17,00 €" au lieu de "× 1" puis "7,00 €" — un
+autre cas montrait "× 1105,00 €" au lieu de "× 1" / "105,00 €". Pas un
+problème de texte, un vrai problème de mise en page.
+
+**Cause** : les `<li>` du récap sont générés côté client
+(`summaryEl.innerHTML = ...` dans `CheckoutView.astro`), jamais passés par
+le compilateur Astro. Le CSS scopé d'Astro n'existe que via un attribut
+`data-astro-cid-*` ajouté **au build** aux éléments présents dans le
+template — un élément créé après coup par `innerHTML` ne l'a jamais, donc
+aucune règle scopée ne s'applique (vérifié en direct :
+`getComputedStyle(li).gap` renvoyait `"normal"` malgré un `gap` défini
+dans le `<style>` du composant). Le premier correctif (ajouter un `gap`
+dans ce même `<style>` scopé) n'a donc eu **aucun effet** — piège dans
+lequel il est facile de retomber en pensant avoir corrigé alors que rien
+n'a changé.
+
+**Vrai fix** : déplacer vers `src/styles/global.css` (seul CSS non scopé,
+donc le seul qui s'applique réellement à du contenu injecté en JS) tout
+ce qui style du HTML généré par `innerHTML`. Motif déjà connu dans ce
+projet pour `.kx-acct-msg/-notice/-table`, mais pas généralisé à l'époque.
+En auditant tous les composants utilisant `innerHTML`
+(`grep -l '\.innerHTML' src/components/*.astro`), le même bug touchait
+aussi :
+- **`CartView.astro`** — quasi tout le panier (lignes produits, total,
+  bouton commander) s'affichait sans mise en forme en prod.
+- **`AccountView.astro`** — le bloc livraison/paiement/adresses du détail
+  de commande (`.kx-acct-order-meta`).
+- **`OrderConfirmationView.astro`** — les boutons de la page de
+  confirmation (`.kx-confirm-actions`).
+
+Tout corrigé et vérifié en conditions réelles (commits `90126ee`,
+`7cd52b9`). **Encore concerné, pas corrigé** : `WishlistView.astro`,
+`SearchView.astro` (pages hors tunnel d'achat, tâche de suivi créée).
+
+**Règle à retenir pour la suite** : toute classe utilisée à l'intérieur
+d'un template string JS (`innerHTML =` / `.map(...).join("")`) dans un
+composant Astro doit être stylée dans `global.css`, jamais dans le
+`<style>` local du composant — sinon le CSS n'a tout simplement aucun
+effet en production, sans erreur ni avertissement nulle part.
+
 ## Post-bascule : bug critique "produits à variations invendables"
 
 Découvert le 2026-09-14, ~40 min après la bascule, en faisant un vrai test
