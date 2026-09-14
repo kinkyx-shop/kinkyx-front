@@ -5,30 +5,38 @@ vers ce front Astro headless, et déplacer WordPress vers
 `back.kinkyx-shop.com` (moteur API pur : Stripe, commandes, stock,
 facturation — inchangé).
 
-Site qui vend en ce moment : chaque phase note son niveau de risque et son
-caractère réversible ou non. Ne pas enchaîner les phases « bascule réelle »
-un jour où personne ne peut surveiller/réagir dans les heures qui suivent.
+**✅ BASCULE RÉALISÉE le 2026-09-14.** `www.kinkyx-shop.com` sert le front
+Astro headless, branché sur `back.kinkyx-shop.com` comme backend WooCommerce.
+Ce document reste comme trace de la procédure réellement suivie (avec ses
+détours) et comme référence pour une éventuelle prochaine bascule de ce
+type. Voir "Écarts réels vs plan" en bas de chaque phase concernée, et le
+récapitulatif final tout en bas.
 
-## État au 2026-09-14
+## État au 2026-09-14 (fin de session)
 
-- [x] Front Astro feature-complete (L0–L5) : catalogue, fiches produit,
-      panier, checkout Stripe (3DS inclus), compte client, recherche, SEO,
-      i18n FR/EN/DE, reconstruction auto sur webhook WooCommerce.
-- [x] `back.kinkyx-shop.com` créé (Infomaniak Manager), DNS + certificat SSL
-      actifs.
-- [x] Fichiers + base de prod copiés vers `back.` (voir Phase 2 ci-dessous —
-      **déjà fait**, sans risque, ne touchait pas à prod).
-- [x] Mu-plugins headless déployés sur `back.` (voir Phase 2bis — **déjà
-      fait**, testé : namespace REST `kinkyx/v1` répond, `php -l` propre,
-      WP démarre sans erreur).
-- [x] Table de redirections 301 générée **contre le vrai catalogue prod**
-      (via `back.`, clé REST lecture seule dédiée) : 250/250 produits +
-      40/40 catégories appariés, zéro cas non résolu — « Tanga Latex »
-      confirmé et correctement redirigé. Rien à refaire en Phase 6 sauf
-      si le catalogue change significativement d'ici la bascule (produits
-      ajoutés/retirés).
-- [x] Clés Stripe live tournées (rotation + nettoyage dev fait).
-- [ ] Tout le reste ci-dessous : bascule réelle, pas encore faite.
+- [x] Front Astro feature-complete (L0–L5).
+- [x] `back.kinkyx-shop.com` créé, fichiers+base copiés, mu-plugins déployés,
+      table de redirections générée contre le vrai catalogue prod.
+- [x] Clés Stripe live tournées.
+- [x] **Phase 3 — DNS/domaine** : `www.kinkyx-shop.com` délié de l'ancien
+      site WordPress et rattaché au site Node.js `front.kinkyx-shop.com`.
+- [x] **Phase 4 — Migration d'URL** : `wp search-replace` appliqué sur la
+      base partagée (6233 remplacements), `siteurl`/`home` = `back.`.
+- [x] **Phase 5 — mu-plugins** : `kx_front_url()` mis à jour vers `www.`
+      dans **deux** fichiers (voir écarts ci-dessous).
+- [x] **Phase 6 — nettoyage** : passerelle `cheque` désactivée, absence de
+      htpasswd sur `back.` reconfirmée. **Webhook Stripe : à vérifier que
+      l'utilisateur a bien mis à jour l'URL dans le Dashboard Stripe** (pas
+      re-confirmé dans cette session après la demande).
+- [x] **Phase 7 — vérification** : redirections testées OK, pages produit
+      OK, robots.txt sans noindex, sitemap 200, compte 200. **Parcours
+      d'achat réel (carte + 3DS) et e-mails transactionnels PAS testés en
+      conditions réelles post-bascule** — à faire dès que possible.
+- [ ] Recherche Google Search Console : nouveau sitemap pas encore soumis.
+- [ ] Surveillance crawl/rankings 4-8 semaines : à démarrer.
+- [ ] Ancien site WordPress `www.kinkyx-shop.com` (fichiers+DB) laissé tel
+      quel sur Infomaniak (juste délié du domaine, pas supprimé) — filet de
+      secours ; à retirer plus tard une fois la bascule confirmée stable.
 
 ## Phase 0 — Pré-requis avant de commencer
 
@@ -113,24 +121,24 @@ une clé (ne pas réutiliser les clés existantes trouvées sur prod —
 `TrackShip`, `WooCommerce By Meta`, `TikTok` — qui sont en `read_write` et
 appartiennent à d'autres intégrations).
 
-## Phase 3 — Bascule DNS `www.` → front Astro ⚠️ IRRÉVERSIBLE EN L'ÉTAT
+## Phase 3 — Bascule DNS `www.` → front Astro ⚠️ IRRÉVERSIBLE EN L'ÉTAT — ✅ FAIT
 
 **C'est le vrai instant de bascule du trafic public.** À partir d'ici, les
 visiteurs de `www.kinkyx-shop.com` voient le nouveau site.
 
-- [ ] Dans le Manager Infomaniak : le site Node.js qui sert déjà
+- [x] Dans le Manager Infomaniak : le site Node.js qui sert déjà
       `front.kinkyx-shop.com` doit reprendre `www.kinkyx-shop.com` (+
       l'apex `kinkyx-shop.com` s'il existe) — ajout de domaine sur le site
       Node existant, ou renommage selon ce que permet l'interface.
-- [ ] Vérifier que le certificat SSL suit (Infomaniak le gère normalement
+- [x] Vérifier que le certificat SSL suit (Infomaniak le gère normalement
       automatiquement dès qu'un domaine est rattaché).
-- [ ] Variables d'environnement du Builder à mettre à jour AVANT de rebasculer
+- [x] Variables d'environnement du Builder à mettre à jour AVANT de rebasculer
       le DNS si possible, sinon juste après (voir Phase 5) :
       `PUBLIC_SITE_URL=https://www.kinkyx-shop.com`,
       `PUBLIC_CHECKOUT_URL=https://back.kinkyx-shop.com`,
       retirer `SITE_BASIC_AUTH` (back. n'a pas de htpasswd),
       retirer `PUBLIC_NOINDEX`.
-- [ ] `npm run build` (fetch complet, catalogue tiré depuis `back.` — donc
+- [x] `npm run build` (fetch complet, catalogue tiré depuis `back.` — donc
       **doit être fait après la Phase 4**, pas avant) puis redémarrage.
 
 **Rollback possible tant que l'ancien WP tourne encore sous `www.` en
@@ -138,7 +146,54 @@ parallèle** (repointer le DNS en arrière) — mais dès que la Phase 4 démarr
 sur la base partagée, un rollback propre demande de restaurer la sauvegarde
 de la Phase 1.
 
-## Phase 4 — Migration d'URL en base ⚠️ TOUCHE LA BASE DE PROD
+### Écarts réels vs plan (2026-09-14)
+
+- **"Ajouter www. au site Node." a échoué au premier essai** : Infomaniak
+  refuse d'attacher un domaine déjà lié à un autre produit
+  ("Le domaine est déjà lié à un produit du même type"). Il n'existe pas
+  de fonction "déplacer/transférer" directe dans l'UI testée. La vraie
+  procédure, trouvée par tâtonnement puis confirmée par la doc Infomaniak
+  ([Unlink a domain](https://www.infomaniak.com/en/support/faq/1997/unlink-a-domain-name-linked-to-the-website)) :
+  1. Sur la fiche du site WordPress (`www.kinkyx-shop.com` dans Hébergement),
+     bouton **"Gérer" (en haut à droite) → "Retirer le site"**.
+  2. Une boîte de dialogue précise clairement : *"Le domaine ne sera plus
+     lié au contenu de votre site mais restera actif sous votre gestion"*
+     et *"Les fichiers et bases de données liés à ce site ne seront pas
+     supprimés"* — avec une case **séparée et décochée par défaut**
+     "Supprimer les fichiers et base de données des CMS" qu'il ne faut
+     **surtout pas cocher** (elle supprimerait la base partagée avec
+     `back.` !). Cocher seulement "J'ai pris connaissance..." puis Retirer.
+  3. Le domaine devient alors libre (plus aucun enregistrement DNS le
+     temps de quelques minutes — coupure courte et normale) et peut être
+     ajouté au site Node.js via son propre "+" domaines.
+  - Pistes explorées et **écartées** en cours de route : le petit menu ⋮ à
+    côté de chaque domaine dans l'encart "domaines" d'une fiche de site
+    (la doc Infomaniak mentionne un "Délier" à cet endroit, mais il
+    n'apparaissait pas dans l'UI observée ce jour-là — seulement "Voir le
+    site"/"Gérer le certificat") ; le menu ⋮ de la liste globale "Site Web"
+    (option "Délier le site" — action différente, probablement liée au
+    groupement de projet, pas testée par prudence) ; éditer la zone DNS
+    directement (ne suffit probablement pas, le routage domaine→site est
+    piloté par l'attachement au niveau produit, pas juste par le DNS).
+- **`.env` du Builder** : un collage multi-lignes (heredoc `cat > .env <<
+  EOF`) a été cassé par le mode "bracketed paste" du terminal SSH du
+  Builder (préfixe `^[[200~` interprété comme début de commande) — la
+  redirection `>` a quand même vidé le fichier avant que la commande
+  échoue, laissant `.env` vide un instant. Sans conséquence (le process
+  Node tournant utilisait encore l'ancien `.env` chargé en mémoire), mais
+  **préférer une série de commandes `echo 'LIGNE' >> .env` une par une**
+  plutôt qu'un heredoc multi-lignes dans ce terminal spécifique.
+- **`git pull` oublié avant le premier `npm run build`** : le Builder est
+  resté 4 commits en retard (manquait toute la table de redirections) —
+  le premier build après la bascule DNS a tourné sans les redirections.
+  Corrigé par un second `git pull && npm run build` + redémarrage.
+  **Toujours vérifier `git log -1 --oneline` avant un build de bascule.**
+
+## Phase 4 — Migration d'URL en base ⚠️ TOUCHE LA BASE DE PROD — ✅ FAIT
+
+**6233 remplacements appliqués le 2026-09-14**, `siteurl`/`home` confirmés
+sur `https://back.kinkyx-shop.com`, WP démarre sans erreur après coup.
+
 
 Depuis `back.` (la base est partagée avec prod à ce stade, donc peu importe
 lequel des deux WP-CLI l'exécute — mais `back.` est plus sûr, ça évite toute
@@ -166,35 +221,45 @@ déconseille de les changer, ils ne doivent pas être des URLs "vivantes").
 paramètres WooCommerce, etc.) — sans ça, un remplacement naïf de chaîne
 corromprait ces valeurs.
 
-## Phase 5 — dernier réglage mu-plugin sur back.
+## Phase 5 — dernier réglage mu-plugin sur back. — ✅ FAIT
 
-Les 9 mu-plugins sont déjà déployés (Phase 2bis). Il reste un seul
-changement : `kx_front_url()` dans `kinkyx-account-skin.php` (et partagé
-via `function_exists()` dans les autres mu-plugins) doit renvoyer
-`https://www.kinkyx-shop.com` au lieu de `https://front.kinkyx-shop.com`
-une fois que `www.` sert réellement le nouveau front (Phase 3 faite).
+⚠️ **`kx_front_url()` est défini dans DEUX fichiers**, chacun avec sa
+propre valeur par défaut codée en dur, tous deux protégés par
+`function_exists()` — **`kinkyx-account-api.php` ET
+`kinkyx-account-skin.php`**. Comme `kinkyx-account-api.php` charge en
+premier par ordre alphabétique, c'est SA valeur par défaut qui gagne : la
+modifier seulement dans `kinkyx-account-skin.php` n'a visiblement aucun
+effet (vérifié : `wp eval 'echo kx_front_url();'` continuait à renvoyer
+l'ancienne valeur après édition + `opcache_reset()`, jusqu'à corriger
+aussi `kinkyx-account-api.php`). **C'est la récidive exacte d'un incident
+déjà documenté le 2026-09-11** (voir `kinkyx-refonte-headless.md`,
+section P1-A/B) — leçon qui n'avait pas été suffisamment généralisée dans
+ce runbook la première fois.
 
 ```bash
-# éditer la ligne par défaut de kx_front_url() puis redéployer :
-scp kinkyx-account-skin.php infomaniak:~/sites/back.kinkyx-shop.com/wp-content/mu-plugins/kinkyx-account-skin.php
-ssh infomaniak "cd ~/sites/back.kinkyx-shop.com && wp eval 'echo \"ok\";'"  # vérifie l'absence de fatal
+ssh infomaniak "sed -i 's#https://front.kinkyx-shop.com#https://www.kinkyx-shop.com#' \
+  ~/sites/back.kinkyx-shop.com/wp-content/mu-plugins/kinkyx-account-skin.php \
+  ~/sites/back.kinkyx-shop.com/wp-content/mu-plugins/kinkyx-account-api.php"
+ssh infomaniak "php -l ~/sites/back.kinkyx-shop.com/wp-content/mu-plugins/kinkyx-account-skin.php \
+  && php -l ~/sites/back.kinkyx-shop.com/wp-content/mu-plugins/kinkyx-account-api.php"
+ssh infomaniak "cd ~/sites/back.kinkyx-shop.com && wp eval 'echo kx_front_url();'"  # doit afficher www.kinkyx-shop.com
 ```
 
 Vérifier aussi que les 5 pages brouillon ARMember (26338-26342, cf.
 `kinkyx-refonte-headless.md`) sont bien passées en `draft` et n'ont pas
-resurgi avec la copie.
+resurgi avec la copie — **pas revérifié dans cette session, à faire**.
 
 ## Phase 6 — Nettoyage
 
-- [ ] **htpasswd** : confirmer que `back.kinkyx-shop.com` n'en a pas
-      (sinon le webhook Stripe reste bloqué comme sur dev — voir l'incident
-      documenté dans `kinkyx-refonte-headless.md`, section P1-C).
-- [ ] **Webhook Stripe** : dans le Stripe Dashboard, mettre à jour l'URL de
-      l'endpoint vers `https://back.kinkyx-shop.com/?wc-api=wc_stripe` (ou
-      recréer l'endpoint) — l'ancien pointait vers `www.`, qui ne sert plus
-      WordPress.
-- [ ] **Passerelle `cheque`** (paiement de test préprod) :
-      `wp wc payment_gateway update cheque --enabled=false --path=...`
+- [x] **htpasswd** : confirmé absent sur `back.` (`curl -X POST
+      https://back.kinkyx-shop.com/?wc-api=wc_stripe` → 204 sans auth).
+- [ ] **Webhook Stripe** : demandé à l'utilisateur de mettre à jour l'URL de
+      l'endpoint vers `https://back.kinkyx-shop.com/?wc-api=wc_stripe` dans
+      le Stripe Dashboard — **pas reconfirmé fait dans cette session**, à
+      vérifier avant de considérer le 3DS pleinement opérationnel en prod
+      (sinon les paiements 3DS resteront `pending` côté WooCommerce, comme
+      sur dev à l'époque du htpasswd).
+- [x] **Passerelle `cheque`** désactivée.
 - [x] **Table de redirections** — **déjà régénérée le 2026-09-14** contre
       le vrai catalogue prod via `back.` : 250/250 produits + 40/40
       catégories, zéro cas non résolu, « Tanga Latex » confirmé et
@@ -215,33 +280,37 @@ resurgi avec la copie.
       résolution IPv6 dans Node ; probablement lié à la fraîcheur du DNS,
       à revérifier si ça se reproduit). Commit + push + déployer sur le
       Builder après toute régénération.
-- [ ] **Ancien WP sous `www.`** : une fois `www.` sert le front Astro,
-      s'assurer qu'aucune configuration Infomaniak ne fait encore tourner
-      l'ancienne app WP en parallèle sur ce domaine (risque de confusion /
-      double-service). Si l'ancien site Infomaniak `www.kinkyx-shop.com`
-      existe encore séparément de `back.`, le désactiver ou le renommer
-      clairement (ex. `old-www-do-not-use`) plutôt que le supprimer tout de
-      suite (garder un filet de secours quelques semaines).
+- [x] **Ancien WP sous `www.`** : traité de facto par la manip de la Phase 3
+      — "Retirer le site" a délié `www.` de l'ancien produit WordPress sans
+      supprimer ses fichiers/base (choix explicite : case de suppression
+      laissée décochée). L'ancien site existe donc encore sur Infomaniak
+      (fichiers + accès à la même base) mais n'est plus rattaché à aucun
+      domaine public — filet de secours conservé intentionnellement.
 
 ## Phase 7 — Vérification post-bascule
 
-- [ ] Parcours complet en conditions réelles : accueil, catégorie, fiche
-      produit (simple + variable), panier, compte (inscription/connexion),
-      checkout (carte simple + 3DS), confirmation, e-mails WooCommerce
-      (commande, mot de passe oublié) en FR/EN/DE.
-- [ ] Quelques anciennes URLs testées manuellement (produit, catégorie,
-      `/boutique/`, `/en/...`, `/de/...`) → redirection 301 vers la bonne
-      nouvelle URL.
-- [ ] Google Search Console : soumettre le nouveau sitemap (FR+EN+DE),
-      garder l'ancienne propriété active pour suivre la transition des
-      redirections.
-- [ ] Surveillance crawl/rankings/erreurs 404 sur 4 à 8 semaines — ajouter
-      des redirections ponctuelles pour toute URL ancienne encore visitée
-      qui aurait été oubliée dans la table (cas réaliste vu l'historique du
-      site : GTranslate, anciennes URLs de flux, etc.).
-- [ ] Robots.txt / noindex : confirmer que `back.kinkyx-shop.com` n'est pas
-      indexé (ajouter un `noindex` global si Infomaniak ne le fait pas déjà
-      par défaut sur les domaines secondaires).
+- [x] Accueil, page produit (simple + variable "Tanga Latex"), page compte,
+      sitemap, robots.txt (noindex bien retiré) — tous vérifiés 200/corrects
+      juste après la bascule.
+- [x] Anciennes URLs testées (produit, `/boutique/`) → 301 vers la bonne
+      nouvelle URL ; vérifié aussi l'absence de boucle sur une URL de
+      catégorie identique avant/après (`/latex/femme/`).
+- [ ] **Parcours d'achat réel (carte + 3DS) PAS testé post-bascule** — le
+      test 3DS complet avait été fait en préprod (session du 2026-09-11)
+      contre dev, pas encore rejoué en conditions réelles contre `back.`
+      avec la vraie clé Stripe live. À faire dès que possible, avec une
+      carte réelle à faible montant (remboursable) plutôt qu'une carte de
+      test (le mode live n'accepte plus les cartes de test Stripe).
+- [ ] E-mails transactionnels (confirmation de commande, mot de passe
+      oublié) pas revérifiés après la migration d'URL — les liens qu'ils
+      contiennent doivent maintenant pointer vers les bonnes URLs (`back.`
+      pour les liens WP natifs restants, front Astro pour le reste).
+- [ ] Google Search Console : nouveau sitemap pas encore soumis.
+- [ ] Surveillance crawl/rankings/erreurs 404 sur 4 à 8 semaines — pas
+      démarrée (bascule trop récente).
+- [ ] Robots.txt / noindex sur `back.kinkyx-shop.com` lui-même : pas
+      vérifié si un noindex global y est nécessaire (domaine secondaire,
+      ne devrait pas être découvert/indexé en pratique, mais à confirmer).
 
 ## Rollback
 
