@@ -52,6 +52,9 @@ const strings = {
     </div>
 
     <form class="kx-checkout-form" data-checkout-form hidden novalidate>
+      <p class="kx-checkout-login-prompt" data-login-prompt hidden>
+        {t("checkout.alreadyAccount")} <a href={routePath("account", locale)}>{t("account.login")}</a>
+      </p>
       <div class="kx-checkout-grid">
         <div class="kx-checkout-fields">
           <fieldset>
@@ -172,6 +175,7 @@ const strings = {
     const cardMountEl = document.querySelector<HTMLElement>("[data-card-element]")!;
     const passwordField = document.querySelector<HTMLElement>("[data-password-field]")!;
     const passwordInput = document.querySelector<HTMLInputElement>("[data-password-input]")!;
+    const loginPrompt = document.querySelector<HTMLElement>("[data-login-prompt]")!;
     let guest = true;
 
     const esc = (s: string) =>
@@ -300,6 +304,7 @@ const strings = {
       guest = me.status !== "fulfilled" || !me.value;
       passwordField.hidden = !guest;
       passwordInput.required = guest;
+      loginPrompt.hidden = !guest;
       loading.hidden = true;
       if (!cart || !cart.items || cart.items.length === 0) {
         emptyBox.hidden = false;
@@ -425,6 +430,19 @@ const strings = {
     border: 1px solid var(--kx-line-strong);
     border-radius: var(--kx-radius);
     background: var(--kx-paper);
+  }
+  .kx-checkout-login-prompt {
+    margin: 0 0 1.5rem;
+    padding: 0.85em 1em;
+    background: var(--kx-raise);
+    border: 1px solid var(--kx-line);
+    border-radius: var(--kx-radius);
+    font-size: var(--kx-text-sm);
+    color: var(--kx-ink);
+  }
+  .kx-checkout-login-prompt a {
+    color: var(--kx-red);
+    font-weight: 700;
   }
   .kx-checkout-hint {
     text-transform: none;
