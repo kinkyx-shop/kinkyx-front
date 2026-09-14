@@ -63,10 +63,16 @@ récapitulatif final tout en bas.
       les sessions précédentes est un candidat au même type de bug —
       vaudrait le coup d'auditer `wp_options` dev vs prod plutôt que
       d'attendre que chaque écart se révèle via un client réel.**
-- [ ] **Parcours d'achat réel (carte + 3DS)** : produit simple testé en
-      conditions réelles par l'utilisateur, bloqué par le bug ci-dessus,
-      **à refaire maintenant que c'est corrigé** — pas encore confirmé
-      qu'une commande complète passe de bout en bout.
+- [x] **✅ Parcours d'achat réel confirmé de bout en bout** : commande
+      #51911, 10,10 €, statut `processing`, compte créé avec le mot de
+      passe choisi par le client (`b2b@kinkyx-shop.com`), paiement Stripe
+      réellement capturé (`_stripe_charge_captured=yes`, frais réels
+      0,44 €). Carte sans 3DS déclenché (flux frictionless) — le 3DS avait
+      déjà été validé séparément en préprod (session du 2026-09-11) et
+      techniquement re-vérifié après la bascule (fragment + confirmCardPayment
+      + webhook, cf. plus haut) ; un vrai paiement 3DS post-bascule n'a pas
+      spécifiquement été rejoué, risque jugé faible vu tout le reste déjà
+      validé.
 - [ ] E-mails transactionnels : pas revérifiés après la migration d'URL.
 - [ ] Recherche Google Search Console : nouveau sitemap pas encore soumis.
 - [ ] Surveillance crawl/rankings 4-8 semaines : à démarrer.
