@@ -14,11 +14,14 @@ interface Props {
   path?: string;
   /** URLs alternées explicites par langue (chemins préfixés, ex. "/en/latex/woman/") */
   alternates?: Partial<Record<Locale, string>>;
+  /** force la canonique vers un autre chemin que la page courante (ex. fiche FR quand
+   *  cette locale n'a pas de vraie traduction) — le hreflang, lui, reste inchangé */
+  canonicalPath?: string;
   image?: string;
   noindex?: boolean;
 }
 
-const { title, description, path, alternates, image, noindex } = Astro.props;
+const { title, description, path, alternates, canonicalPath, image, noindex } = Astro.props;
 
 const locale = getLocale(Astro.url);
 
@@ -38,7 +41,7 @@ if (alternates) {
 const forceNoindex =
   import.meta.env.PUBLIC_NOINDEX === "1" || import.meta.env.PUBLIC_NOINDEX === "true";
 
-const canonical = new URL(altPaths[locale], SITE.url).href;
+const canonical = new URL(canonicalPath ?? altPaths[locale], SITE.url).href;
 const hreflangs = locales.map((l) => ({
   hreflang: htmlLang[l],
   href: new URL(altPaths[l], SITE.url).href,

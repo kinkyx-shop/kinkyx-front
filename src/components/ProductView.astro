@@ -27,6 +27,9 @@ const t = useTranslations(locale);
 const product = getProduct(productKey);
 if (!product) throw new Error(`Produit introuvable : ${productKey}`);
 
+// fiche non traduite dans cette langue → contenu FR affiché mais canonique
+// renvoyée vers la version FR (voir Base.astro / audit SEO du 14/09)
+const hasTranslation = locale === "fr" || Boolean(product.name[locale]);
 const name = product.name[locale] || product.name.fr;
 const shortDesc = product.short[locale] || product.short.fr;
 const desc = product.desc[locale] || product.desc.fr;
@@ -111,7 +114,13 @@ const ld = [
 ];
 ---
 
-<Base title={name} description={shortDesc || `${name} — Kinkyx`} alternates={alternates} image={product.images[0]?.src}>
+<Base
+  title={name}
+  description={shortDesc || `${name} — Kinkyx`}
+  alternates={alternates}
+  canonicalPath={hasTranslation ? undefined : alternates.fr}
+  image={product.images[0]?.src}
+>
   <div class="kx-container kx-pdp">
     <nav class="kx-crumbs" aria-label="Fil d'ariane">
       <a href={localizedPath("/", locale)}>{t("nav.shop")}</a>

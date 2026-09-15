@@ -23,6 +23,9 @@ const t = useTranslations(locale);
 const category = getCategory(categoryKey);
 if (!category) throw new Error(`Catégorie introuvable : ${categoryKey}`);
 
+// catégorie non traduite dans cette langue → contenu FR affiché mais canonique
+// renvoyée vers la version FR (voir Base.astro / audit SEO du 14/09)
+const hasTranslation = locale === "fr" || Boolean(category.name[locale]);
 const name = category.name[locale] || category.name.fr;
 const desc = category.desc[locale] || category.desc.fr;
 const subs = childCategories(category.key);
@@ -44,6 +47,7 @@ const crumbs = breadcrumbList([
   title={name}
   description={desc || `${name} — Kinkyx`}
   alternates={alternates}
+  canonicalPath={hasTranslation ? undefined : alternates.fr}
   image={category.image ?? products[0]?.images[0]?.src}
 >
   <JsonLd slot="head" data={crumbs} />
