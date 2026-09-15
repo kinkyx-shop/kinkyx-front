@@ -1,0 +1,106 @@
+---
+import Base from "@/layouts/Base.astro";
+import { useTranslations, localizedPath, routePath } from "@/i18n/utils";
+import { locales, type Locale } from "@/i18n/ui";
+
+// Page statique unique servie pour toute URL introuvable, quelle que soit la
+// langue visitée (server/static.mjs sert dist/404.html tel quel). Le rendu
+// serveur est en FR par défaut ; un petit script client détecte le préfixe
+// /en/ ou /de/ dans l'URL réellement visitée et corrige le texte affiché.
+const locale: Locale = "fr";
+const t = useTranslations(locale);
+
+const strings = Object.fromEntries(
+  locales.map((l) => [
+    l,
+    {
+      eyebrow: useTranslations(l)("notfound.eyebrow"),
+      title: useTranslations(l)("notfound.title"),
+      text: useTranslations(l)("notfound.text"),
+      home: useTranslations(l)("notfound.home"),
+      search: useTranslations(l)("notfound.search"),
+      homeUrl: localizedPath("/", l),
+      searchUrl: routePath("search", l),
+    },
+  ]),
+);
+---
+
+<Base title={t("notfound.title")} description={t("notfound.text")} path="/404" noindex>
+  <div class="kx-container kx-404">
+    <p class="kx-404__code" aria-hidden="true">404</p>
+    <p class="kx-404__eyebrow" data-nf-eyebrow>{t("notfound.eyebrow")}</p>
+    <h1 data-nf-title>{t("notfound.title")}</h1>
+    <p class="kx-404__text" data-nf-text>{t("notfound.text")}</p>
+    <div class="kx-404__actions">
+      <a class="kx-btn" data-nf-home href={localizedPath("/", locale)}>{t("notfound.home")}</a>
+      <a class="kx-btn kx-btn--ghost" data-nf-search href={routePath("search", locale)}>{t("notfound.search")}</a>
+    </div>
+  </div>
+
+  <script type="application/json" data-nf-strings set:html={JSON.stringify(strings).replace(/</g, "\\u003c")} />
+  <script>
+    type Loc = "fr" | "en" | "de";
+    const S = JSON.parse(document.querySelector("[data-nf-strings]")!.textContent || "{}") as Record<
+      Loc,
+      { eyebrow: string; title: string; text: string; home: string; search: string; homeUrl: string; searchUrl: string }
+    >;
+
+    const seg = location.pathname.split("/").filter(Boolean)[0];
+    const locale: Loc = seg === "en" || seg === "de" ? seg : "fr";
+    if (locale !== "fr") {
+      const s = S[locale];
+      document.querySelector("[data-nf-eyebrow]")!.textContent = s.eyebrow;
+      document.querySelector("[data-nf-title]")!.textContent = s.title;
+      document.querySelector("[data-nf-text]")!.textContent = s.text;
+      const home = document.querySelector<HTMLAnchorElement>("[data-nf-home]")!;
+      home.textContent = s.home;
+      home.href = s.homeUrl;
+      const search = document.querySelector<HTMLAnchorElement>("[data-nf-search]")!;
+      search.textContent = s.search;
+      search.href = s.searchUrl;
+      document.documentElement.lang = locale === "en" ? "en-GB" : "de-DE";
+    }
+  </script>
+</Base>
+
+<style>
+  .kx-404 {
+    padding-block: 4rem 6rem;
+    max-width: 34rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .kx-404__code {
+    margin: 0;
+    font-size: clamp(4rem, 16vw, 7rem);
+    line-height: 1;
+    font-weight: 700;
+    color: var(--kx-line-strong);
+  }
+  .kx-404__eyebrow {
+    margin: 0;
+    font-size: var(--kx-text-xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--kx-red);
+  }
+  .kx-404 h1 {
+    margin: 0.25rem 0 0;
+  }
+  .kx-404__text {
+    margin: 0;
+    color: var(--kx-muted);
+    max-width: 30rem;
+  }
+  .kx-404__actions {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+</style>
