@@ -180,7 +180,10 @@ export function normalize({ categories, products, attributes, attributeTerms, va
       .filter((id) => catByFrId.has(id));
 
     // attributs déclarés sur le produit FR
-    const productAttrs = (fr.attributes || []).map((a) => ({
+    // le GTIN (code-barres) est une donnée interne : jamais affiché ni filtrable
+    const productAttrs = (fr.attributes || [])
+      .filter((a) => !/^(pa_)?gtin$/i.test(String(a.slug || a.name || "").trim()) && !/^gtin$/i.test(String(a.name || "").trim()))
+      .map((a) => ({
       slug: a.slug || `pa_${slugify(a.name)}`,
       label: a.name,
       forVariation: !!a.variation,
