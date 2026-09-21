@@ -29,7 +29,7 @@ if (!product) throw new Error(`Produit introuvable : ${productKey}`);
 
 // fiche non traduite dans cette langue → contenu FR affiché mais canonique
 // renvoyée vers la version FR (voir Base.astro / audit SEO du 14/09)
-const hasTranslation = locale === "fr" || Boolean(product.name[locale]);
+const hasTranslation = locale === "fr" || Boolean(product.translated?.[locale]);
 const name = product.name[locale] || product.name.fr;
 const shortDesc = product.short[locale] || product.short.fr;
 const desc = product.desc[locale] || product.desc.fr;

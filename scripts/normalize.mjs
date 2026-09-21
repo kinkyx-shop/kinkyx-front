@@ -123,6 +123,7 @@ export function normalize({ categories, products, attributes, attributeTerms, va
     }
     const cat = {
       key: fr.id,
+      translated: { en: !!g.en, de: !!g.de },
       parentKey: fr.parent || null,
       count: fr.count || 0,
       order: fr.menu_order || 0,
@@ -231,6 +232,7 @@ export function normalize({ categories, products, attributes, attributeTerms, va
 
     return {
       key: fr.id,
+      translated: { en: !!g.en, de: !!g.de },
       type: fr.type,
       sku: fr.sku || "",
       order: fr.menu_order || 0,

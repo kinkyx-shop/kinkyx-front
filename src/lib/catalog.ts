@@ -7,6 +7,8 @@ export type L10n = Record<Locale, string>;
 
 export interface Category {
   key: number;
+  /** true = une vraie traduction existe dans cette langue (sinon `name`/`desc` retombent sur le FR) */
+  translated?: { en: boolean; de: boolean };
   parentKey: number | null;
   count: number;
   order: number;
@@ -47,6 +49,8 @@ export interface Review {
 
 export interface Product {
   key: number;
+  /** true = une vraie traduction existe dans cette langue (sinon name/short/desc retombent sur le FR) */
+  translated?: { en: boolean; de: boolean };
   type: string;
   sku: string;
   order: number;
