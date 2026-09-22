@@ -34,6 +34,11 @@ const strings = {
   passwordLabel: t("account.password"),
   passwordHint: t("checkout.passwordHint"),
   errWeakPassword: t("checkout.errWeakPassword"),
+  parcelPointChosen: t("checkout.parcelPointChosen"),
+  parcelPointChange: t("checkout.parcelPointChange"),
+  parcelPointChoose: t("checkout.parcelPointChoose"),
+  parcelPointLoading: t("checkout.parcelPointLoading"),
+  parcelPointNone: t("checkout.parcelPointNone"),
   cartHref: routePath("cart", locale),
   confirmationUrl: routePath("checkoutConfirmation", locale),
   stripeKey: import.meta.env.PUBLIC_STRIPE_PUBLISHABLE_KEY || "",
@@ -122,6 +127,13 @@ const strings = {
           <fieldset class="kx-checkout-shipping" data-shipping-methods hidden>
             <legend>{t("checkout.shippingMethod")}</legend>
             <div data-shipping-rates />
+            <div class="kx-checkout-parcel" data-parcel-point hidden>
+              <p class="kx-checkout-parcel__current" data-parcel-current></p>
+              <button type="button" class="kx-btn kx-btn--ghost kx-checkout-parcel__toggle" data-parcel-toggle>
+                {t("checkout.parcelPointChoose")}
+              </button>
+              <ul class="kx-checkout-parcel__list" data-parcel-list hidden></ul>
+            </div>
           </fieldset>
 
           <label class="kx-checkout-notes-label">
@@ -160,6 +172,7 @@ const strings = {
     import { refresh, updateCustomer, selectShippingRate, money, type Address, type ShippingRate } from "@/scripts/cart";
     import { mountCard, placeOrder } from "@/scripts/checkout";
     import { isLoggedIn } from "@/scripts/account";
+    import { listParcelPoints, chooseParcelPoint, type ParcelPoint } from "@/scripts/boxtal";
 
     const S = JSON.parse(document.querySelector("[data-checkout-strings]")!.textContent || "{}") as Record<string, string>;
     const loading = document.querySelector<HTMLElement>("[data-checkout-loading]")!;
@@ -176,7 +189,13 @@ const strings = {
     const passwordField = document.querySelector<HTMLElement>("[data-password-field]")!;
     const passwordInput = document.querySelector<HTMLInputElement>("[data-password-input]")!;
     const loginPrompt = document.querySelector<HTMLElement>("[data-login-prompt]")!;
+    const parcelBox = document.querySelector<HTMLElement>("[data-parcel-point]")!;
+    const parcelCurrent = document.querySelector<HTMLElement>("[data-parcel-current]")!;
+    const parcelToggle = document.querySelector<HTMLButtonElement>("[data-parcel-toggle]")!;
+    const parcelList = document.querySelector<HTMLElement>("[data-parcel-list]")!;
     let guest = true;
+    let parcelCarrier: string | null = null;
+    let parcelChosen: ParcelPoint | null = null;
 
     const esc = (s: string) =>
       String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
@@ -217,6 +236,74 @@ const strings = {
       shippingFields.hidden = !shipDifferent.checked;
     });
 
+    // Boxtal (point relais) accroche automatiquement le point le plus proche
+    // à la commande si rien n'est choisi ici — ce widget est un bonus, jamais
+    // bloquant pour la validation de la commande.
+    function isParcelPointRate(rateId: string) {
+      return rateId.startsWith("boxtal_connect");
+    }
+
+    function renderParcelState() {
+      if (!parcelCarrier) {
+        parcelBox.hidden = true;
+        return;
+      }
+      parcelBox.hidden = false;
+      parcelList.hidden = true;
+      parcelList.innerHTML = "";
+      parcelCurrent.textContent = parcelChosen
+        ? `${S.parcelPointChosen} ${parcelChosen.name} — ${parcelChosen.address}, ${parcelChosen.zipcode} ${parcelChosen.city}`
+        : "";
+      parcelToggle.textContent = parcelChosen ? S.parcelPointChange : S.parcelPointChoose;
+    }
+
+    function setParcelCarrier(rateId: string) {
+      parcelCarrier = isParcelPointRate(rateId) ? rateId : null;
+      parcelChosen = null;
+      renderParcelState();
+    }
+
+    async function openParcelPicker() {
+      if (!parcelCarrier) return;
+      if (!parcelList.hidden) {
+        parcelList.hidden = true;
+        return;
+      }
+      parcelList.hidden = false;
+      parcelList.innerHTML = `<li class="kx-checkout-parcel__status">${esc(S.parcelPointLoading)}</li>`;
+      const addr = shipDifferent.checked ? shippingAddress() : billingAddress();
+      const points = await listParcelPoints(parcelCarrier, addr);
+      if (!points || points.length === 0) {
+        parcelList.innerHTML = `<li class="kx-checkout-parcel__status">${esc(S.parcelPointNone)}</li>`;
+        return;
+      }
+      parcelList.innerHTML = points
+        .map(
+          (p, i) => `<li>
+        <button type="button" class="kx-checkout-parcel__item" data-point-index="${i}">
+          <span class="kx-checkout-parcel__name">${esc(p.name)}</span>
+          <span class="kx-checkout-parcel__addr">${esc(p.address)}, ${esc(p.zipcode)} ${esc(p.city)}</span>
+        </button>
+      </li>`,
+        )
+        .join("");
+      parcelList.querySelectorAll<HTMLButtonElement>("[data-point-index]").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const p = points[Number(btn.dataset.pointIndex)];
+          if (!p || !parcelCarrier) return;
+          btn.disabled = true;
+          const ok = await chooseParcelPoint(parcelCarrier, p);
+          if (ok) {
+            parcelChosen = p;
+            renderParcelState();
+          } else {
+            btn.disabled = false;
+          }
+        });
+      });
+    }
+    parcelToggle.addEventListener("click", openParcelPicker);
+
     function renderRates(rates: ShippingRate[], unit: number, sym: string) {
       shippingMethods.hidden = rates.length === 0;
       shippingRatesEl.innerHTML = rates
@@ -230,6 +317,7 @@ const strings = {
         .join("");
       shippingRatesEl.querySelectorAll<HTMLInputElement>('input[name="shipping_rate"]').forEach((input) => {
         input.addEventListener("change", async () => {
+          setParcelCarrier(input.value);
           try {
             const cart = await selectShippingRate(0, input.value);
             renderSummary(cart);
@@ -238,6 +326,8 @@ const strings = {
           }
         });
       });
+      const selected = rates.find((r) => r.selected) ?? rates[0];
+      setParcelCarrier(selected ? selected.rate_id : "");
       updateSubmitState();
     }
 
@@ -500,6 +590,31 @@ const strings = {
     border-radius: var(--kx-radius);
     background: var(--kx-paper);
   }
+  .kx-checkout-parcel {
+    margin-top: 0.9rem;
+  }
+  .kx-checkout-parcel__current {
+    margin: 0 0 0.5rem;
+    font-size: var(--kx-text-sm);
+    color: var(--kx-ink);
+  }
+  .kx-checkout-parcel__toggle {
+    font-size: var(--kx-text-xs);
+    padding: 0.55em 1em;
+  }
+  .kx-checkout-parcel__list {
+    list-style: none;
+    margin: 0.75rem 0 0;
+    padding: 0;
+    max-height: 16rem;
+    overflow-y: auto;
+    border: 1px solid var(--kx-line);
+    border-radius: var(--kx-radius);
+  }
+  /* .kx-checkout-parcel__item/__name/__addr/__status ciblent du contenu
+     injecté via innerHTML (voir <script> ci-dessus) → règles dans global.css,
+     le CSS scopé d'Astro ne s'y applique jamais. */
+
   .kx-checkout-submit {
     width: 100%;
   }

@@ -354,6 +354,45 @@ img {
 .kx-checkout-rate span {
   flex: 1;
 }
+.kx-checkout-parcel__status {
+  padding: 0.75em 0.9em;
+  font-size: var(--kx-text-sm);
+  color: var(--kx-muted);
+}
+.kx-checkout-parcel__item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  width: 100%;
+  padding: 0.7em 0.9em;
+  border: 0;
+  border-bottom: 1px solid var(--kx-line);
+  background: var(--kx-paper);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.kx-checkout-parcel__item:last-child {
+  border-bottom: 0;
+}
+.kx-checkout-parcel__item:hover,
+.kx-checkout-parcel__item:focus-visible {
+  background: var(--kx-raise);
+}
+.kx-checkout-parcel__item[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.kx-checkout-parcel__name {
+  font-weight: 700;
+  font-size: var(--kx-text-sm);
+  color: var(--kx-ink);
+}
+.kx-checkout-parcel__addr {
+  font-size: var(--kx-text-xs);
+  color: var(--kx-muted);
+}
 .kx-checkout-lines {
   list-style: none;
   margin: 0 0 1rem;
