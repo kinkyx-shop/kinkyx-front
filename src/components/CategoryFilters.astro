@@ -43,6 +43,14 @@ const facets: Facet[] = [...attrMap.entries()]
   }))
   .filter((f) => f.options.length >= 2 && f.options.length <= 30);
 
+// affichage par défaut : nouveautés d'abord (l'ordre "En vedette" de WooCommerce
+// reste disponible dans le menu, mais n'est plus le tri au premier chargement)
+const productsByDate = [...products].sort((a, b) => {
+  const da = a.date ? Date.parse(a.date) : 0;
+  const db = b.date ? Date.parse(b.date) : 0;
+  return db - da;
+});
+
 const prices = products.map((p) => p.price.min).filter((n): n is number => n != null);
 const priceFloor = prices.length ? Math.floor(Math.min(...prices)) : 0;
 const priceCeil = prices.length ? Math.ceil(Math.max(...prices)) : 0;
@@ -105,8 +113,8 @@ const cellData = (p: Product) => {
     <label class="kx-cf__sortwrap">
       <span>{L.sort}</span>
       <select data-cf-sort>
+        <option value="new" selected>{L.sortNew}</option>
         <option value="featured">{L.sortFeatured}</option>
-        <option value="new">{L.sortNew}</option>
         <option value="price-asc">{L.sortPriceAsc}</option>
         <option value="price-desc">{L.sortPriceDesc}</option>
         <option value="name">{L.sortName}</option>
@@ -178,7 +186,7 @@ const cellData = (p: Product) => {
     }
 
     <div class="kx-grid" data-cf-grid>
-      {products.map((p) => <ProductCard product={p} locale={locale} attrs={cellData(p)} />)}
+      {productsByDate.map((p) => <ProductCard product={p} locale={locale} attrs={cellData(p)} />)}
       <p class="kx-cf__empty" data-cf-empty hidden>
         {L.empty} <button type="button" class="kx-cf__reset" data-cf-reset>{L.reset}</button>
       </p>
